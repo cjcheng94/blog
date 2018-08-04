@@ -19,7 +19,6 @@ class PostIndex extends Component {
 		}
 		return (
 			<div className="row">
-				<h1>Heller</h1>
 				<Cards posts={this.props.posts} />
 			</div>
 		);
