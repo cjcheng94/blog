@@ -5,20 +5,21 @@ import { Provider } from "react-redux";
 import { createStore, applyMiddleware } from "redux";
 import { BrowserRouter as Router, Route } from "react-router-dom";
 import promise from "redux-promise";
+import { createLogger } from "redux-logger";
 
 import reducers from "./reducers";
-import Header from "./components/Header";
-import PostNew from "./components/post_new";
-import PostIndex from "./components/post_index";
-import PostDetails from "./components/post_details";
-import PostUpdate from './components/post_update';
+import Header from "./components/header";
+import PostNew from "./containers/Post_new";
+import PostIndex from "./containers/Post_index";
+import PostDetails from "./containers/Post_details";
+import PostUpdate from './containers/Post_update';
 
 import 'materialize-css/dist/js/materialize.min.js';
 import "materialize-css/dist/css/materialize.min.css";
 import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
 
-const createStoreWithMiddleWare = applyMiddleware(promise)(createStore);
+const createStoreWithMiddleWare = applyMiddleware(promise, createLogger())(createStore);
 const routes = [
 	{
 		path: "/posts/detail/:_id",

@@ -2,11 +2,12 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { fetchPosts } from "../actions";
 
-import Cards from "./Cards";
-
+import Cards from "../components/cards";
 class PostIndex extends Component {
 	componentDidMount() {
-		this.props.fetchPosts();
+		// if (!this.props.posts) {
+			this.props.fetchPosts();
+		// }
 	}
 	render() {
 		if (!this.props.posts) {
@@ -16,7 +17,6 @@ class PostIndex extends Component {
 				</div>
 			);
 		}
-
 		return (
 			<div className="row">
 				<Cards posts={this.props.posts} />
@@ -29,4 +29,4 @@ function mapStateToProps(state) {
 	return { posts: state.posts };
 }
 
-export default connect(mapStateToProps, { fetchPosts: fetchPosts })(PostIndex);
+export default connect(mapStateToProps, { fetchPosts })(PostIndex);

@@ -2,12 +2,8 @@ import React, { Component } from "react";
 import _ from "lodash";
 import { Link } from "react-router-dom";
 
-export default class Cards extends Component {
-	// handleMouseEnter(){
-	// 	const className = `card samll z-depth-5`;
-	// 	console.log(className);
-	// }
 
+export default class Cards extends Component {
 	render() {
 		return _.map(this.props.posts, post => {
 			const url = `/posts/detail/${post._id}`;

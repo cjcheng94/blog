@@ -3,22 +3,18 @@ import { connect } from "react-redux";
 import { fetchPost, deletePost } from "../actions";
 import { Link } from "react-router-dom";
 import Alert from "react-s-alert";
-import Modal from "./Modal";
+import Modal from "../components/modal";
 
 class PostDetails extends Component {
 	constructor(props) {
 		super(props);
-
 		this.state = {
 			showModal: false
 		};
-
-		this.handleModalShow = this.handleModalShow.bind(this);
-		this.handleModalHide = this.handleModalHide.bind(this);
-		this.handleDelete = this.handleDelete.bind(this);
 	}
 
 	componentDidMount() {
+		//reset to top of the page
 		window.scrollTo(0, 0);
 		//if there's already a post, then don't waste network usage to fetch it again
 		if (!this.props.post) {
@@ -45,7 +41,6 @@ class PostDetails extends Component {
 			showModal: false
 		});
 	}
-
 	handleDelete() {
 		const { _id } = this.props.match.params;
 		this.props.deletePost(_id, () => {
@@ -71,8 +66,8 @@ class PostDetails extends Component {
 			<div>
 				{this.state.showModal ? (
 					<Modal
-						handler={this.handleDelete}
-						handleModalHide={this.handleModalHide}
+						handler={this.handleDelete.bind(this)}
+						handleModalHide={this.handleModalHide.bind(this)}
 						message="Are you sure you want to delete this article?"
 					/>
 				) : null}
@@ -84,7 +79,7 @@ class PostDetails extends Component {
 				</div>
 				<div className="detail-buttons">
 					<button
-						onClick={this.handleModalShow}
+						onClick={this.handleModalShow.bind(this)}
 						className="btn waves-effect waves-light red lighten-1 "
 					>
 						Delete

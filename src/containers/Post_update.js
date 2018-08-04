@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import Alert from "react-s-alert";
 
 import { updatePost, fetchPost } from "../actions";
-import Modal from "./Modal";
+import Modal from "../components/modal";
 
 class PostUpdate extends Component {
 	constructor(props) {
