@@ -65,7 +65,8 @@ class PostNew extends Component {
 				<form
 					onSubmit={handleSubmit(this.onSubmit.bind(this))}
 					//                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
-					// this.onSubmit() referes to line 53 - , it handles the submission of the form
+					// this.onSubmit() referes to the onSubmit() method of this component,
+					// it handles the submission of the form
 					className="col s12"
 				>
 					<div className="row">

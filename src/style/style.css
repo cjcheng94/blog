@@ -43,36 +43,28 @@ body {
 	margin: 1em 0 !important;
 }
 .detail-buttons {
-	position: fixed;
-	top:100px;
-	right:50px;
+	margin-top: 30px;
+	margin-bottom: 50px;
 }
-.detail-buttons > button{
-	display: block;
-	margin-bottom: 20px;
+.detail-buttons *{
+	/* width: 100px; */
+	margin-right: 12px;
 }
 .modal {
 	display: block !important;
 	z-index: 2;
 }
 .detail {
-	margin: auto;
-	max-width: 700px;
-	letter-spacing: 0;
-	font-weight: 400;
-	font-style: normal;
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	font-size: 20px;
 	line-height: 1.4;
 }
-.detail > p {
+.detail .post-content {
 	white-space: pre-wrap;
-	font-size: 21px;
-	font-weight: 400;
 	line-height: 1.58;
 	letter-spacing: -0.003em;
 }
 
-.edit-textarea{
-}
+/* .edit-textarea{
+} */

@@ -18,6 +18,7 @@ import 'materialize-css/dist/js/materialize.min.js';
 import "materialize-css/dist/css/materialize.min.css";
 import 'react-s-alert/dist/s-alert-default.css';
 import 'react-s-alert/dist/s-alert-css-effects/slide.css';
+import './style/style.css'
 
 const createStoreWithMiddleWare = applyMiddleware(promise, createLogger())(createStore);
 const routes = [
@@ -47,7 +48,7 @@ const routes = [
 ReactDOM.render(
 	<Provider store={createStoreWithMiddleWare(reducers)}>
 		<Router>
-			<div className="wrapper">
+			<div>
 				{routes.map((route, index) => (
 					<Route
 						key={index}
