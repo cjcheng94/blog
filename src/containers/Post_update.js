@@ -78,7 +78,7 @@ class PostUpdate extends Component {
 
 		this.props.updatePost(_id, requestBody, () => {
 			this.showAlert("Post Successfully Updated!");
-			setTimeout(() => this.props.history.push("/"), 1000);
+			setTimeout(() => this.props.history.push("/"), 1500);
 		});
 	}
 	render() {
@@ -96,7 +96,8 @@ class PostUpdate extends Component {
 				<form
 					onSubmit={handleSubmit(this.onSubmit.bind(this))}
 					//                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
-					// this.onSubmit() referes to line 59 - , it handles the submission of the form
+					// this.onSubmit() referes to the onSubmit() method of this component,
+					// it handles the submission of the form
 					className="col s12"
 				>
 					{this.state.showModal ? (

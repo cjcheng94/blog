@@ -8,11 +8,13 @@ import promise from "redux-promise";
 import { createLogger } from "redux-logger";
 
 import reducers from "./reducers";
-import Header from "./components/header";
+import Header from "./containers/Header";
 import PostNew from "./containers/Post_new";
 import PostIndex from "./containers/Post_index";
 import PostDetails from "./containers/Post_details";
 import PostUpdate from './containers/Post_update';
+import Login from "./containers/Login";
+import Signup from "./containers/Signup";
 
 import 'materialize-css/dist/js/materialize.min.js';
 import "materialize-css/dist/css/materialize.min.css";
@@ -36,6 +38,16 @@ const routes = [
 		path: "/posts/edit/:_id",
 		sidebar: Header,
 		main: PostUpdate
+	},
+	{
+		path: '/user/login',
+		sidebar: Header,
+		main: Login
+	},
+	{
+		path: '/user/signup',
+		sidebar: Header,
+		main: Signup
 	},
 	{
 		path: "/",
