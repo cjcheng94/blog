@@ -71,7 +71,7 @@ class PostNew extends Component {
 				>
 					<div className="row">
 						<Field name="title" component={this.renderField} />
-						<Field name="author" component={this.renderField} />
+						{/* <Field name="author" component={this.renderField} /> */}
 						<Field name="content" component={this.renderField} />
 						<div className=" col s12">
 							<button
@@ -102,9 +102,9 @@ function validate(values) {
 	if (!values.title) {
 		errors.title = "Please enter a title";
 	}
-	if (!values.author) {
-		errors.author = "Please enter an author";
-	}
+	// if (!values.author) {
+	// 	errors.author = "Please enter an author";
+	// }
 	if (!values.content) {
 		errors.content = "Please enter some content";
 	}

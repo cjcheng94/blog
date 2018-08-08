@@ -10,46 +10,49 @@ export const USER_LOGIN_PENDING = "USER_LOGIN_PENDING";
 export const USER_LOGIN_FULFILLED = "USER_LOGIN_FULFILLED";
 export const USER_LOGIN_REJECTED = "USER_LOGIN_REJECTED";
 
-export function userLogin(loginData, cb) {
+export function userLogin(loginData, callback) {
   return dispatch => {
+    console.log(dispatch);
+    
     const request = axios({
       baseURL: ROOT_URL,
       url: "/user/login",
       method: "POST",
       data: loginData
     });
+    console.log('heller? '+loginData.username);
+    
     return dispatch({
       type: USER_LOGIN,
-      payload: request,
-      username: loginData.username
-    }).then(resolved => {
+      payload: request
+    }).then(({value}) => {      
       // resolved = {
       //   action:{type: "USER_LOGIN_FULFILLED", payload: {...}
       //   value: {same as action.payload on line above}
       // }
-      localStorage.setItem('username', loginData.username);
-      localStorage.setItem("token", resolved.value.data.token);
-      cb();
+      localStorage.setItem('username', value.data.username)
+      localStorage.setItem("token", value.data.token);
+      callback();
     });
   };
 }
 
-export function userLogout(cb) {
+export function userLogout(callback) {
   return dispatch => {
     dispatch({ type: USER_LOGOUT });
     localStorage.removeItem("token");
     localStorage.removeItem("username");
-    cb();
+    callback();
   };
 }
 
-export function userSignup(signUpData, cb) {
+export function userSignup(signUpData, callback) {
   const request = axios({
     baseURL: ROOT_URL,
     url: "/user/signup",
     method: "POST",
     data: signUpData
-  }).then(() => cb());
+  }).then(() => callback());
   return {
     type: USER_SIGNUP,
     payload: request

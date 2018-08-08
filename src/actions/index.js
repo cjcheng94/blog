@@ -27,33 +27,55 @@ export function fetchPost(_id) {
 	};
 }
 
+
+// protected requests
 export function createPost(values, callback) {
-	const request = axios
-		.post(`${ROOT_URL}/posts`, values)
-		.then(() => callback());
-	return {
-		type: CREATE_POST,
-		payload: request
-	};
+	const token = localStorage.getItem('token')
+	return dispatch=>{
+		const request = axios({
+			baseURL: ROOT_URL,
+			url: "/posts",
+			method: "POST",
+			headers: {'Authorization': `Bearer ${token}`},
+			data: values
+		});
+		return dispatch({
+			type: CREATE_POST,
+			payload: request
+		}).then(()=>callback())
+	}
 }
 
 export function deletePost(_id, callback) {
-	const request = axios
-		.delete(`${ROOT_URL}/posts/${_id}`)
-		.then(() => callback());
-
-	return {
-		type: DELETE_POST,
-		payload: request
-	};
+	const token = localStorage.getItem('token');
+	return dispatch=>{
+		const request = axios({
+			baseURL: ROOT_URL,
+			url: `/posts/${_id}`,
+			method: "DELETE",
+			headers: {'Authorization': `Bearer ${token}`},
+		});
+		return dispatch({
+			type: DELETE_POST,
+			payload: request
+		}).then(()=>callback());
+	}
 }
 
 export function updatePost(_id, values, callback) {
-	const request = axios
-		.patch(`${ROOT_URL}/posts/${_id}`, values)
-		.then(() => callback());
-	return {
-		type: UPDATE_POST,
-		payload: request
-	};
+	const token = localStorage.getItem('token');
+	return dispatch=>{
+		const request = axios({
+			baseURL: ROOT_URL,
+			url: `/posts/${_id}`,
+			method: "PATCH",
+			headers: {'Authorization': `Bearer ${token}`},
+			data: values
+		});
+		return dispatch({
+			type: UPDATE_POST,
+			payload: request
+		}).then(()=>callback())
+	}
 }
+

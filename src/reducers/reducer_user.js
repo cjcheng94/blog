@@ -16,7 +16,7 @@ export default function(state = initialUserState, action) {
     case USER_LOGIN_PENDING:
       return {
         ...state,
-        isFetching: true
+        isFetching: true,
       }
     case USER_LOGIN_REJECTED:
       return {
@@ -29,13 +29,15 @@ export default function(state = initialUserState, action) {
       return {
         ...state,
         isAuthenticated: true,
-        isFetching: false
+        isFetching: false,
+        username: action.payload.data.username
       };
     case USER_LOGOUT:
       return {
         ...state,
         isAuthenticated: false,
-        isFetching: false
+        isFetching: false,
+        username: null
       }
     default:
       return state;

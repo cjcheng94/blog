@@ -3,6 +3,7 @@ import { connect } from "react-redux";
 import { fetchPost, deletePost } from "../actions";
 import { Link } from "react-router-dom";
 import Alert from "react-s-alert";
+import moment from "moment";
 import Modal from "../components/modal";
 
 class PostDetails extends Component {
@@ -58,7 +59,9 @@ class PostDetails extends Component {
       );
     }
 
-    const { title, author, content } = this.props.post;
+    const { title, author, content, date } = this.props.post;
+    const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
+
     const { _id } = this.props.match.params;
     const url = `/posts/edit/${_id}`;
     //----------------------------------------------
@@ -77,28 +80,39 @@ class PostDetails extends Component {
 
         <div className="detail">
           <h3>{title}</h3>
-          <h6>By {author}</h6>
-          <div className="divider" style={{marginBottom: '30px'}}/>
-          <div className="post-content" dangerouslySetInnerHTML={createMarkup()} />
+          <h6>
+            By <i>{author}</i>
+          </h6>
+          <h6>{postTime}</h6>
+          <div className="divider" style={{ marginBottom: "30px" }} />
+          <div
+            className="post-content"
+            dangerouslySetInnerHTML={createMarkup()}
+          />
         </div>
-        <div className="detail-buttons">
-          <button
-            onClick={this.handleModalShow.bind(this)}
-            className="btn waves-effect waves-light red lighten-1 "
-          >
-            Delete
-          </button>
-          <Link to={url} className="btn waves-effect waves-light ">
-            Edit
-          </Link>
-        </div>
+        {author === this.props.user.username ? (
+          <div className="detail-buttons">
+            <button
+              onClick={this.handleModalShow.bind(this)}
+              className="btn waves-effect waves-light red lighten-1 "
+            >
+              Delete
+            </button>
+            <Link to={url} className="btn waves-effect waves-light ">
+              Edit
+            </Link>
+          </div>
+        ) : null}
       </div>
     );
   }
 }
 
-function mapStateToProps({ posts }, ownProps) {
-  return { post: posts[ownProps.match.params._id] };
+function mapStateToProps({ posts, user }, ownProps) {
+  return {
+    post: posts[ownProps.match.params._id],
+    user
+  };
 }
 
 export default connect(
