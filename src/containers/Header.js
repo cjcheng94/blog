@@ -1,6 +1,10 @@
 import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import Alert from "react-s-alert";
+
+import { userLogout } from "../actions/user";
+
 import HeaderButton from "../components/headerButton";
 
 const buttonList = [
@@ -22,8 +26,22 @@ const buttonList = [
   }
 ];
 class Header extends Component {
+  showAlert(message) {
+    Alert.success(message, {
+      position: "top-right",
+      effect: "slide",
+      timeout: 2000
+    });
+  }
+  handleLogoutClick(e) {
+    e.preventDefault();
+    this.props.userLogout(() => {
+      this.showAlert("Logged out");
+      setTimeout(() => this.props.history.push("/"), 1000);
+    });
+  }
   render() {
-    const buttons = this.props.authorized
+    const buttons = this.props.isAuthenticated
       ? buttonList.slice(0, 2)
       : buttonList.slice(2);
     return (
@@ -50,6 +68,11 @@ class Header extends Component {
                   />
                 );
               })}
+              {this.props.isAuthenticated ? (
+                <li className="waves-effect waves-light">
+                  <a onClick={this.handleLogoutClick.bind(this)}>Log out</a>
+                </li>
+              ) : null}
             </ul>
           </div>
         </nav>
@@ -58,6 +81,11 @@ class Header extends Component {
   }
 }
 
-const mapStateToProps = ({ user: { authorized } }) => ({ authorized });
+const mapStateToProps = ({ user: { isAuthenticated } }) => ({
+  isAuthenticated
+});
 
-export default connect(mapStateToProps)(Header);
+export default connect(
+  mapStateToProps,
+  { userLogout }
+)(Header);

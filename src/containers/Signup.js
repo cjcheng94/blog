@@ -24,12 +24,13 @@ class Signup extends Component {
       meta: { touched, error }
     } = field;
     const className = `${touched && error ? "invalid" : ""}`;
+    const type = field.input.name === 'username'? 'text': 'password';
     return (
       <div className="input-field col s6">
         <input
           className={className}
           id={field.input.name}
-          type="text"
+          type={type}
           {...field.input}
         />
         <label htmlFor={field.input.name}>{field.input.name}</label>
@@ -52,6 +53,9 @@ class Signup extends Component {
           <div className="row">
             <Field name="password" component={this.renderField} />
           </div>
+          <div className="row">
+            <Field name="confirm password" component={this.renderField} />
+          </div>
             <input
               type="submit"
               value="Sign Up"
@@ -72,7 +76,9 @@ function validate(values) {
   if (!values.password) {
     errors.password = "Please enter a password";
   }
-
+  if (values.password !== values['confirm password']) {
+    errors['confirm password'] = 'Passwords doesn\'t match'
+  }
   //if the "errors" object is empty, the form is valid and ok to submit
   return errors;
 }

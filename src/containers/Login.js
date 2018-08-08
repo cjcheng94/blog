@@ -24,12 +24,13 @@ class Login extends Component {
       meta: { touched, error }
     } = field;
     const className = `${touched && error ? "invalid" : ""}`;
+    const type = field.input.name === "password" ? "password" : "text";
     return (
       <div className="input-field col s6">
         <input
           className={className}
           id={field.input.name}
-          type="text"
+          type={type}
           {...field.input}
         />
         <label htmlFor={field.input.name}>{field.input.name}</label>
@@ -41,24 +42,31 @@ class Login extends Component {
   render() {
     const { handleSubmit } = this.props;
     return (
-      <div className="container">
-        <h1>Log in</h1>
-        <form
-          className="col s12"
-          onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
-        >
-          <div className="row">
-            <Field name="username" component={this.renderField} />
+      <div>
+        {this.props.isFetching ? (
+          <div className="progress">
+            <div className="indeterminate" />
           </div>
-          <div className="row">
-            <Field name="password" component={this.renderField} />
-          </div>
-          <input
-            type="submit"
-            value="Log in"
-            className="btn waves-effect waves-light from-btn cyan darken-1"
-          />
-        </form>
+        ) : null}
+        <div className="container">
+          <h1>Log in</h1>
+          <form
+            className="col s12"
+            onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
+          >
+            <div className="row">
+              <Field name="username" component={this.renderField} />
+            </div>
+            <div className="row">
+              <Field name="password" component={this.renderField} />
+            </div>
+            <input
+              type="submit"
+              value="Log in"
+              className="btn waves-effect waves-light from-btn cyan darken-1"
+            />
+          </form>
+        </div>
       </div>
     );
   }
@@ -78,12 +86,16 @@ function validate(values) {
   return errors;
 }
 
+function mapStateToProps(state) {
+  return { isFetching: state.user.isFetching };
+}
+
 export default reduxForm({
   validate,
   form: "LoginForm"
 })(
   connect(
-    null,
+    mapStateToProps,
     { userLogin }
   )(Login)
 );

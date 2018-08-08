@@ -1,10 +1,13 @@
 import axios from "axios";
 
-export const FETCH_POSTS = "fetch_posts";
-export const FETCH_POST = "fetch_post";
-export const CREATE_POST = "create_post";
-export const DELETE_POST = "delete_post";
-export const UPDATE_POST = "update_post";
+const FETCH_POSTS = 'FETCH_POSTS'
+const FETCH_POST = 'FETCH_POST'
+
+export const FETCH_POSTS_FULFILLED = "FETCH_POSTS_FULFILLED";
+export const FETCH_POST_FULFILLED = "FETCH_POST_FULFILLED";
+export const CREATE_POST = "CREATE_POST";
+export const DELETE_POST = "DELETE_POST";
+export const UPDATE_POST = "UPDATE_POST";
 
 const ROOT_URL = "https://alexsapiblog.herokuapp.com";
 
