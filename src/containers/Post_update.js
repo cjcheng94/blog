@@ -82,7 +82,7 @@ class PostUpdate extends Component {
 
     this.props.updatePost(_id, requestBody, () => {
       this.showAlert("Post Successfully Updated!");
-      setTimeout(() => this.props.history.push("/"), 1500);
+      this.props.history.push("/");
     });
   }
   render() {
@@ -102,6 +102,7 @@ class PostUpdate extends Component {
               message="Submit changes?"
               handleModalHide={this.handleModalHide.bind(this)}
               buttonType="submit"
+              isFetching={this.props.isFetching}
             />
           ) : null}
           <div className="row">
@@ -147,7 +148,8 @@ function validate(values) {
 function mapStateToProps({ posts }, ownProps) {
   return {
     postData: posts.postData[ownProps.match.params._id],
-    initialValues: posts.postData[ownProps.match.params._id]
+    initialValues: posts.postData[ownProps.match.params._id],
+    isFetching: posts.isFetching
   };
 }
 

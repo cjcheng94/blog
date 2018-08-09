@@ -42,6 +42,7 @@ class PostDetails extends Component {
       showModal: false
     });
   }
+
   handleDelete() {
     const { _id } = this.props.match.params;
     this.props.deletePost(_id, () => {
@@ -54,7 +55,6 @@ class PostDetails extends Component {
     if (!this.props.postData) {
       return null
     }
-
     const { title, author, content, date } = this.props.postData;
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
@@ -71,6 +71,7 @@ class PostDetails extends Component {
             handler={this.handleDelete.bind(this)}
             handleModalHide={this.handleModalHide.bind(this)}
             message="Are you sure you want to delete this article?"
+            isFetching={this.props.isFetching}
           />
         ) : null}
 
@@ -107,7 +108,8 @@ class PostDetails extends Component {
 function mapStateToProps({ posts, user }, ownProps) {
   return {
     postData: posts.postData[ownProps.match.params._id],
-    user
+    user,
+    isFetching: posts.isFetching
   };
 }
 

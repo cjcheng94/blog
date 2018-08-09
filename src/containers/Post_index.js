@@ -16,8 +16,11 @@ class PostIndex extends Component {
   }
 }
 
-function mapStateToProps(state) {
-  return { postData: state.posts.postData };
+function mapStateToProps({ posts }) {
+  return { 
+    postData: posts.postData, 
+    isFetching: posts.isFetching 
+  };
 }
 
 export default connect(

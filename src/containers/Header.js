@@ -2,10 +2,9 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
-
 import { userLogout } from "../actions/user";
-
 import HeaderButton from "../components/headerButton";
+import ErrorPage from "../components/errorPage";
 
 const buttonList = [
   {
@@ -41,6 +40,7 @@ class Header extends Component {
       setTimeout(() => this.props.history.push("/"), 1000);
     });
   }
+
   render() {
     const buttons = this.props.isAuthenticated
       ? buttonList.slice(0, 2)
@@ -83,7 +83,10 @@ class Header extends Component {
           <div className="progress">
             <div className="indeterminate" />
           </div>
-        ) : <div className='placeholder'></div>}
+        ) : (
+          <div className="placeholder" />
+        )}
+        <ErrorPage />
       </div>
     );
   }

@@ -56,14 +56,14 @@ class PostNew extends Component {
   onSubmit(values) {
     this.props.createPost(values, () => {
       this.showAlert("Post Successfully Added!");
-      setTimeout(() => this.props.history.push("/"), 1000);
+      this.props.history.push("/")
     });
   }
 
   render() {
     // handleSubmit is from Redux Form, it handles validation etc.
     const { handleSubmit } = this.props;
-
+    const isDisabled = this.props.isFetching? 'disabled': ''
     return (
       <div className="row">
         <form
@@ -78,7 +78,7 @@ class PostNew extends Component {
             <Field name="content" component={this.renderField} />
             <div className=" col s12">
               <button
-                className="btn waves-effect waves-light from-btn cyan darken-1"
+                className={`btn waves-effect waves-light from-btn cyan darken-1 ${isDisabled}`}
                 type="submit"
               >
                 Submit

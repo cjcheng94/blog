@@ -1,9 +1,12 @@
 import { combineReducers } from "redux";
 import deepFreeze from "deep-freeze";
-import expect from 'expect'
+import expect from "expect";
 import {
   FETCH_POSTS_FULFILLED,
   FETCH_POST_FULFILLED,
+  CREATE_POST_FULFILLED,
+  UPDATE_POST_FULFILLED,
+  DELETE_POST_FULFILLED,
   FETCH_POSTS_PENDING,
   FETCH_POST_PENDING,
   CREATE_POST_PENDING,
@@ -17,16 +20,9 @@ import {
 } from "../actions/posts";
 import _ from "lodash";
 
-//state design -> {_id: {post object}} ->
-//{
-//	5: {title: 'hello', author: 'John Doe', content: '...'},
-//	12: {title: 'bye', author: 'Jane Doe', content: '...'},
-//}
-//for easier lookup/manipulation
-
 // const initialPostsState = {
-//   isFetching: true,
-//   postsData: {},
+//   isFetching: false,
+//   postsData: {_id: {post object}}},
 //   error: null
 // };
 
@@ -48,15 +44,57 @@ function isFetchingReducer(state = false, action) {
     case CREATE_POST_PENDING:
     case UPDATE_POST_PENDING:
     case DELETE_POST_PENDING:
-    //flag, not right here, FIX!
+    case "@@redux-form/SET_SUBMIT_SUCCEEDED":
+      //flag, not right here, FIX!
       return true;
+    case FETCH_POSTS_FULFILLED:
+    case FETCH_POST_FULFILLED:
+    case CREATE_POST_FULFILLED:
+    case UPDATE_POST_FULFILLED:
+    case DELETE_POST_FULFILLED:
+    case FETCH_POSTS_REJECTED:
+    case FETCH_POST_REJECTED:
+    case CREATE_POST_REJECTED:
+    case UPDATE_POST_REJECTED:
+    case DELETE_POST_REJECTED:
+      return false;
     default:
       return state;
   }
 }
 
-function errorReducer(state = "", action) {
-  return state;
+function errorReducer(state = {}, action) {
+  switch (action.type) {
+    case FETCH_POSTS_REJECTED:
+    case FETCH_POST_REJECTED:
+    case CREATE_POST_REJECTED:
+    case UPDATE_POST_REJECTED:
+    case DELETE_POST_REJECTED:
+      return {
+        ...state,
+        status: action.payload.response.status,
+        statusText: action.payload.response.statusText,
+        message: action.payload.response.data.message
+      };
+    case FETCH_POSTS_FULFILLED:
+    case FETCH_POST_FULFILLED:
+    case CREATE_POST_FULFILLED:
+    case UPDATE_POST_FULFILLED:
+    case DELETE_POST_FULFILLED:
+    case FETCH_POSTS_PENDING:
+    case FETCH_POST_PENDING:
+    case CREATE_POST_PENDING:
+    case UPDATE_POST_PENDING:
+    case DELETE_POST_PENDING:
+      return {
+        ...state,
+        status: null,
+        statusText: null,
+        message: null
+      };
+    default:
+      return state;
+  }
 }
 
 const postReducer = combineReducers({
@@ -64,13 +102,5 @@ const postReducer = combineReducers({
   isFetching: isFetchingReducer,
   error: errorReducer
 });
-//same as
-// function postReducer(state.., action){
-//   return {
-//     postData: postDataReducer(state.., action),
-//     isFetching: isFetchingReducer(state.., action),
-//     ...
-//   }
-// }
 
 export default postReducer;
