@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { fetchPost, deletePost } from "../actions";
+import { fetchPost, deletePost } from "../actions/posts";
 import { Link } from "react-router-dom";
 import Alert from "react-s-alert";
 import moment from "moment";
@@ -17,8 +17,8 @@ class PostDetails extends Component {
   componentDidMount() {
     //reset to top of the page
     window.scrollTo(0, 0);
-    //if there's already a post, then don't waste network usage to fetch it again
-    if (!this.props.post) {
+    //if all posts are already fetched, then don't waste network usage to fetch it again
+    if (!this.props.postData) {
       const { _id } = this.props.match.params;
       this.props.fetchPost(_id);
     }
@@ -51,15 +51,11 @@ class PostDetails extends Component {
   }
 
   render() {
-    if (!this.props.post) {
-      return (
-        <div className="progress">
-          <div className="indeterminate" />
-        </div>
-      );
+    if (!this.props.postData) {
+      return null
     }
 
-    const { title, author, content, date } = this.props.post;
+    const { title, author, content, date } = this.props.postData;
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
     const { _id } = this.props.match.params;
@@ -110,7 +106,7 @@ class PostDetails extends Component {
 
 function mapStateToProps({ posts, user }, ownProps) {
   return {
-    post: posts[ownProps.match.params._id],
+    postData: posts.postData[ownProps.match.params._id],
     user
   };
 }

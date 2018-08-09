@@ -7,16 +7,17 @@ import { userLogin } from "../actions/user";
 
 class Login extends Component {
   showAlert(message) {
-    Alert.success(message, {
+    Alert.info(message, {
       position: "top-right",
       effect: "slide",
-      timeout: 2000
+      timeout: 2000,
+      offset: "50px"
     });
   }
   onComponentSubmit(values) {
     this.props.userLogin(values, () => {
       this.showAlert("Login successful!");
-      this.props.history.push("/");
+      setTimeout(()=>this.props.history.push("/"), 1000)
     });
   }
   renderField(field) {
@@ -42,31 +43,24 @@ class Login extends Component {
   render() {
     const { handleSubmit } = this.props;
     return (
-      <div>
-        {this.props.isFetching ? (
-          <div className="progress">
-            <div className="indeterminate" />
+      <div className="container">
+        <h1>Log in</h1>
+        <form
+          className="col s12"
+          onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
+        >
+          <div className="row">
+            <Field name="username" component={this.renderField} />
           </div>
-        ) : null}
-        <div className="container">
-          <h1>Log in</h1>
-          <form
-            className="col s12"
-            onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
-          >
-            <div className="row">
-              <Field name="username" component={this.renderField} />
-            </div>
-            <div className="row">
-              <Field name="password" component={this.renderField} />
-            </div>
-            <input
-              type="submit"
-              value="Log in"
-              className="btn waves-effect waves-light from-btn cyan darken-1"
-            />
-          </form>
-        </div>
+          <div className="row">
+            <Field name="password" component={this.renderField} />
+          </div>
+          <input
+            type="submit"
+            value="Log in"
+            className="btn waves-effect waves-light from-btn cyan darken-1"
+          />
+        </form>
       </div>
     );
   }
@@ -86,16 +80,12 @@ function validate(values) {
   return errors;
 }
 
-function mapStateToProps(state) {
-  return { isFetching: state.user.isFetching };
-}
-
 export default reduxForm({
   validate,
   form: "LoginForm"
 })(
   connect(
-    mapStateToProps,
+    null,
     { userLogin }
   )(Login)
 );

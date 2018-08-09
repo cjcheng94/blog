@@ -7,10 +7,11 @@ import { userSignup } from "../actions/user";
 
 class Signup extends Component {
   showAlert(message) {
-    Alert.success(message, {
+    Alert.info(message, {
       position: "top-right",
       effect: "slide",
-      timeout: 2000
+      timeout: 2000,
+      offset: '50px'
     });
   }
   onComponentSubmit(values) {

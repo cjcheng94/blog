@@ -11,22 +11,19 @@ export const USER_LOGIN_FULFILLED = "USER_LOGIN_FULFILLED";
 export const USER_LOGIN_REJECTED = "USER_LOGIN_REJECTED";
 
 export function userLogin(loginData, callback) {
-  return dispatch => {
-    console.log(dispatch);
-    
+  return dispatch => {    
     const request = axios({
       baseURL: ROOT_URL,
       url: "/user/login",
       method: "POST",
       data: loginData
-    });
-    console.log('heller? '+loginData.username);
-    
+    });    
     return dispatch({
       type: USER_LOGIN,
       payload: request
-    }).then(({value}) => {      
-      // resolved = {
+    }).then(({value}) => {  
+      //    ▼      ▼    
+      // {
       //   action:{type: "USER_LOGIN_FULFILLED", payload: {...}
       //   value: {same as action.payload on line above}
       // }

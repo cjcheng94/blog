@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
 
-import { updatePost, fetchPost } from "../actions";
+import { updatePost, fetchPost } from "../actions/posts";
 import Modal from "../components/modal";
 
 class PostUpdate extends Component {
@@ -31,10 +31,11 @@ class PostUpdate extends Component {
     });
   }
   showAlert(message) {
-    Alert.success(message, {
+    Alert.info(message, {
       position: "top-right",
       effect: "slide",
-      timeout: 2000
+      timeout: 2000,
+      offset: '50px'
     });
   }
   renderField(field) {
@@ -85,13 +86,6 @@ class PostUpdate extends Component {
     });
   }
   render() {
-    if (!this.props.post) {
-      return (
-        <div className="progress">
-          <div className="indeterminate" />
-        </div>
-      );
-    }
     // handleSubmit is from Redux Form, it handles validation etc.
     const { handleSubmit } = this.props;
     return (
@@ -152,8 +146,8 @@ function validate(values) {
 
 function mapStateToProps({ posts }, ownProps) {
   return {
-    post: posts[ownProps.match.params._id],
-    initialValues: posts[ownProps.match.params._id]
+    postData: posts.postData[ownProps.match.params._id],
+    initialValues: posts.postData[ownProps.match.params._id]
   };
 }
 

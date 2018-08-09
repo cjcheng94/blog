@@ -27,10 +27,11 @@ const buttonList = [
 ];
 class Header extends Component {
   showAlert(message) {
-    Alert.success(message, {
+    Alert.info(message, {
       position: "top-right",
       effect: "slide",
-      timeout: 2000
+      timeout: 2000,
+      offset: "50px"
     });
   }
   handleLogoutClick(e) {
@@ -45,44 +46,52 @@ class Header extends Component {
       ? buttonList.slice(0, 2)
       : buttonList.slice(2);
     return (
-      <div className="navbar-fixed">
-        <nav className="cyan darken-1">
-          <div className="nav-wrapper container">
-            <Link
-              to="/"
-              className="brand-logo left"
-              style={{
-                textShadow:
-                  "2px 2px 0px #b2ebf2,4px 4px 0px #4dd0e1,6px 6px 0px #00bcd4"
-              }}
-            >
-              Blog!
-            </Link>
-            <ul id="nav-mobile" className="right">
-              {buttons.map(button => {
-                return (
-                  <HeaderButton
-                    key={button.to}
-                    to={button.to}
-                    text={button.text}
-                  />
-                );
-              })}
-              {this.props.isAuthenticated ? (
-                <li className="waves-effect waves-light">
-                  <a onClick={this.handleLogoutClick.bind(this)}>Log out</a>
-                </li>
-              ) : null}
-            </ul>
+      <div>
+        <div className="navbar-fixed">
+          <nav className="cyan darken-1">
+            <div className="nav-wrapper container">
+              <Link
+                to="/"
+                className="brand-logo left"
+                style={{
+                  textShadow:
+                    "2px 2px 0px #b2ebf2,4px 4px 0px #4dd0e1,6px 6px 0px #00bcd4"
+                }}
+              >
+                Blog!
+              </Link>
+              <ul id="nav-mobile" className="right">
+                {buttons.map(button => {
+                  return (
+                    <HeaderButton
+                      key={button.to}
+                      to={button.to}
+                      text={button.text}
+                    />
+                  );
+                })}
+                {this.props.isAuthenticated ? (
+                  <li className="waves-effect waves-light">
+                    <a onClick={this.handleLogoutClick.bind(this)}>Log out</a>
+                  </li>
+                ) : null}
+              </ul>
+            </div>
+          </nav>
+        </div>
+        {this.props.isFetching ? (
+          <div className="progress">
+            <div className="indeterminate" />
           </div>
-        </nav>
+        ) : <div className='placeholder'></div>}
       </div>
     );
   }
 }
 
-const mapStateToProps = ({ user: { isAuthenticated } }) => ({
-  isAuthenticated
+const mapStateToProps = state => ({
+  isAuthenticated: state.user.isAuthenticated,
+  isFetching: state.posts.isFetching || state.user.isFetching
 });
 
 export default connect(
