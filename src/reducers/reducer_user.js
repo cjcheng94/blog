@@ -2,13 +2,15 @@ import {
   USER_LOGIN_FULFILLED,
   USER_LOGIN_PENDING,
   USER_LOGIN_REJECTED,
-  USER_LOGOUT
+  USER_LOGOUT,
+  GET_ALL_USERNAME_FULFILLED,
+  USER_SIGNUP_REJECTED
 } from "../actions/user";
 
 const initialUserState = {
   isAuthenticated: localStorage.getItem('token')?true:false,
   isFetching: false, 
-  username: localStorage.getItem('username')
+  username: localStorage.getItem('username'),
   // error: null
 };
 export default function(state = initialUserState, action) {
@@ -32,12 +34,22 @@ export default function(state = initialUserState, action) {
         isFetching: false,
         username: action.payload.data.username
       };
+    case USER_SIGNUP_REJECTED:
+      return {
+        ...state,
+        isFetching: false
+      }
     case USER_LOGOUT:
       return {
         ...state,
         isAuthenticated: false,
         isFetching: false,
         username: null
+      }
+    case GET_ALL_USERNAME_FULFILLED:
+      return {
+        ...state,
+        userList: action.payload.data.usernameList
       }
     default:
       return state;

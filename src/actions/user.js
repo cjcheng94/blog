@@ -4,11 +4,19 @@ const ROOT_URL = "https://alexsapiblog.herokuapp.com";
 
 const USER_LOGIN = "USER_LOGIN";
 const USER_SIGNUP = "USER_SIGNUP";
-export const USER_LOGOUT = "USER_LOGOUT";
+const GET_ALL_USERNAME = "GET_ALL_USERNAME";
 
 export const USER_LOGIN_PENDING = "USER_LOGIN_PENDING";
 export const USER_LOGIN_FULFILLED = "USER_LOGIN_FULFILLED";
 export const USER_LOGIN_REJECTED = "USER_LOGIN_REJECTED";
+
+export const USER_SIGNUP_PENDING = "USER_SIGNUP_PENDING";
+export const USER_SIGNUP_FULFILLED = "USER_SIGNUP_FULFILLED";
+export const USER_SIGNUP_REJECTED = "USER_SIGNUP_REJECTED";
+
+export const USER_LOGOUT = "USER_LOGOUT";
+
+export const GET_ALL_USERNAME_FULFILLED = "GET_ALL_USERNAME_FULFILLED";
 
 export function userLogin(loginData, callback) {
   return dispatch => {    
@@ -43,6 +51,18 @@ export function userLogout(callback) {
   };
 }
 
+export function getAllUsername(){
+  const request = axios({
+    baseURL: ROOT_URL,
+    url: "/user/all/username",
+    method: "GET",
+  });
+  return {
+    type: GET_ALL_USERNAME,
+    payload: request
+  }
+}
+
 export function userSignup(signUpData, callback) {
   const request = axios({
     baseURL: ROOT_URL,
@@ -55,3 +75,7 @@ export function userSignup(signUpData, callback) {
     payload: request
   };
 }
+
+//check existing user, because this app is very small, I decided to get 
+//the entire list of users from the database and do the comparing in the front end
+//rather than making a billion calls to the server

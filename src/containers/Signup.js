@@ -2,18 +2,23 @@ import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
-
-import { userSignup } from "../actions/user";
+import { userSignup, getAllUsername } from "../actions/user";
 
 class Signup extends Component {
+  // componentDidMount() {
+  //   this.props.getAllUsername();
+  // }
   showAlert(message) {
     Alert.info(message, {
       position: "top-right",
       effect: "slide",
       timeout: 2000,
-      offset: '50px'
+      offset: "50px"
     });
   }
+  // isUnique(username) {
+  //   return this.props.userList.indexOf(username) < 0 ? true : false;
+  // }
   onComponentSubmit(values) {
     this.props.userSignup(values, () => {
       this.showAlert("Sign up successful!");
@@ -22,19 +27,20 @@ class Signup extends Component {
   }
   renderField(field) {
     const {
+      input: {name},
       meta: { touched, error }
     } = field;
     const className = `${touched && error ? "invalid" : ""}`;
-    const type = field.input.name === 'username'? 'text': 'password';
+    const type = name === "username" ? "text" : "password";
     return (
       <div className="input-field col s6">
-        <input
+        <input 
           className={className}
-          id={field.input.name}
+          id={name}
           type={type}
           {...field.input}
         />
-        <label htmlFor={field.input.name}>{field.input.name}</label>
+        <label htmlFor={name}>{name}</label>
         <span className="helper-text red-text">{touched ? error : ""}</span>
       </div>
     );
@@ -77,8 +83,11 @@ function validate(values) {
   if (!values.password) {
     errors.password = "Please enter a password";
   }
-  if (values.password !== values['confirm password']) {
-    errors['confirm password'] = 'Passwords doesn\'t match'
+  if (!values["confirm password"]) {
+    errors["confirm password"] = "Please confirm your password";
+  }
+  if (values.password !== values["confirm password"]) {
+    errors["confirm password"] = "Passwords doesn't match";
   }
   //if the "errors" object is empty, the form is valid and ok to submit
   return errors;

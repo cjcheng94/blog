@@ -94,3 +94,7 @@ body {
 	position: absolute;
 	top: 30%;
 }
+.preloader-wrapper{
+  margin-top: 12px;
+  margin-left: 4px;
+}

@@ -1,6 +1,6 @@
 import { combineReducers } from "redux";
-import deepFreeze from "deep-freeze";
-import expect from "expect";
+// import deepFreeze from "deep-freeze";
+// import expect from "expect";
 import {
   FETCH_POSTS_FULFILLED,
   FETCH_POST_FULFILLED,
@@ -63,44 +63,11 @@ function isFetchingReducer(state = false, action) {
   }
 }
 
-function errorReducer(state = {}, action) {
-  switch (action.type) {
-    case FETCH_POSTS_REJECTED:
-    case FETCH_POST_REJECTED:
-    case CREATE_POST_REJECTED:
-    case UPDATE_POST_REJECTED:
-    case DELETE_POST_REJECTED:
-      return {
-        ...state,
-        status: action.payload.response.status,
-        statusText: action.payload.response.statusText,
-        message: action.payload.response.data.message
-      };
-    case FETCH_POSTS_FULFILLED:
-    case FETCH_POST_FULFILLED:
-    case CREATE_POST_FULFILLED:
-    case UPDATE_POST_FULFILLED:
-    case DELETE_POST_FULFILLED:
-    case FETCH_POSTS_PENDING:
-    case FETCH_POST_PENDING:
-    case CREATE_POST_PENDING:
-    case UPDATE_POST_PENDING:
-    case DELETE_POST_PENDING:
-      return {
-        ...state,
-        status: null,
-        statusText: null,
-        message: null
-      };
-    default:
-      return state;
-  }
-}
+
 
 const postReducer = combineReducers({
   postData: postDataReducer,
-  isFetching: isFetchingReducer,
-  error: errorReducer
+  isFetching: isFetchingReducer
 });
 
 export default postReducer;

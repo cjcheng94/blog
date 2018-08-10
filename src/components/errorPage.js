@@ -25,10 +25,13 @@ class ErrorPage extends Component {
   }
 }
 
-const mapStateToProps = ({
-  posts: {
-    error: { status, statusText, message }
-  }
-}) => ({ status, statusText, message });
+const mapStateToProps = ({ error: { status, statusText, message } }) => ({
+  status,
+  statusText,
+  message
+});
 
-export default connect(mapStateToProps, null)(ErrorPage)
+export default connect(
+  mapStateToProps,
+  null
+)(ErrorPage);
