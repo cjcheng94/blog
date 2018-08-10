@@ -2,7 +2,7 @@ import React, { Component } from "react";
 
 export default class Modal extends Component {
   render() {
-    const isDisabled = this.props.isFetching ? "disabled" : "";
+    const isDisabled = this.props.isPending ? "disabled" : "";
     return (
       <div className="modal-container">
         <div className="modal">

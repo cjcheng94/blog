@@ -3,6 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
 
+import ErrorPage from "../components/errorPage";
 import { userLogin } from "../actions/user";
 
 class Login extends Component {
@@ -41,6 +42,9 @@ class Login extends Component {
   }
 
   render() {
+    if (this.props.error && this.props.error.status) {
+      return <ErrorPage />
+    }
     const { handleSubmit } = this.props;
     return (
       <div className="container">
@@ -80,12 +84,14 @@ function validate(values) {
   return errors;
 }
 
+const mapStateToProps = ({error}) => ({error});
+
 export default reduxForm({
   validate,
   form: "LoginForm"
 })(
   connect(
-    null,
+    mapStateToProps,
     { userLogin }
   )(Login)
 );

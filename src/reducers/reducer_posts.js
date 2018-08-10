@@ -21,7 +21,7 @@ import {
 import _ from "lodash";
 
 // const initialPostsState = {
-//   isFetching: false,
+//   isPending: false,
 //   postsData: {_id: {post object}}},
 //   error: null
 // };
@@ -37,7 +37,7 @@ function postDataReducer(state = {}, action) {
   }
 }
 
-function isFetchingReducer(state = false, action) {
+function isPendingReducer(state = false, action) {
   switch (action.type) {
     case FETCH_POSTS_PENDING:
     case FETCH_POST_PENDING:
@@ -67,7 +67,7 @@ function isFetchingReducer(state = false, action) {
 
 const postReducer = combineReducers({
   postData: postDataReducer,
-  isFetching: isFetchingReducer
+  isPending: isPendingReducer
 });
 
 export default postReducer;

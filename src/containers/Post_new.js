@@ -3,6 +3,7 @@ import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
+import ErrorPage from "../components/errorPage";
 
 import { createPost } from "../actions/posts";
 
@@ -61,9 +62,12 @@ class PostNew extends Component {
   }
 
   render() {
+    if (this.props.error && this.props.error.status) {
+      return <ErrorPage />
+    }
     // handleSubmit is from Redux Form, it handles validation etc.
     const { handleSubmit } = this.props;
-    const isDisabled = this.props.isFetching? 'disabled': ''
+    const isDisabled = this.props.isPending? 'disabld': ''
     return (
       <div className="row">
         <form
@@ -112,7 +116,7 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({ posts: { isFetching } }) => ({ isFetching });
+const mapStateToProps = ({ posts: { isPending }, error }) => ({ isPending, error });
 
 export default reduxForm({
   validate, // -> validate: validate

@@ -4,11 +4,11 @@ import { Link } from "react-router-dom";
 
 class ErrorPage extends Component {
   render() {
-    if (!this.props.status) {
-      return null;
-    }
+    // if (!this.props.status) {
+    //   return null;
+    // }
     return (
-      <div className="error-container container">
+      <div className="error-container">
         <div className="error-content">
           <h1>Oops, Something went wrong..</h1>
           <p>{this.props.status + " " + this.props.statusText + " "}</p>

@@ -6,6 +6,7 @@ import Alert from "react-s-alert";
 
 import { updatePost, fetchPost } from "../actions/posts";
 import Modal from "../components/modal";
+import ErrorPage from "../components/errorPage";
 
 class PostUpdate extends Component {
   constructor(props) {
@@ -86,6 +87,9 @@ class PostUpdate extends Component {
     });
   }
   render() {
+    if (this.props.error && this.props.error.status) {
+      return <ErrorPage />
+    }
     // handleSubmit is from Redux Form, it handles validation etc.
     const { handleSubmit } = this.props;
     return (
@@ -102,7 +106,7 @@ class PostUpdate extends Component {
               message="Submit changes?"
               handleModalHide={this.handleModalHide.bind(this)}
               buttonType="submit"
-              isFetching={this.props.isFetching}
+              isPending={this.props.isPending}
             />
           ) : null}
           <div className="row">
@@ -145,11 +149,12 @@ function validate(values) {
   return errors;
 }
 
-function mapStateToProps({ posts }, ownProps) {
+function mapStateToProps({ posts:{postData, isPending}, error }, ownProps) {
   return {
-    postData: posts.postData[ownProps.match.params._id],
-    initialValues: posts.postData[ownProps.match.params._id],
-    isFetching: posts.isFetching
+    postData: postData[ownProps.match.params._id],
+    initialValues: postData[ownProps.match.params._id],
+    isPending,
+    error
   };
 }
 

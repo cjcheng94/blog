@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
 import { userLogout } from "../actions/user";
+
+import checkIfExpired from "../middlewares/checkTokenExpired";
 import HeaderButton from "../components/headerButton";
 import ErrorPage from "../components/errorPage";
 
@@ -79,14 +81,14 @@ class Header extends Component {
             </div>
           </nav>
         </div>
-        {this.props.isFetching ? (
+        {this.props.isPending ? (
           <div className="progress">
             <div className="indeterminate" />
           </div>
         ) : (
           <div className="placeholder" />
         )}
-        <ErrorPage />
+        
       </div>
     );
   }
@@ -94,7 +96,7 @@ class Header extends Component {
 
 const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
-  isFetching: state.posts.isFetching || state.user.isFetching
+  isPending: state.posts.isPending || state.user.isPending
 });
 
 export default connect(

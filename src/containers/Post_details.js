@@ -4,7 +4,9 @@ import { fetchPost, deletePost } from "../actions/posts";
 import { Link } from "react-router-dom";
 import Alert from "react-s-alert";
 import moment from "moment";
+
 import Modal from "../components/modal";
+import ErrorPage from "../components/errorPage";
 
 class PostDetails extends Component {
   constructor(props) {
@@ -52,8 +54,11 @@ class PostDetails extends Component {
   }
 
   render() {
+    if (this.props.error && this.props.error.status) {
+      return <ErrorPage />
+    }
     if (!this.props.postData) {
-      return null
+      return null;
     }
     const { title, author, content, date } = this.props.postData;
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
@@ -71,7 +76,7 @@ class PostDetails extends Component {
             handler={this.handleDelete.bind(this)}
             handleModalHide={this.handleModalHide.bind(this)}
             message="Are you sure you want to delete this article?"
-            isFetching={this.props.isFetching}
+            isPending={this.props.isPending}
           />
         ) : null}
 
@@ -105,11 +110,15 @@ class PostDetails extends Component {
   }
 }
 
-function mapStateToProps({ posts, user }, ownProps) {
+function mapStateToProps(
+  { posts: { postData, isPending }, user, error },
+  ownProps
+) {
   return {
-    postData: posts.postData[ownProps.match.params._id],
+    postData: postData[ownProps.match.params._id],
     user,
-    isFetching: posts.isFetching
+    isPending,
+    error
   };
 }
 
