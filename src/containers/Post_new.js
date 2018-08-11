@@ -19,36 +19,30 @@ class PostNew extends Component {
 
   renderField(field) {
     const {
+      input: { name },
       meta: { touched, error }
     } = field;
-    //-> touched = field.meta.touched
-    //-> error = field.meta.error
     const className = `${touched && error ? "invalid" : ""}`;
     const txtAreaClassName = `materialize-textarea ${className}`;
 
-    if (field.input.name === "content") {
+    if (name === "content") {
       return (
         <div className="input-field col s12" id="contentDiv">
           <textarea
             className={txtAreaClassName}
-            id={field.input.name}
+            id={name}
             type="text"
             {...field.input}
           />
-          <label htmlFor={field.input.name}>{field.input.name}</label>
+          <label htmlFor={name}>{name}</label>
           <span className="helper-text red-text">{touched ? error : ""}</span>
         </div>
       );
     }
     return (
       <div className="input-field col s6">
-        <input
-          className={className}
-          id={field.input.name}
-          type="text"
-          {...field.input}
-        />
-        <label htmlFor={field.input.name}>{field.input.name}</label>
+        <input className={className} id={name} type="text" {...field.input} />
+        <label htmlFor={name}>{name}</label>
         <span className="helper-text red-text">{touched ? error : ""}</span>
       </div>
     );
@@ -57,19 +51,17 @@ class PostNew extends Component {
   onSubmit(values) {
     this.props.createPost(values, () => {
       this.showAlert("Post Successfully Added!");
-      this.props.history.push("/")
+      this.props.history.push("/");
     });
   }
 
   render() {
-    if (this.props.error && this.props.error.status) {
-      return <ErrorPage />
-    }
     // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit } = this.props;
-    const isDisabled = this.props.isPending? 'disabld': ''
+    const { handleSubmit, error } = this.props;
+    const isDisabled = this.props.isPending ? "disabld" : "";
     return (
-      <div className="row">
+      <div className="container">
+        {error && error.status ? <ErrorPage type='postNew' /> : null}
         <form
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
@@ -79,21 +71,23 @@ class PostNew extends Component {
         >
           <div className="row">
             <Field name="title" component={this.renderField} />
+          </div>
+          <div className="row">
             <Field name="content" component={this.renderField} />
-            <div className=" col s12">
-              <button
-                className={`btn waves-effect waves-light from-btn cyan darken-1 ${isDisabled}`}
-                type="submit"
-              >
-                Submit
-              </button>
-              <Link
-                className="btn waves-effect waves-light red lighten-1 from-btn"
-                to="/"
-              >
-                Back
-              </Link>
-            </div>
+          </div>
+          <div className=" col s12">
+            <button
+              className={`btn waves-effect waves-light from-btn cyan darken-1 ${isDisabled}`}
+              type="submit"
+            >
+              Submit
+            </button>
+            <Link
+              className="btn waves-effect waves-light red lighten-1 from-btn"
+              to="/"
+            >
+              Back
+            </Link>
           </div>
         </form>
       </div>
@@ -116,7 +110,10 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({ posts: { isPending }, error }) => ({ isPending, error });
+const mapStateToProps = ({ posts: { isPending }, error }) => ({
+  isPending,
+  error
+});
 
 export default reduxForm({
   validate, // -> validate: validate

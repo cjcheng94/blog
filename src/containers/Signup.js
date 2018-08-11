@@ -2,13 +2,10 @@ import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
-import { userSignup, getAllUsername } from "../actions/user";
+import { userSignup } from "../actions/user";
 import ErrorPage from "../components/errorPage";
 
 class Signup extends Component {
-  // componentDidMount() {
-  //   this.props.getAllUsername();
-  // }
   showAlert(message) {
     Alert.info(message, {
       position: "top-right",
@@ -17,9 +14,7 @@ class Signup extends Component {
       offset: "50px"
     });
   }
-  // isUnique(username) {
-  //   return this.props.userList.indexOf(username) < 0 ? true : false;
-  // }
+
   onComponentSubmit(values) {
     this.props.userSignup(values, () => {
       this.showAlert("Sign up successful!");
@@ -47,12 +42,11 @@ class Signup extends Component {
     );
   }
   render() {
-    if (this.props.error && this.props.error.status) {
-      return <ErrorPage />
-    }
-    const { handleSubmit } = this.props;
+    const { handleSubmit, error } = this.props;
+    
     return (
       <div className="container">
+      {error && error.status?  <ErrorPage  type='signup' />: null}
         <h1>Sign up</h1>
         <form
           className="col s12"

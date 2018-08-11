@@ -10,11 +10,10 @@ class PostIndex extends Component {
     this.props.fetchPosts();
   }
   render() {
-    if (this.props.error && this.props.error.status) {
-      return <ErrorPage />
-    }
+    const { error } = this.props;
     return (
       <div className="row">
+      {error && error.status ? <ErrorPage /> : null}
         <Cards posts={this.props.postData} />
       </div>
     );

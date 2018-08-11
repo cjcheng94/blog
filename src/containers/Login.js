@@ -42,12 +42,10 @@ class Login extends Component {
   }
 
   render() {
-    if (this.props.error && this.props.error.status) {
-      return <ErrorPage />
-    }
-    const { handleSubmit } = this.props;
+    const { handleSubmit,error } = this.props;
     return (
       <div className="container">
+      {error && error.status?  <ErrorPage type='login'/>: null}
         <h1>Log in</h1>
         <form
           className="col s12"

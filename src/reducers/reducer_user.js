@@ -3,9 +3,9 @@ import {
   USER_LOGIN_PENDING,
   USER_LOGIN_REJECTED,
   USER_LOGOUT,
-  GET_ALL_USERNAME_FULFILLED,
   USER_SIGNUP_REJECTED
 } from "../actions/user";
+
 import checkIfExpired from "../middlewares/checkTokenExpired";
 
 const initialUserState = {
@@ -14,6 +14,7 @@ const initialUserState = {
   isPending: false,
   username: localStorage.getItem("username")
 };
+
 export default function(state = initialUserState, action) {
   switch (action.type) {
     case USER_LOGIN_PENDING:
@@ -26,7 +27,6 @@ export default function(state = initialUserState, action) {
         ...state,
         isAuthenticated: false,
         isPending: false
-        // error: action.payload
       };
     case USER_LOGIN_FULFILLED:
       return {
@@ -46,11 +46,6 @@ export default function(state = initialUserState, action) {
         isAuthenticated: false,
         isPending: false,
         username: null
-      };
-    case GET_ALL_USERNAME_FULFILLED:
-      return {
-        ...state,
-        userList: action.payload.data.usernameList
       };
     default:
       return state;

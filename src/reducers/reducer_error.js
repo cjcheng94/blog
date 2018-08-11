@@ -22,8 +22,10 @@ import {
   USER_LOGIN_REJECTED,
   USER_SIGNUP_PENDING,
   USER_SIGNUP_FULFILLED,
-  USER_SIGNUP_REJECTED
+  USER_SIGNUP_REJECTED,
 } from "../actions/user";
+
+import { CLEAR_ERROR } from "../actions/clearError";
 
 export default function errorReducer(state = {}, action) {
   switch (action.type) {
@@ -54,6 +56,7 @@ export default function errorReducer(state = {}, action) {
     case DELETE_POST_PENDING:
     case USER_SIGNUP_PENDING:
     case USER_LOGIN_PENDING:
+    case CLEAR_ERROR:
       return {
         ...state,
         status: null,

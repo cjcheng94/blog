@@ -36,18 +36,16 @@ class PostUpdate extends Component {
       position: "top-right",
       effect: "slide",
       timeout: 2000,
-      offset: '50px'
+      offset: "50px"
     });
   }
   renderField(field) {
     const {
-      meta: { touched, error }
+      meta: { touched, error },
+      input: {name}
     } = field;
-    //-> touched = field.meta.touched
-    //-> error = field.meta.error
     const className = `${touched && error ? "invalid" : ""}`;
     const txtAreaClassName = `materialize-textarea edit-textarea ${className}`;
-    const { name } = field.input;
     if (name === "content") {
       return (
         <div className="input-field col s12" id="contentDiv">
@@ -87,13 +85,10 @@ class PostUpdate extends Component {
     });
   }
   render() {
-    if (this.props.error && this.props.error.status) {
-      return <ErrorPage />
-    }
     // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit } = this.props;
+    const { handleSubmit, stateError } = this.props;
     return (
-      <div className="row">
+      <div className="container">
         <form
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
@@ -109,24 +104,28 @@ class PostUpdate extends Component {
               isPending={this.props.isPending}
             />
           ) : null}
+          {stateError && stateError.status ? <ErrorPage type='postUpdate' /> : null}
+
           <div className="row">
             <Field name="title" component={this.renderField} />
+          </div>
+          <div className="row">
             <Field name="content" component={this.renderField} />
-            <div className=" col s12">
-              <button
-                className="btn waves-effect waves-light from-btn cyan darken-1"
-                onClick={this.handleModalShow}
-                type="button"
-              >
-                Submit
-              </button>
-              <Link
-                className="btn waves-effect waves-light red lighten-1 from-btn"
-                to="/"
-              >
-                Back
-              </Link>
-            </div>
+          </div>
+          <div className=" col s12">
+            <button
+              className="btn waves-effect waves-light from-btn cyan darken-1"
+              onClick={this.handleModalShow}
+              type="button"
+            >
+              Submit
+            </button>
+            <Link
+              className="btn waves-effect waves-light red lighten-1 from-btn"
+              to="/"
+            >
+              Back
+            </Link>
           </div>
         </form>
       </div>
@@ -149,18 +148,19 @@ function validate(values) {
   return errors;
 }
 
-function mapStateToProps({ posts:{postData, isPending}, error }, ownProps) {
-  return {
-    postData: postData[ownProps.match.params._id],
-    initialValues: postData[ownProps.match.params._id],
-    isPending,
-    error
-  };
-}
+const mapStateToProps = (
+  { error, posts: { postData, isPending } },
+  ownProps
+) => ({
+  postData: postData[ownProps.match.params._id],
+  initialValues: postData[ownProps.match.params._id],
+  isPending,
+  stateError: error
+});
 
 PostUpdate = reduxForm({
-  form: "PostEditForm",
-  validate
+  validate,
+  form: "PostEditForm"
 })(PostUpdate);
 
 PostUpdate = connect(

@@ -1,6 +1,5 @@
 import { combineReducers } from "redux";
-// import deepFreeze from "deep-freeze";
-// import expect from "expect";
+
 import {
   FETCH_POSTS_FULFILLED,
   FETCH_POST_FULFILLED,
@@ -22,8 +21,7 @@ import _ from "lodash";
 
 // const initialPostsState = {
 //   isPending: false,
-//   postsData: {_id: {post object}}},
-//   error: null
+//   postsData: {}
 // };
 
 function postDataReducer(state = {}, action) {
@@ -44,8 +42,6 @@ function isPendingReducer(state = false, action) {
     case CREATE_POST_PENDING:
     case UPDATE_POST_PENDING:
     case DELETE_POST_PENDING:
-    case "@@redux-form/SET_SUBMIT_SUCCEEDED":
-      //flag, not right here, FIX!
       return true;
     case FETCH_POSTS_FULFILLED:
     case FETCH_POST_FULFILLED:
@@ -62,8 +58,6 @@ function isPendingReducer(state = false, action) {
       return state;
   }
 }
-
-
 
 const postReducer = combineReducers({
   postData: postDataReducer,
