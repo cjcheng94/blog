@@ -16,6 +16,7 @@ import PostDetails from "./containers/Post_details";
 import PostUpdate from "./containers/Post_update";
 import Login from "./containers/Login";
 import Signup from "./containers/Signup";
+import UserProfile from "./containers/UserProfile";
 
 import "materialize-css/dist/js/materialize.min.js";
 import "materialize-css/dist/css/materialize.min.css";
@@ -54,6 +55,11 @@ const routes = [
     path: "/user/signup",
     sidebar: Header,
     main: Signup
+  },
+  {
+    path: '/user/profile/:username',
+    sidebar: Header,
+    main: UserProfile
   },
   {
     path: "/",

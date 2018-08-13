@@ -54,14 +54,14 @@ class PostDetails extends Component {
   }
 
   render() {
-    const {error} = this.props;
+    const { error } = this.props;
     if (!this.props.postData) {
       if (error && error.status) {
-        return <ErrorPage type='postDetail' />
+        return <ErrorPage type="postDetail" />;
       }
       return null;
     }
-    const { title, author, content, date } = this.props.postData;    
+    const { title, author, content, date } = this.props.postData;
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
     const { _id } = this.props.match.params;
@@ -80,11 +80,11 @@ class PostDetails extends Component {
             isPending={this.props.isPending}
           />
         ) : null}
-        {error && error.status ? <ErrorPage type='postDetail' /> : null}
+        {error && error.status ? <ErrorPage type="postDetail" /> : null}
         <div className="detail">
           <h3>{title}</h3>
           <h6>
-            By <i>{author}</i>
+            By <Link to={`/user/profile/${author}`}>{author}</Link>
           </h6>
           <h6>{postTime}</h6>
           <div className="divider" style={{ marginBottom: "30px" }} />

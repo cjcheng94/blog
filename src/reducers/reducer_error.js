@@ -4,16 +4,19 @@ import {
   CREATE_POST_FULFILLED,
   UPDATE_POST_FULFILLED,
   DELETE_POST_FULFILLED,
+  FETCH_PROFILE_FULFILLED,
   FETCH_POSTS_PENDING,
   FETCH_POST_PENDING,
   CREATE_POST_PENDING,
   UPDATE_POST_PENDING,
   DELETE_POST_PENDING,
+  FETCH_PROFILE_PENDING,
   FETCH_POSTS_REJECTED,
   FETCH_POST_REJECTED,
   CREATE_POST_REJECTED,
   UPDATE_POST_REJECTED,
-  DELETE_POST_REJECTED
+  DELETE_POST_REJECTED,
+  FETCH_PROFILE_REJECTED
 } from "../actions/posts";
 
 import {
@@ -22,7 +25,7 @@ import {
   USER_LOGIN_REJECTED,
   USER_SIGNUP_PENDING,
   USER_SIGNUP_FULFILLED,
-  USER_SIGNUP_REJECTED,
+  USER_SIGNUP_REJECTED
 } from "../actions/user";
 
 import { CLEAR_ERROR } from "../actions/clearError";
@@ -36,6 +39,7 @@ export default function errorReducer(state = {}, action) {
     case DELETE_POST_REJECTED:
     case USER_LOGIN_REJECTED:
     case USER_SIGNUP_REJECTED:
+    case FETCH_PROFILE_REJECTED:
       return {
         ...state,
         status: action.payload.response.status,
@@ -49,6 +53,7 @@ export default function errorReducer(state = {}, action) {
     case DELETE_POST_FULFILLED:
     case USER_SIGNUP_FULFILLED:
     case USER_LOGIN_FULFILLED:
+    case FETCH_PROFILE_FULFILLED:
     case FETCH_POSTS_PENDING:
     case FETCH_POST_PENDING:
     case CREATE_POST_PENDING:
@@ -56,6 +61,7 @@ export default function errorReducer(state = {}, action) {
     case DELETE_POST_PENDING:
     case USER_SIGNUP_PENDING:
     case USER_LOGIN_PENDING:
+    case FETCH_PROFILE_PENDING:
     case CLEAR_ERROR:
       return {
         ...state,

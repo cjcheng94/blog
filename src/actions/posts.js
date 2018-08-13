@@ -5,24 +5,28 @@ const FETCH_POST = "FETCH_POST";
 const CREATE_POST = "CREATE_POST";
 const DELETE_POST = "DELETE_POST";
 const UPDATE_POST = "UPDATE_POST";
+const FETCH_PROFILE = "FETCH_PROFILE";
 
 export const FETCH_POSTS_FULFILLED = "FETCH_POSTS_FULFILLED";
 export const FETCH_POST_FULFILLED = "FETCH_POST_FULFILLED";
 export const CREATE_POST_FULFILLED = "CREATE_POST_FULFILLED";
 export const UPDATE_POST_FULFILLED = "UPDATE_POST_FULFILLED";
 export const DELETE_POST_FULFILLED = "DELETE_POST_FULFILLED";
+export const FETCH_PROFILE_FULFILLED = "FETCH_PROFILE_FULFILLED";
 
 export const FETCH_POSTS_PENDING = "FETCH_POSTS_PENDING";
 export const FETCH_POST_PENDING = "FETCH_POST_PENDING";
 export const CREATE_POST_PENDING = "CREATE_POST_PENDING";
 export const UPDATE_POST_PENDING = "UPDATE_POST_PENDING";
 export const DELETE_POST_PENDING = "DELETE_POST_PENDING";
+export const FETCH_PROFILE_PENDING = "FETCH_PROFILE_PENDING";
 
 export const FETCH_POSTS_REJECTED = "FETCH_POSTS_REJECTED";
 export const FETCH_POST_REJECTED = "FETCH_POST_REJECTED";
 export const CREATE_POST_REJECTED = "CREATE_POST_REJECTED";
 export const UPDATE_POST_REJECTED = "UPDATE_POST_REJECTED";
 export const DELETE_POST_REJECTED = "DELETE_POST_REJECTED";
+export const FETCH_PROFILE_REJECTED = "FETCH_PROFILE_REJECTED";
 
 const ROOT_URL = "https://alexsapiblog.herokuapp.com";
 
@@ -40,6 +44,14 @@ export function fetchPost(_id) {
     type: FETCH_POST,
     payload: request
   };
+}
+
+export function fetchUserPosts(username){
+  const request = axios.get(`${ROOT_URL}/user/${username}`);
+  return {
+    type: FETCH_PROFILE,
+    payload: request
+  }
 }
 
 // protected requests

@@ -6,13 +6,8 @@ import { userLogout } from "../actions/user";
 
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import HeaderButton from "../components/headerButton";
-import ErrorPage from "../components/errorPage";
 
 const buttonList = [
-  {
-    to: "/",
-    text: "Home"
-  },
   {
     to: "/posts/new",
     text: "Write"
@@ -45,8 +40,8 @@ class Header extends Component {
 
   render() {
     const buttons = this.props.isAuthenticated
-      ? buttonList.slice(0, 2)
-      : buttonList.slice(2);
+      ? buttonList.slice(0, 1)
+      : buttonList.slice(1);
     return (
       <div>
         <div className="navbar-fixed">
@@ -63,6 +58,11 @@ class Header extends Component {
                 Blog!
               </Link>
               <ul id="nav-mobile" className="right">
+                <li>
+                  <Link to={`/user/profile/${this.props.username}`}>
+                    {this.props.username}
+                  </Link>
+                </li>
                 {buttons.map(button => {
                   return (
                     <HeaderButton
@@ -88,7 +88,6 @@ class Header extends Component {
         ) : (
           <div className="placeholder" />
         )}
-        
       </div>
     );
   }
@@ -96,7 +95,8 @@ class Header extends Component {
 
 const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
-  isPending: state.posts.isPending || state.user.isPending
+  isPending: state.posts.isPending || state.user.isPending,
+  username: state.user.username
 });
 
 export default connect(
