@@ -58,11 +58,13 @@ class Header extends Component {
                 Blog!
               </Link>
               <ul id="nav-mobile" className="right">
-                <li>
-                  <Link to={`/user/profile/${this.props.username}`}>
-                    {this.props.username}
-                  </Link>
-                </li>
+                {this.props.isAuthenticated ? (
+                  <li>
+                    <Link to={`/user/profile/${this.props.username}`}>
+                      {this.props.username}
+                    </Link>
+                  </li>
+                ) : null}
                 {buttons.map(button => {
                   return (
                     <HeaderButton

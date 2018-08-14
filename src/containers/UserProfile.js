@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
+import { withRouter } from "react-router-dom";
 import { fetchUserPosts } from "../actions/posts";
 
 import ErrorPage from "../components/errorPage";
@@ -35,8 +36,11 @@ function mapStateToProps({ posts, error, isPending }) {
     error
   };
 }
-
-export default connect(
-  mapStateToProps,
-  { fetchUserPosts }
-)(PostIndex);
+//Use withRouter to deal with update blocking
+//See: https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/blocked-updates.md#dealing-with-update-blocking
+export default withRouter(
+  connect(
+    mapStateToProps,
+    { fetchUserPosts }
+  )(PostIndex)
+);

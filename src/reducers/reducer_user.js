@@ -7,8 +7,7 @@ import {
 import checkIfExpired from "../middlewares/checkTokenExpired";
 
 const initialUserState = {
-  isAuthenticated:
-    localStorage.getItem("token") && !checkIfExpired() ? true : false,
+  isAuthenticated: !checkIfExpired(),
   username: localStorage.getItem("username")
 };
 
