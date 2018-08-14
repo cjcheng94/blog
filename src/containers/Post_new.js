@@ -61,7 +61,7 @@ class PostNew extends Component {
     const isDisabled = this.props.isPending ? "disabld" : "";
     return (
       <div className="container">
-        {error && error.status ? <ErrorPage type='postNew' /> : null}
+        {error && error.status ? <ErrorPage type="postNew" /> : null}
         <form
           onSubmit={handleSubmit(this.onSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲

@@ -46,12 +46,12 @@ export function fetchPost(_id) {
   };
 }
 
-export function fetchUserPosts(username){
+export function fetchUserPosts(username) {
   const request = axios.get(`${ROOT_URL}/user/${username}`);
   return {
     type: FETCH_PROFILE,
     payload: request
-  }
+  };
 }
 
 // protected requests

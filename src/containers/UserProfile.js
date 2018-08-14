@@ -8,11 +8,13 @@ import Cards from "../components/cards";
 class PostIndex extends Component {
   componentDidMount() {
     const rawUsername = this.props.match.params.username;
+    console.log(rawUsername);
+
     const encodedUsername = encodeURIComponent(rawUsername);
     this.props.fetchUserPosts(encodedUsername);
   }
   render() {
-    const { error, postData, username } = this.props;
+    const { error, posts } = this.props;
 
     return (
       <div className="row container">
@@ -20,22 +22,17 @@ class PostIndex extends Component {
           Posts By {this.props.match.params.username}
         </h2>
         {error && error.status ? <ErrorPage /> : null}
-        <Cards posts={postData} />
+        <Cards posts={posts} />
       </div>
     );
   }
 }
 
-function mapStateToProps({
-  user: { username },
-  posts: { postData, isPending },
-  error
-}) {
+function mapStateToProps({ posts, error, isPending }) {
   return {
-    postData,
+    posts,
     isPending,
-    error,
-    username
+    error
   };
 }
 

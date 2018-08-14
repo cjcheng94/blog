@@ -23,19 +23,14 @@ class Signup extends Component {
   }
   renderField(field) {
     const {
-      input: {name},
+      input: { name },
       meta: { touched, error }
     } = field;
     const className = `${touched && error ? "invalid" : ""}`;
     const type = name === "username" ? "text" : "password";
     return (
       <div className="input-field col s6">
-        <input 
-          className={className}
-          id={name}
-          type={type}
-          {...field.input}
-        />
+        <input className={className} id={name} type={type} {...field.input} />
         <label htmlFor={name}>{name}</label>
         <span className="helper-text red-text">{touched ? error : ""}</span>
       </div>
@@ -43,10 +38,10 @@ class Signup extends Component {
   }
   render() {
     const { handleSubmit, error } = this.props;
-    
+
     return (
       <div className="container">
-      {error && error.status?  <ErrorPage  type='signup' />: null}
+        {error && error.status ? <ErrorPage type="signup" /> : null}
         <h1>Sign up</h1>
         <form
           className="col s12"
@@ -61,11 +56,11 @@ class Signup extends Component {
           <div className="row">
             <Field name="confirm password" component={this.renderField} />
           </div>
-            <input
-              type="submit"
-              value="Sign Up"
-              className="btn waves-effect waves-light from-btn cyan darken-1"
-            />
+          <input
+            type="submit"
+            value="Sign Up"
+            className="btn waves-effect waves-light from-btn cyan darken-1"
+          />
         </form>
       </div>
     );
@@ -91,7 +86,7 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({error}) => ({error});
+const mapStateToProps = ({ error }) => ({ error });
 
 export default reduxForm({
   mapStateToProps,

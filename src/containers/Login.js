@@ -18,7 +18,7 @@ class Login extends Component {
   onComponentSubmit(values) {
     this.props.userLogin(values, () => {
       this.showAlert("Login successful!");
-      setTimeout(()=>this.props.history.push("/"), 1000)
+      setTimeout(() => this.props.history.push("/"), 1000);
     });
   }
   renderField(field) {
@@ -42,10 +42,10 @@ class Login extends Component {
   }
 
   render() {
-    const { handleSubmit,error } = this.props;
+    const { handleSubmit, error } = this.props;
     return (
       <div className="container">
-      {error && error.status?  <ErrorPage type='login'/>: null}
+        {error && error.status ? <ErrorPage type="login" /> : null}
         <h1>Log in</h1>
         <form
           className="col s12"
@@ -82,7 +82,7 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({error}) => ({error});
+const mapStateToProps = ({ error }) => ({ error });
 
 export default reduxForm({
   validate,

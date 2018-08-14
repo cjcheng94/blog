@@ -42,7 +42,7 @@ class PostUpdate extends Component {
   renderField(field) {
     const {
       meta: { touched, error },
-      input: {name}
+      input: { name }
     } = field;
     const className = `${touched && error ? "invalid" : ""}`;
     const txtAreaClassName = `materialize-textarea edit-textarea ${className}`;
@@ -104,7 +104,9 @@ class PostUpdate extends Component {
               isPending={this.props.isPending}
             />
           ) : null}
-          {stateError && stateError.status ? <ErrorPage type='postUpdate' /> : null}
+          {stateError && stateError.status ? (
+            <ErrorPage type="postUpdate" />
+          ) : null}
 
           <div className="row">
             <Field name="title" component={this.renderField} />
@@ -148,12 +150,9 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = (
-  { error, posts: { postData, isPending } },
-  ownProps
-) => ({
-  postData: postData[ownProps.match.params._id],
-  initialValues: postData[ownProps.match.params._id],
+const mapStateToProps = ({ error, posts, isPending }, ownProps) => ({
+  posts: posts[ownProps.match.params._id],
+  initialValues: posts[ownProps.match.params._id],
   isPending,
   stateError: error
 });

@@ -6,32 +6,19 @@ import { clearError } from "../actions/clearError";
 class ErrorPage extends Component {
   render() {
     const { type, status, statusText, message, clearError } = this.props;
-    let customMessage = "";
-    switch (type) {
-      case "login":
-        customMessage = "Password Incorrect or user doesn't exist";
-        break;
-      case "signup":
-        customMessage = "User already exists";
-        break;
-      case "postNew":
-        customMessage = "Login expired, please log in again";
-        break;
-      case "postUpdate":
-        customMessage = "Unauthorized or Login expired, please log in again";
-        break;
-      case "postDetail":
-        customMessage = "Unauthorized or Login expired, please log in again";
-        break;
-      default:
-        break;
+    const customMessage = {
+      login: "Password Incorrect or user doesn't exist",
+      signup: "User already exists",
+      postNew: "Login expired, please log in again",
+      postUpdate: "Unauthorized or Login expired, please log in again",
+      postDetail: "Unauthorized or Login expired, please log in again"
     }
     return (
       <div className="error-container">
         <div className="error-content">
           <h6>Oops, Something went wrong..</h6>
           {status !== 500 && status !== 404 ? (
-            <h5>{customMessage}</h5>
+            <h5>{customMessage[type]}</h5>
           ) : (
             <div>
               <p>{status + " " + statusText}</p>

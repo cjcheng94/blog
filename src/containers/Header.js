@@ -93,10 +93,13 @@ class Header extends Component {
   }
 }
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.user.isAuthenticated,
-  isPending: state.posts.isPending || state.user.isPending,
-  username: state.user.username
+const mapStateToProps = ({
+  isPending,
+  user: { isAuthenticated, username }
+}) => ({
+  isAuthenticated,
+  isPending,
+  username
 });
 
 export default connect(

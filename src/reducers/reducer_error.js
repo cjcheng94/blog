@@ -30,7 +30,7 @@ import {
 
 import { CLEAR_ERROR } from "../actions/clearError";
 
-export default function errorReducer(state = {}, action) {
+const errorReducer = (state = {}, action) => {
   switch (action.type) {
     case FETCH_POSTS_REJECTED:
     case FETCH_POST_REJECTED:
@@ -72,4 +72,5 @@ export default function errorReducer(state = {}, action) {
     default:
       return state;
   }
-}
+};
+export default errorReducer;

@@ -17,6 +17,19 @@ export const GET_ALL_USERNAME_FULFILLED = "GET_ALL_USERNAME_FULFILLED";
 
 const ROOT_URL = "https://alexsapiblog.herokuapp.com";
 
+export function userSignup(signUpData, callback) {
+  const request = axios({
+    baseURL: ROOT_URL,
+    url: "/user/signup",
+    method: "POST",
+    data: signUpData
+  }).then(() => callback());
+  return {
+    type: USER_SIGNUP,
+    payload: request
+  };
+}
+
 export function userLogin(loginData, callback) {
   return dispatch => {
     const request = axios({
@@ -47,18 +60,5 @@ export function userLogout(callback) {
     localStorage.removeItem("token");
     localStorage.removeItem("username");
     callback();
-  };
-}
-
-export function userSignup(signUpData, callback) {
-  const request = axios({
-    baseURL: ROOT_URL,
-    url: "/user/signup",
-    method: "POST",
-    data: signUpData
-  }).then(() => callback())
-  return {
-    type: USER_SIGNUP,
-    payload: request
   };
 }

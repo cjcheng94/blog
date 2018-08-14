@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { fetchPost, deletePost } from "../actions/posts";
+import { clearLoader } from "../actions/clearLoader";
+
 import { Link } from "react-router-dom";
 import Alert from "react-s-alert";
 import moment from "moment";
@@ -20,7 +22,7 @@ class PostDetails extends Component {
     //reset to top of the page
     window.scrollTo(0, 0);
     //if all posts are already fetched, then don't waste network usage to fetch it again
-    if (!this.props.postData) {
+    if (!this.props.posts) {
       const { _id } = this.props.match.params;
       this.props.fetchPost(_id);
     }
@@ -53,15 +55,18 @@ class PostDetails extends Component {
     });
   }
 
+  componentWillUnmount() {
+    this.props.clearLoader();
+  }
   render() {
     const { error } = this.props;
-    if (!this.props.postData) {
+    if (!this.props.posts) {
       if (error && error.status) {
         return <ErrorPage type="postDetail" />;
       }
       return null;
     }
-    const { title, author, content, date } = this.props.postData;
+    const { title, author, content, date } = this.props.posts;
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
     const { _id } = this.props.match.params;
@@ -111,12 +116,9 @@ class PostDetails extends Component {
   }
 }
 
-function mapStateToProps(
-  { posts: { postData, isPending }, user, error },
-  ownProps
-) {
+function mapStateToProps({ posts, user, error, isPending }, ownProps) {
   return {
-    postData: postData[ownProps.match.params._id],
+    posts: posts[ownProps.match.params._id],
     user,
     isPending,
     error
@@ -125,5 +127,5 @@ function mapStateToProps(
 
 export default connect(
   mapStateToProps,
-  { fetchPost, deletePost }
+  { fetchPost, deletePost, clearLoader }
 )(PostDetails);
