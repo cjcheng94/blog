@@ -4,7 +4,6 @@ import { connect } from "react-redux";
 import Alert from "react-s-alert";
 import { userLogout } from "../actions/user";
 
-import checkIfExpired from "../middlewares/checkTokenExpired";
 import HeaderButton from "../components/headerButton";
 
 const buttonList = [

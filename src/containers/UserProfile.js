@@ -1,46 +1,47 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { withRouter } from "react-router-dom";
-import { fetchUserPosts } from "../actions/posts";
+import { fetchPosts } from "../actions/posts";
 
 import ErrorPage from "../components/errorPage";
 import Cards from "../components/cards";
 
-class PostIndex extends Component {
+class UserProfile extends Component {
   componentDidMount() {
-    const rawUsername = this.props.match.params.username;
-    console.log(rawUsername);
-
-    const encodedUsername = encodeURIComponent(rawUsername);
-    this.props.fetchUserPosts(encodedUsername);
+    //if this.props.posts is already there, don't waste network usage on fetching again
+    if (Object.keys(this.props.posts).length === 0) {
+      this.props.fetchPosts();
+    }
   }
   render() {
-    const { error, posts } = this.props;
-
+    const { error, userPosts, userFilter } = this.props;
     return (
       <div className="row container">
-        <h2 className="center-align">
-          Posts By {this.props.match.params.username}
-        </h2>
+        <h2 className="center-align">Posts By {userFilter}</h2>
         {error && error.status ? <ErrorPage /> : null}
-        <Cards posts={posts} />
+        <Cards posts={userPosts} />
       </div>
     );
   }
 }
 
-function mapStateToProps({ posts, error, isPending }) {
+function mapStateToProps({ posts, error, isPending }, ownProps) {
+  //filter all posts whose author field matches the username in url
+  const userPosts = {};
+  for (let key in posts) {
+    if (posts[key]["author"] === ownProps.match.params.username) {
+      userPosts[key] = posts[key];
+    }
+  }
   return {
     posts,
+    userPosts,
     isPending,
-    error
+    error,
+    userFilter: ownProps.match.params.username
   };
 }
-//Use withRouter to deal with update blocking
-//See: https://github.com/ReactTraining/react-router/blob/master/packages/react-router/docs/guides/blocked-updates.md#dealing-with-update-blocking
-export default withRouter(
-  connect(
-    mapStateToProps,
-    { fetchUserPosts }
-  )(PostIndex)
-);
+
+export default connect(
+  mapStateToProps,
+  { fetchPosts }
+)(UserProfile);

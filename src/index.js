@@ -24,11 +24,11 @@ import "react-s-alert/dist/s-alert-default.css";
 import "react-s-alert/dist/s-alert-css-effects/slide.css";
 import "./style/style.css";
 
-const createStoreWithMiddleWare = applyMiddleware(
-  promiseMiddleware(),
-  thunk,
-  createLogger()
-)(createStore);
+const middlewares = [promiseMiddleware(), thunk];
+if (process.env.NODE_ENV === "development") {
+  middlewares.push(createLogger());
+}
+const createStoreWithMiddleWare = applyMiddleware(...middlewares)(createStore);
 
 const routes = [
   {
@@ -57,7 +57,7 @@ const routes = [
     main: Signup
   },
   {
-    path: '/user/profile/:username',
+    path: "/user/profile/:username",
     sidebar: Header,
     main: UserProfile
   },

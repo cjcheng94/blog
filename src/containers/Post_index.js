@@ -8,6 +8,8 @@ import Cards from "../components/cards";
 
 class PostIndex extends Component {
   componentDidMount() {
+    //We always want to fetch all posts in index page
+    //because this way we can capture changes in post(s)
     this.props.fetchPosts();
   }
   componentWillUnmount() {

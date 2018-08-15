@@ -90,7 +90,8 @@ const mapStateToProps = ({ error }) => ({ error });
 
 export default reduxForm({
   mapStateToProps,
-  form: "SignUpForm"
+  form: "SignUpForm",
+  validate
 })(
   connect(
     mapStateToProps,
