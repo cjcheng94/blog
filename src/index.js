@@ -18,6 +18,8 @@ import Login from "./containers/Login";
 import Signup from "./containers/Signup";
 import UserProfile from "./containers/UserProfile";
 
+import "react-s-alert/dist/s-alert-default.css";
+import "react-s-alert/dist/s-alert-css-effects/slide.css";
 import "./style/style.css";
 
 const middlewares = [promiseMiddleware(), thunk];
