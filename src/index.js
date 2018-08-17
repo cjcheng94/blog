@@ -18,6 +18,8 @@ import Login from "./containers/Login";
 import Signup from "./containers/Signup";
 import UserProfile from "./containers/UserProfile";
 
+import "./style/style.css";
+
 const middlewares = [promiseMiddleware(), thunk];
 if (process.env.NODE_ENV === "development") {
   middlewares.push(createLogger());
