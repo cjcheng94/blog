@@ -73,7 +73,7 @@ class PostDetails extends Component {
     const url = `/posts/edit/${_id}`;
     //----------------------------------------------
     //DANGEROUS! may may expose users to a cross-site scripting (XSS) attack.
-    const createMarkup = () => ({ __html: content });
+    // const createMarkup = () => ({ __html: content });
     //----------------------------------------------
     return (
       <div className="container">
@@ -93,10 +93,7 @@ class PostDetails extends Component {
           </h6>
           <h6>{postTime}</h6>
           <div className="divider" style={{ marginBottom: "30px" }} />
-          <div
-            className="post-content"
-            dangerouslySetInnerHTML={createMarkup()}
-          />
+          <div className="post-content">{content}</div>
         </div>
         {author === this.props.user.username ? (
           <div className="detail-buttons">

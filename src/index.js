@@ -18,12 +18,6 @@ import Login from "./containers/Login";
 import Signup from "./containers/Signup";
 import UserProfile from "./containers/UserProfile";
 
-import "materialize-css/dist/js/materialize.min.js";
-import "materialize-css/dist/css/materialize.min.css";
-import "react-s-alert/dist/s-alert-default.css";
-import "react-s-alert/dist/s-alert-css-effects/slide.css";
-import "./style/style.css";
-
 const middlewares = [promiseMiddleware(), thunk];
 if (process.env.NODE_ENV === "development") {
   middlewares.push(createLogger());
