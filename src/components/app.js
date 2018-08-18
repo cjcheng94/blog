@@ -5,53 +5,56 @@ import "react-s-alert/dist/s-alert-default.css";
 import "react-s-alert/dist/s-alert-css-effects/slide.css";
 import "../style/style.css";
 
-import asyncComponent from "./AsyncComponent";
-const AsyncHeader = asyncComponent(() => import("../containers/Header"));
-const AsyncPostNew = asyncComponent(() => import("../containers/Post_new"));
-const AsyncPostIndex = asyncComponent(() => import("../containers/Post_index"));
-const AsyncPostDetails = asyncComponent(() => import("../containers/Post_details"));
-const AsyncPostUpdate = asyncComponent(() => import("../containers/Post_update"));
-const AsyncLogin = asyncComponent(() => import("../containers/Login"));
-const AsyncSignup = asyncComponent(() => import("../containers/Signup"));
-const AsyncUserProfile = asyncComponent(() => import("../containers/UserProfile"));
+import Header from "../containers/Header";
+import PostNew from "../containers/Post_new";
+import PostIndex from "../containers/Post_index";
+import PostDetails from "../containers/Post_details";
+import PostUpdate from "../containers/Post_update";
+import Login from "../containers/Login";
+import Signup from "../containers/Signup";
+
+import AsyncComponent from "./AsyncComponent";
+//As this app is quite small, we don't need to unnassisarily split the code into too many chunks,
+//but I'll leave AsyncUserProfile spit as a demonstration
+const AsyncUserProfile = AsyncComponent(() => import("../containers/UserProfile"));
 
 const routes = [
   {
     path: "/posts/detail/:_id",
-    sidebar: AsyncHeader,
-    main: AsyncPostDetails
+    sidebar: Header,
+    main: PostDetails
   },
   {
     path: "/posts/new",
-    sidebar: AsyncHeader,
-    main: AsyncPostNew
+    sidebar: Header,
+    main: PostNew
   },
   {
     path: "/posts/edit/:_id",
-    sidebar: AsyncHeader,
-    main: AsyncPostUpdate
+    sidebar: Header,
+    main: PostUpdate
   },
   {
     path: "/user/login",
-    sidebar: AsyncHeader,
-    main: AsyncLogin
+    sidebar: Header,
+    main: Login
   },
   {
     path: "/user/signup",
-    sidebar: AsyncHeader,
-    main: AsyncSignup
+    sidebar: Header,
+    main: Signup
   },
   {
     path: "/user/profile/:username",
     exact: true,
-    sidebar: AsyncHeader,
+    sidebar: Header,
     main: AsyncUserProfile
   },
   {
     path: "/",
     exact: true,
-    sidebar: AsyncHeader,
-    main: AsyncPostIndex
+    sidebar: Header,
+    main: PostIndex
   }
 ];
 
