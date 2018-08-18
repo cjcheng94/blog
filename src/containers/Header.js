@@ -2,8 +2,8 @@ import React, { Component } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
-import { userLogout } from "../actions/user";
 
+import { userLogout } from "../actions/user";
 import HeaderButton from "../components/headerButton";
 
 const buttonList = [
@@ -21,6 +21,7 @@ const buttonList = [
   }
 ];
 class Header extends Component {
+  //react-s-alert config
   showAlert(message) {
     Alert.info(message, {
       position: "top-right",
@@ -29,6 +30,7 @@ class Header extends Component {
       offset: "50px"
     });
   }
+
   handleLogoutClick(e) {
     e.preventDefault();
     this.props.userLogout(() => {
@@ -38,9 +40,11 @@ class Header extends Component {
   }
 
   render() {
+    //Returns different sets of buttons based user auth state
     const buttons = this.props.isAuthenticated
       ? buttonList.slice(0, 1)
       : buttonList.slice(1);
+
     return (
       <div>
         <div className="navbar-fixed">
@@ -57,7 +61,9 @@ class Header extends Component {
                 Blog!
               </Link>
               <ul id="nav-mobile" className="right">
-                {this.props.isAuthenticated ? (
+                {
+                  //Show user's info on header when logged in
+                  this.props.isAuthenticated ? (
                   <li>
                     <Link to={`/user/profile/${this.props.username}`}>
                       {this.props.username}
@@ -82,7 +88,9 @@ class Header extends Component {
             </div>
           </nav>
         </div>
-        {this.props.isPending ? (
+        {
+          //Show a progress bar based on isPending state
+          this.props.isPending ? (
           <div className="progress">
             <div className="indeterminate" />
           </div>

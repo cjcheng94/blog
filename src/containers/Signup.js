@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
+
 import { userSignup } from "../actions/user";
 import ErrorPage from "../components/errorPage";
 
@@ -18,15 +19,19 @@ class Signup extends Component {
   onComponentSubmit(values) {
     this.props.userSignup(values, () => {
       this.showAlert("Sign up successful!");
-      this.props.history.push("/user/login");
+      setTimeout(()=>{this.props.history.push("/user/login")});
     });
   }
+  //Redux Form's renderField() method
   renderField(field) {
+    //Provide "invalid" classNames when a field is both 'touched', 
+    //and has 'error', which is an object returned by the validate() function.
     const {
       input: { name },
       meta: { touched, error }
     } = field;
     const className = `${touched && error ? "invalid" : ""}`;
+
     const type = name === "username" ? "text" : "password";
     return (
       <div className="input-field col s6">
@@ -38,14 +43,17 @@ class Signup extends Component {
   }
   render() {
     const { handleSubmit, error } = this.props;
-
     return (
       <div className="container">
-        {error && error.status ? <ErrorPage type="signup" /> : null}
+        {
+          //the "error" here refers to the error in the application state(store)
+          error && error.status ? <ErrorPage type="signup" /> : null}
         <h1>Sign up</h1>
         <form
           className="col s12"
           onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
+          //                      ▲ ▲ ▲ ▲ ▲ ▲ ▲
+          // this.onComponentSubmit() referes to the method of this component
         >
           <div className="row">
             <Field name="username" component={this.renderField} />
@@ -67,6 +75,8 @@ class Signup extends Component {
   }
 }
 
+// The 'validate' function will be called automaticalli by Redux Form
+// whenever a user attempts to submit the form
 function validate(values) {
   const errors = {};
   // Validate the inputs from 'values'

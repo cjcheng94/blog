@@ -3,8 +3,8 @@ import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
-import ErrorPage from "../components/errorPage";
 
+import ErrorPage from "../components/errorPage";
 import { createPost } from "../actions/posts";
 
 class PostNew extends Component {
@@ -17,7 +17,10 @@ class PostNew extends Component {
     });
   }
 
+  //Redux Form's renderField() method
   renderField(field) {
+    //Provide "invalid" classNames when a field is both 'touched',
+    //and has 'error', which is an object returned by the validate() function.
     const {
       input: { name },
       meta: { touched, error }
@@ -48,10 +51,12 @@ class PostNew extends Component {
     );
   }
 
-  onSubmit(values) {
+  onComponentSubmit(values) {
     this.props.createPost(values, () => {
       this.showAlert("Post Successfully Added!");
-      this.props.history.push("/");
+      setTimeout(() => {
+        this.props.history.push("/");
+      }, 1000);
     });
   }
 
@@ -61,12 +66,13 @@ class PostNew extends Component {
     const isDisabled = this.props.isPending ? "disabld" : "";
     return (
       <div className="container">
-        {error && error.status ? <ErrorPage type="postNew" /> : null}
+        {
+          //error here refers to state error
+          error && error.status ? <ErrorPage type="postNew" /> : null}
         <form
-          onSubmit={handleSubmit(this.onSubmit.bind(this))}
+          onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
-          // this.onSubmit() referes to the onSubmit() method of this component,
-          // it handles the submission of the form
+          // this.onComponentSubmit() referes to the method of this component
           className="col s12"
         >
           <div className="row">
@@ -95,7 +101,7 @@ class PostNew extends Component {
   }
 }
 
-// The 'validate' function will be called AUTOMATICALLY by Redux Form
+// The 'validate' function will be called automaticalli by Redux Form
 // whenever a user attempts to submit the form
 function validate(values) {
   const errors = {};
@@ -116,9 +122,9 @@ const mapStateToProps = ({ posts: { isPending }, error }) => ({
 });
 
 export default reduxForm({
-  validate, // -> validate: validate
-  form: "PostsNewForm"
+  validate,
   //value of "form" must be unique
+  form: "PostsNewForm"
 })(
   connect(
     mapStateToProps,

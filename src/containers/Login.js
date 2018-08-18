@@ -17,15 +17,19 @@ class Login extends Component {
   }
   onComponentSubmit(values) {
     this.props.userLogin(values, () => {
+      //Callback to execute when the action is resolved
       this.showAlert("Login successful!");
       setTimeout(() => this.props.history.push("/"), 1000);
     });
   }
+  
+  //Redux Form's renderField() method
   renderField(field) {
-    const {
-      meta: { touched, error }
-    } = field;
+    //Provide "invalid" classNames when a field is both 'touched', 
+    //and has 'error', which is an object returned by the validate() function.
+    const { meta: { touched, error } } = field;
     const className = `${touched && error ? "invalid" : ""}`;
+
     const type = field.input.name === "password" ? "password" : "text";
     return (
       <div className="input-field col s6">
@@ -45,11 +49,16 @@ class Login extends Component {
     const { handleSubmit, error } = this.props;
     return (
       <div className="container">
-        {error && error.status ? <ErrorPage type="login" /> : null}
+        {
+          //the "error" here refers to the error in the application state(store)
+          error && error.status ? <ErrorPage type="login" /> : null
+        }
         <h1>Log in</h1>
         <form
           className="col s12"
           onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
+          //                      ▲ ▲ ▲ ▲ ▲ ▲ ▲
+          // this.onComponentSubmit() referes to the method of this component
         >
           <div className="row">
             <Field name="username" component={this.renderField} />
@@ -68,6 +77,8 @@ class Login extends Component {
   }
 }
 
+// The 'validate' function will be called automaticalli by Redux Form
+// whenever a user attempts to submit the form
 function validate(values) {
   const errors = {};
   // Validate the inputs from 'values'
@@ -77,7 +88,6 @@ function validate(values) {
   if (!values.password) {
     errors.password = "Please enter a password";
   }
-
   //if the "errors" object is empty, the form is valid and ok to submit
   return errors;
 }
@@ -86,6 +96,7 @@ const mapStateToProps = ({ error }) => ({ error });
 
 export default reduxForm({
   validate,
+  //value of "form" must be unique
   form: "LoginForm"
 })(
   connect(

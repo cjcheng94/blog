@@ -1,10 +1,12 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { fetchPosts } from "../actions/posts";
-import { clearLoader } from "../actions/clearLoader";
 
 import ErrorPage from "../components/errorPage";
 import Cards from "../components/cards";
+import CardPlaceHolder from "../components/cardPlaceholder";
+
+import { fetchPosts } from "../actions/posts";
+import { clearLoader } from "../actions/clearLoader";
 
 class PostIndex extends Component {
   componentDidMount() {
@@ -13,15 +15,18 @@ class PostIndex extends Component {
     this.props.fetchPosts();
   }
   componentWillUnmount() {
+    //Clear the progress bar on unmount
     this.props.clearLoader();
   }
 
   render() {
-    const { error } = this.props;
+    const { error, isPending, posts } = this.props;
     return (
       <div className="row">
         {error && error.status ? <ErrorPage /> : null}
-        <Cards posts={this.props.posts} />
+        {
+          //Show placeholders when loading
+          isPending ? <CardPlaceHolder /> : <Cards posts={posts} />}
       </div>
     );
   }

@@ -30,6 +30,7 @@ export const FETCH_PROFILE_REJECTED = "FETCH_PROFILE_REJECTED";
 
 const ROOT_URL = "https://alexsapiblog.herokuapp.com";
 
+//Fetchs all posts
 export function fetchPosts() {
   const request = axios.get(`${ROOT_URL}/posts`);
   return {
@@ -38,6 +39,7 @@ export function fetchPosts() {
   };
 }
 
+//Fetchs one post by id
 export function fetchPost(_id) {
   const request = axios.get(`${ROOT_URL}/posts/${_id}`);
   return {
@@ -46,6 +48,7 @@ export function fetchPost(_id) {
   };
 }
 
+//Fetchs posts written by a specific user
 export function fetchUserPosts(username) {
   const request = axios.get(`${ROOT_URL}/user/${username}`);
   return {
@@ -54,53 +57,50 @@ export function fetchUserPosts(username) {
   };
 }
 
-// protected requests
+// -----------------protected actions-----------------
+//Creates new post
 export function createPost(values, callback) {
   const token = localStorage.getItem("token");
-  return dispatch => {
-    const request = axios({
-      baseURL: ROOT_URL,
-      url: "/posts",
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}` },
-      data: values
-    });
-    return dispatch({
-      type: CREATE_POST,
-      payload: request
-    }).then(() => callback());
+  const request = axios({
+    baseURL: ROOT_URL,
+    url: "/posts",
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+    data: values
+  }).then(() => callback());
+  return {
+    type: CREATE_POST,
+    payload: request
   };
 }
 
+//Deletes one post by id
 export function deletePost(_id, callback) {
   const token = localStorage.getItem("token");
-  return dispatch => {
-    const request = axios({
-      baseURL: ROOT_URL,
-      url: `/posts/${_id}`,
-      method: "DELETE",
-      headers: { Authorization: `Bearer ${token}` }
-    });
-    return dispatch({
-      type: DELETE_POST,
-      payload: request
-    }).then(() => callback());
+  const request = axios({
+    baseURL: ROOT_URL,
+    url: `/posts/${_id}`,
+    method: "DELETE",
+    headers: { Authorization: `Bearer ${token}` }
+  }).then(() => callback());
+  return {
+    type: DELETE_POST,
+    payload: request
   };
 }
 
+//Updates post
 export function updatePost(_id, values, callback) {
   const token = localStorage.getItem("token");
-  return dispatch => {
-    const request = axios({
-      baseURL: ROOT_URL,
-      url: `/posts/${_id}`,
-      method: "PATCH",
-      headers: { Authorization: `Bearer ${token}` },
-      data: values
-    });
-    return dispatch({
-      type: UPDATE_POST,
-      payload: request
-    }).then(() => callback());
+  const request = axios({
+    baseURL: ROOT_URL,
+    url: `/posts/${_id}`,
+    method: "PATCH",
+    headers: { Authorization: `Bearer ${token}` },
+    data: values
+  }).then(() => callback());
+  return {
+    type: UPDATE_POST,
+    payload: request
   };
 }

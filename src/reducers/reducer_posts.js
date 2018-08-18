@@ -5,6 +5,13 @@ import {
 } from "../actions/posts";
 import _ from "lodash";
 
+//state.posts looks like this:
+// {
+//   5b71b53e1db7dd00205583a9: { _id: 5b71b53e1db7dd00205583a9, title:'...' author: '...', content: '...'},
+//   5b70815e6fd3080020640b05: { _id: 5b70815e6fd3080020640b05, title:'...' author: '...', content: '...'},
+//   ...
+// }
+
 const postReducer = (state = {}, action)=>{
   switch (action.type) {
     case FETCH_POSTS_FULFILLED:

@@ -30,6 +30,9 @@ export function userSignup(signUpData, callback) {
   };
 }
 
+//Combines redux-promise-middleware and redux thunk to 
+//chain async actions and perform side effects
+//See https://docs.psb.codes/redux-promise-middleware/guides/chaining-actions
 export function userLogin(loginData, callback) {
   return dispatch => {
     const request = axios({
@@ -42,11 +45,11 @@ export function userLogin(loginData, callback) {
       type: USER_LOGIN,
       payload: request
     }).then(({ value }) => {
-      //    ▼      ▼
-      // {
-      //   action:{type: "USER_LOGIN_FULFILLED", payload: {...}
-      //   value: {same as action.payload on line above}
-      // }
+      //The reason to use thunk is because 
+      //  1. We need the jwt token returned by the server to be saved to localStorage, 
+      //     which is available only when the promise resolves, 
+      //  2. Reducers must be kept PURE, 
+      //     i.e. we can't do side effects (like saving tokens to localStorage) in them
       localStorage.setItem("username", value.data.username);
       localStorage.setItem("token", value.data.token);
       callback();
@@ -54,6 +57,7 @@ export function userLogin(loginData, callback) {
   };
 }
 
+//Simply remove token and username from localStorage
 export function userLogout(callback) {
   return dispatch => {
     dispatch({ type: USER_LOGOUT });

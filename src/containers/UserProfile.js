@@ -1,9 +1,9 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { fetchPosts } from "../actions/posts";
 
 import ErrorPage from "../components/errorPage";
 import Cards from "../components/cards";
+import { fetchPosts } from "../actions/posts";
 
 class UserProfile extends Component {
   componentDidMount() {
@@ -25,7 +25,7 @@ class UserProfile extends Component {
 }
 
 function mapStateToProps({ posts, error, isPending }, ownProps) {
-  //filter all posts whose author field matches the username in url
+  //filter all posts whose author prop matches the username in url
   const userPosts = {};
   for (let key in posts) {
     if (posts[key]["author"] === ownProps.match.params.username) {

@@ -1,3 +1,4 @@
+//Router configuration
 import React, { Component } from "react";
 import Alert from "react-s-alert";
 import { BrowserRouter as Router, Route } from "react-router-dom";
@@ -46,7 +47,6 @@ const routes = [
   },
   {
     path: "/user/profile/:username",
-    exact: true,
     sidebar: Header,
     main: AsyncUserProfile
   },
@@ -79,6 +79,7 @@ export default class App extends Component {
               component={route.main}
             />
           ))}
+          {/* A light-weight 3rd party alert component*/}
           <Alert stack={{ limit: 1 }} />
         </div>
       </Router>

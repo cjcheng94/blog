@@ -39,6 +39,12 @@ body {
   line-height: 28px;
   background-color: hsl(187, 72%, 93%);
 }
+.card-title-placeholder {
+  font-style: italic;
+  height: 28px;
+  width: 150px;
+  background-color: hsl(187, 72%, 93%);
+}
 .card-author {
   margin: 1em 0 !important;
 }
@@ -47,7 +53,6 @@ body {
   margin-bottom: 50px;
 }
 .detail-buttons * {
-  /* width: 100px; */
   margin-right: 12px;
 }
 .modal {

@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import { fetchPost, deletePost } from "../actions/posts";
-import { clearLoader } from "../actions/clearLoader";
-
 import { Link } from "react-router-dom";
 import Alert from "react-s-alert";
 import moment from "moment";
 
 import Modal from "../components/modal";
 import ErrorPage from "../components/errorPage";
+import { fetchPost, deletePost } from "../actions/posts";
+import { clearLoader } from "../actions/clearLoader";
 
 class PostDetails extends Component {
   constructor(props) {
@@ -19,9 +18,10 @@ class PostDetails extends Component {
   }
 
   componentDidMount() {
-    //reset to top of the page
+    //Reset to top of the page
     window.scrollTo(0, 0);
-    //if all posts are already fetched, then don't waste network usage to fetch it again
+    //If all posts are already fetched, then don't waste network usage to fetch it again,
+    //simply find the post by id in state
     if (!this.props.posts) {
       const { _id } = this.props.match.params;
       this.props.fetchPost(_id);
@@ -29,7 +29,7 @@ class PostDetails extends Component {
   }
 
   showAlert(message) {
-    Alert.success(message, {
+    Alert.info(message, {
       position: "top-right",
       effect: "slide",
       timeout: 2000
@@ -56,9 +56,11 @@ class PostDetails extends Component {
   }
 
   componentWillUnmount() {
+    //Clear the progress bar on unmount
     this.props.clearLoader();
   }
   render() {
+    // Show error page if any
     const { error } = this.props;
     if (!this.props.posts) {
       if (error && error.status) {
@@ -66,15 +68,14 @@ class PostDetails extends Component {
       }
       return null;
     }
+
     const { title, author, content, date } = this.props.posts;
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
+    //Extract post id from url, and compose url for editing page
     const { _id } = this.props.match.params;
     const url = `/posts/edit/${_id}`;
-    //----------------------------------------------
-    //DANGEROUS! may may expose users to a cross-site scripting (XSS) attack.
-    // const createMarkup = () => ({ __html: content });
-    //----------------------------------------------
+
     return (
       <div className="container">
         {this.state.showModal ? (
@@ -115,6 +116,7 @@ class PostDetails extends Component {
 
 function mapStateToProps({ posts, user, error, isPending }, ownProps) {
   return {
+    //Filter posts by id (from url) to find the post we're looking for
     posts: posts[ownProps.match.params._id],
     user,
     isPending,

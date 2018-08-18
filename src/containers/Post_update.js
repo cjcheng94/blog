@@ -4,9 +4,9 @@ import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import Alert from "react-s-alert";
 
-import { updatePost, fetchPost } from "../actions/posts";
 import Modal from "../components/modal";
 import ErrorPage from "../components/errorPage";
+import { updatePost, fetchPost } from "../actions/posts";
 
 class PostUpdate extends Component {
   constructor(props) {
@@ -14,10 +14,10 @@ class PostUpdate extends Component {
     this.state = {
       showModal: false
     };
-    this.handleModalShow = this.handleModalShow.bind(this);
-    this.handleModalHide = this.handleModalHide.bind(this);
   }
   componentDidMount() {
+    //If all posts are already fetched, then don't waste network usage to fetch it again,
+    //simply find the post by id in state
     const { _id } = this.props.match.params;
     this.props.fetchPost(_id);
   }
@@ -39,7 +39,11 @@ class PostUpdate extends Component {
       offset: "50px"
     });
   }
+
+  //Redux Form's renderField() method
   renderField(field) {
+    //Provide "invalid" classNames when a field is both 'touched',
+    //and has 'error', which is an object returned by the validate() function.
     const {
       meta: { touched, error },
       input: { name }
@@ -72,9 +76,20 @@ class PostUpdate extends Component {
       </div>
     );
   }
-  onSubmit(values) {
-    const { _id } = this.props.match.params;
 
+  onComponentSubmit(values) {
+    const { _id } = this.props.match.params;
+    //Map changes into an array that looks like this:
+    // [
+    //   {
+    //     propName: "title",
+    //     value: "new title"
+    //   },
+    //   {
+    //     propName: "content",
+    //     value: "new content"
+    //   }
+    // ]
     const requestBody = Object.keys(values)
       .filter(key => key === "title" || key === "content")
       .map(e => ({ propName: e, value: values[e] }));
@@ -90,10 +105,9 @@ class PostUpdate extends Component {
     return (
       <div className="container">
         <form
-          onSubmit={handleSubmit(this.onSubmit.bind(this))}
+          onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
-          // this.onSubmit() referes to the onSubmit() method of this component,
-          // it handles the submission of the form
+          // this.onComponentSubmit() referes to the method of this component
           className="col s12"
         >
           {this.state.showModal ? (
@@ -104,7 +118,8 @@ class PostUpdate extends Component {
               isPending={this.props.isPending}
             />
           ) : null}
-          {stateError && stateError.status ? (
+          {//stateError can not be named "error" here, it will conflict with Redux Form's "error"
+          stateError && stateError.status ? (
             <ErrorPage type="postUpdate" />
           ) : null}
 
@@ -117,7 +132,7 @@ class PostUpdate extends Component {
           <div className=" col s12">
             <button
               className="btn waves-effect waves-light from-btn cyan darken-1"
-              onClick={this.handleModalShow}
+              onClick={this.handleModalShow.bind(this)}
               type="button"
             >
               Submit
@@ -151,12 +166,15 @@ function validate(values) {
 }
 
 const mapStateToProps = ({ error, posts, isPending }, ownProps) => ({
-  posts: posts[ownProps.match.params._id],
+  //Provide initialValues to prepopulate the form
+  //See https://redux-form.com/7.4.2/examples/initializefromstate/
   initialValues: posts[ownProps.match.params._id],
+  posts: posts[ownProps.match.params._id],
   isPending,
   stateError: error
 });
 
+//See https://redux-form.com/7.4.2/examples/initializefromstate/
 PostUpdate = reduxForm({
   validate,
   form: "PostEditForm"
@@ -166,4 +184,5 @@ PostUpdate = connect(
   mapStateToProps,
   { fetchPost, updatePost }
 )(PostUpdate);
+
 export default PostUpdate;

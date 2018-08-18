@@ -7,6 +7,7 @@ import {
 import checkIfExpired from "../middlewares/checkTokenExpired";
 
 const initialUserState = {
+  //Check user auth state immediately when app boots up
   isAuthenticated: !checkIfExpired(),
   username: localStorage.getItem("username")
 };
