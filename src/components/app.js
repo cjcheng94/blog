@@ -1,80 +1,84 @@
 import React, { Component } from "react";
-import Header from "../containers/Header";
-import PostNew from "../containers/Post_new";
-import PostIndex from "../containers/Post_index";
-import PostDetails from "../containers/Post_details";
-import PostUpdate from "../containers/Post_update";
-import Login from "../containers/Login";
-import Signup from "../containers/Signup";
-import UserProfile from "../containers/UserProfile";
 import Alert from "react-s-alert";
+import { BrowserRouter as Router, Route } from "react-router-dom";
+import "react-s-alert/dist/s-alert-default.css";
+import "react-s-alert/dist/s-alert-css-effects/slide.css";
+import "../style/style.css";
 
-import { Route, withRouter } from "react-router-dom";
-import {connect} from 'react-redux';
+import asyncComponent from "./AsyncComponent";
+const AsyncHeader = asyncComponent(() => import("../containers/Header"));
+const AsyncPostNew = asyncComponent(() => import("../containers/Post_new"));
+const AsyncPostIndex = asyncComponent(() => import("../containers/Post_index"));
+const AsyncPostDetails = asyncComponent(() => import("../containers/Post_details"));
+const AsyncPostUpdate = asyncComponent(() => import("../containers/Post_update"));
+const AsyncLogin = asyncComponent(() => import("../containers/Login"));
+const AsyncSignup = asyncComponent(() => import("../containers/Signup"));
+const AsyncUserProfile = asyncComponent(() => import("../containers/UserProfile"));
 
 const routes = [
   {
     path: "/posts/detail/:_id",
-    sidebar: Header,
-    main: PostDetails
+    sidebar: AsyncHeader,
+    main: AsyncPostDetails
   },
   {
     path: "/posts/new",
-    sidebar: Header,
-    main: PostNew
+    sidebar: AsyncHeader,
+    main: AsyncPostNew
   },
   {
     path: "/posts/edit/:_id",
-    sidebar: Header,
-    main: PostUpdate
+    sidebar: AsyncHeader,
+    main: AsyncPostUpdate
   },
   {
     path: "/user/login",
-    sidebar: Header,
-    main: Login
+    sidebar: AsyncHeader,
+    main: AsyncLogin
   },
   {
     path: "/user/signup",
-    sidebar: Header,
-    main: Signup
+    sidebar: AsyncHeader,
+    main: AsyncSignup
   },
   {
     path: "/user/profile/:username",
     exact: true,
-    sidebar: Header,
-    main: UserProfile
+    sidebar: AsyncHeader,
+    main: AsyncUserProfile
   },
   {
     path: "/",
     exact: true,
-    sidebar: Header,
-    main: PostIndex
+    sidebar: AsyncHeader,
+    main: AsyncPostIndex
   }
 ];
-class App extends Component {
+
+export default class App extends Component {
   render() {
     return (
-      <div>
-        {routes.map((route, index) => (
-          <Route
-            key={index}
-            path={route.path}
-            exact={route.exact}
-            component={route.sidebar}
-          />
-        ))}
-        {routes.map((route, index) => (
-          <Route
-            key={index}
-            path={route.path}
-            exact={route.exact}
-            component={route.main}
-          />
-        ))}
-        <Alert stack={{ limit: 1 }} />
-      </div>
+      <Router>
+        <div>
+          {routes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              exact={route.exact}
+              component={route.sidebar}
+            />
+          ))}
+          {routes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              exact={route.exact}
+              component={route.main}
+            />
+          ))}
+          <Alert stack={{ limit: 1 }} />
+        </div>
+      </Router>
     );
   }
 }
-//FLAG!
-export default withRouter(connect(null)(App));
