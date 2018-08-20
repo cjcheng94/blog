@@ -1,22 +1,13 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
-import { createStore, applyMiddleware } from "redux";
-import promiseMiddleware from "redux-promise-middleware";
-import thunk from "redux-thunk";
-import { createLogger } from "redux-logger";
 
-import App from './components/app'
-import reducers from "./reducers";
+import App from "./components/app";
 
-const middlewares = [promiseMiddleware(), thunk];
-if (process.env.NODE_ENV === "development") {
-  middlewares.push(createLogger());
-}
-const createStoreWithMiddleWare = applyMiddleware(...middlewares)(createStore);
+import configureStore from "./configureStore";
 
 ReactDOM.render(
-  <Provider store={createStoreWithMiddleWare(reducers)}>
+  <Provider store={configureStore()}>
     <App />
   </Provider>,
   document.querySelector("#root")
