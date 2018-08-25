@@ -76,7 +76,7 @@ class PostDetails extends Component {
     //Extract post id from url, and compose url for editing page
     const { _id } = this.props.match.params;
     const url = `/posts/edit/${_id}`;
-
+    
     return (
       <div className="container">
         {this.state.showModal ? (
@@ -98,7 +98,7 @@ class PostDetails extends Component {
           <div className="post-content">{content}</div>
         </div>
         {/*Disqus plugin*/}
-        <DisqueComment url={url} identifier={_id} title={title}/>
+        <DisqueComment identifier={_id} title={title}/>
         {author === this.props.user.username ? (
           <div className="detail-buttons">
             <button
