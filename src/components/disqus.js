@@ -10,7 +10,7 @@ export default class DisqueComment extends React.Component {
       identifier: this.props.id,
       title: this.props.title
     };
-    console.log(window.location.href);
+    console.log(disqusShortname);
     console.log(disqusConfig.url);
     
     
