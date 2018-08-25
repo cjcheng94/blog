@@ -97,8 +97,6 @@ class PostDetails extends Component {
           <div className="divider" style={{ marginBottom: "30px" }} />
           <div className="post-content">{content}</div>
         </div>
-        {/*Disqus plugin*/}
-        <DisqueComment identifier={_id} title={title}/>
         {author === this.props.user.username ? (
           <div className="detail-buttons">
             <button
@@ -112,6 +110,8 @@ class PostDetails extends Component {
             </Link>
           </div>
         ) : null}
+        {/*Disqus plugin*/}
+        <DisqueComment identifier={_id} title={title}/>
       </div>
     );
   }
