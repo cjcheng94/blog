@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import Alert from "react-s-alert";
 import moment from "moment";
 
+import DisqueComment from '../components/disqus'
 import Modal from "../components/modal";
 import ErrorPage from "../components/errorPage";
 import { fetchPost, deletePost } from "../actions/posts";
@@ -96,6 +97,8 @@ class PostDetails extends Component {
           <div className="divider" style={{ marginBottom: "30px" }} />
           <div className="post-content">{content}</div>
         </div>
+        {/*Disqus plugin*/}
+        <DisqueComment url={url} identifier={_id} title={title}/>
         {author === this.props.user.username ? (
           <div className="detail-buttons">
             <button
