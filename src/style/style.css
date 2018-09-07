@@ -11,7 +11,11 @@ body {
   margin-right: 2em;
   margin-top: 30px;
 }
-
+.brand-logo {
+  font-family: 'Vast Shadow';
+  /* font-size: 40px !important; */
+  text-shadow: 2px 2px 0px #b2ebf2, 4px 4px 0px #4dd0e1, 6px 6px 0px #00bcd4;
+}
 .input-field input[type="text"].invalid + label {
   color: red !important;
 }

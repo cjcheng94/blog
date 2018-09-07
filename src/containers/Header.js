@@ -44,7 +44,7 @@ class Header extends Component {
     const buttons = this.props.isAuthenticated
       ? buttonList.slice(0, 1)
       : buttonList.slice(1);
-
+    const logo = window.innerWidth < 400?'B':'BLOG!'; 
     return (
       <div>
         <div className="navbar-fixed">
@@ -53,12 +53,8 @@ class Header extends Component {
               <Link
                 to="/"
                 className="brand-logo left"
-                style={{
-                  textShadow:
-                    "2px 2px 0px #b2ebf2,4px 4px 0px #4dd0e1,6px 6px 0px #00bcd4"
-                }}
               >
-                Blog!
+                {logo}
               </Link>
               <ul id="nav-mobile" className="right">
                 {
