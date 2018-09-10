@@ -44,28 +44,25 @@ class Header extends Component {
     const buttons = this.props.isAuthenticated
       ? buttonList.slice(0, 1)
       : buttonList.slice(1);
-    const logo = window.innerWidth < 400?'B':'BLOG!'; 
+    const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
     return (
       <div>
         <div className="navbar-fixed">
           <nav className="cyan darken-1">
             <div className="nav-wrapper container">
-              <Link
-                to="/"
-                className="brand-logo left"
-              >
+              <Link to="/" className="brand-logo left">
                 {logo}
               </Link>
               <ul id="nav-mobile" className="right">
-                {
-                  //Show user's info on header when logged in
-                  this.props.isAuthenticated ? (
+                {/*Show user's info on header when logged in*/}
+                {this.props.isAuthenticated ? (
                   <li>
                     <Link to={`/user/profile/${this.props.username}`}>
                       {this.props.username}
                     </Link>
                   </li>
                 ) : null}
+                {/*Render buttons according to user login state */}
                 {buttons.map(button => {
                   return (
                     <HeaderButton
@@ -75,6 +72,7 @@ class Header extends Component {
                     />
                   );
                 })}
+                {/*Render a log out button when user is logged in*/}
                 {this.props.isAuthenticated ? (
                   <li className="waves-effect waves-light">
                     <a onClick={this.handleLogoutClick.bind(this)}>Log out</a>
@@ -84,9 +82,8 @@ class Header extends Component {
             </div>
           </nav>
         </div>
-        {
-          //Show a progress bar based on isPending state
-          this.props.isPending ? (
+        {//Show a progress bar based on isPending state
+        this.props.isPending ? (
           <div className="progress">
             <div className="indeterminate" />
           </div>
