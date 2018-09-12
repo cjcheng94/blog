@@ -328,8 +328,10 @@ module.exports = {
         // See https://googlechromelabs.github.io/sw-toolbox/api.html#toolboxnetworkfirst
         handler: 'networkFirst',
         options:{
+          //if the request takes more than N seconds, fallback to cached response
+          networkTimeoutSeconds: 3,
           cache:{
-            maxEntries :1,
+            maxEntries: 5,
             name: 'runtime-cache'
           }
         }
