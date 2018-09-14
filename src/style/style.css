@@ -75,10 +75,10 @@ body {
   letter-spacing: -0.003em;
 }
 .progress {
-  position: fixed;
+  position: fixed !important;
   z-index: 9;
-  margin-top: 1px;
-  margin-bottom: 0px;
+  margin-top: 1px !important;
+  margin-bottom: 0px !important;
 }
 .placeholder {
   position: fixed;
