@@ -3,17 +3,9 @@ import axios from "axios";
 const USER_LOGIN = "USER_LOGIN";
 const USER_SIGNUP = "USER_SIGNUP";
 
-export const USER_LOGIN_PENDING = "USER_LOGIN_PENDING";
+export const USER_LOGOUT = "USER_LOGOUT";
 export const USER_LOGIN_FULFILLED = "USER_LOGIN_FULFILLED";
 export const USER_LOGIN_REJECTED = "USER_LOGIN_REJECTED";
-
-export const USER_SIGNUP_PENDING = "USER_SIGNUP_PENDING";
-export const USER_SIGNUP_FULFILLED = "USER_SIGNUP_FULFILLED";
-export const USER_SIGNUP_REJECTED = "USER_SIGNUP_REJECTED";
-
-export const USER_LOGOUT = "USER_LOGOUT";
-
-export const GET_ALL_USERNAME_FULFILLED = "GET_ALL_USERNAME_FULFILLED";
 
 const ROOT_URL = "https://alexsapiblog.herokuapp.com";
 
