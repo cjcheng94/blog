@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 import { userLogout } from "../actions/user";
@@ -14,7 +14,6 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { compose } from "redux";
 
 const styles = {
-  appBar: {},
   brand: {
     flexGrow: 1,
     fontSize: "2.4em",
@@ -36,14 +35,10 @@ class Header extends Component {
     open: false
   };
   showAlert() {
-    this.setState({
-      open: true
-    });
+    this.setState({ open: true });
   }
   hideAlert() {
-    this.setState({
-      open: false
-    });
+    this.setState({ open: false });
   }
   handleLogoutClick(e) {
     e.preventDefault();
@@ -56,10 +51,9 @@ class Header extends Component {
   render() {
     const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
     const { classes, isAuthenticated } = this.props;
-    const { open } = this.state;
 
     return (
-      <div>
+      <Fragment>
         <AppBar className={classes.appBar} position="static">
           <Toolbar>
             <Typography
@@ -71,8 +65,11 @@ class Header extends Component {
             >
               {logo}
             </Typography>
-            {isAuthenticated ? (
-              <div>
+
+            {/* Show different sets of buttons based on whether user is signed in or not*/}
+            {isAuthenticated
+            ? (
+              <Fragment>
                 <IconButton
                   aria-haspopup="true"
                   color="inherit"
@@ -88,9 +85,10 @@ class Header extends Component {
                 >
                   Log Out
                 </Button>
-              </div>
-            ) : (
-              <div>
+              </Fragment>
+            ) 
+            : (
+              <Fragment>
                 <Button
                   aria-haspopup="true"
                   color="inherit"
@@ -107,10 +105,12 @@ class Header extends Component {
                 >
                   Sign Up
                 </Button>
-              </div>
+              </Fragment>
             )}
           </Toolbar>
         </AppBar>
+
+        {/* Show Progress Bar */}
         {this.props.isPending ? (
           <LinearProgress
             classes={{
@@ -121,31 +121,30 @@ class Header extends Component {
         ) : (
           <div style={{ height: 5 }} />
         )}
+        
+        {/* material-ui's Alert Component */}
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "left"
           }}
-          open={open}
+          open={this.state.open}
           autoHideDuration={4000}
           onClose={this.hideAlert.bind(this)}
           ContentProps={{
             "aria-describedby": "message-id"
           }}
-          message={<span id="message-id">Logged Out</span>}
+          message={<span id="message-id">Logout successful</span>}
         />
-      </div>
+      </Fragment>
     );
   }
 }
 
-const mapStateToProps = ({
-  isPending,
-  user: { isAuthenticated, username }
-}) => ({
-  isAuthenticated,
-  isPending,
-  username
+const mapStateToProps = state => ({
+  isAuthenticated: state.user.isAuthenticated,
+  username: state.user.username,
+  isPending: state.isPending
 });
 
 export default compose(

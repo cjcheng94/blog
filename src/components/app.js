@@ -1,9 +1,6 @@
 //Router configuration
 import React, { Component } from "react";
-import Alert from "react-s-alert";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import "react-s-alert/dist/s-alert-default.css";
-import "react-s-alert/dist/s-alert-css-effects/slide.css";
 import "../style/style.css";
 
 import Header from "../containers/Header";
@@ -13,16 +10,17 @@ import PostDetails from "../containers/Post_details";
 import PostUpdate from "../containers/Post_update";
 import Login from "../containers/Login";
 import Signup from "../containers/Signup";
-import NoMatch from '../components/noMatch';
+import NoMatch from "../components/noMatch";
 
 import AsyncComponent from "./AsyncComponent";
 
 //As this app is quite small, we don't need to unnassisarily split the code into too many chunks,
 //but I'll leave AsyncUserProfile spit as a demonstration
-const AsyncUserProfile = AsyncComponent(() => import("../containers/UserProfile"));
+const AsyncUserProfile = AsyncComponent(() =>
+  import("../containers/UserProfile")
+);
 
 const routes = [
-  
   {
     path: "/posts/detail/:_id",
     sidebar: Header,
@@ -60,8 +58,8 @@ const routes = [
     main: PostIndex
   },
   {
-    main: NoMatch,
-  },
+    main: NoMatch
+  }
 ];
 
 export default class App extends Component {
@@ -69,15 +67,15 @@ export default class App extends Component {
     return (
       <Router>
         <div>
-            {routes.map((route, index) => (
-              <Route
-                key={index}
-                path={route.path}
-                exact={route.exact}
-                component={route.sidebar}
-              />
-            ))}
-            <Switch>
+          {routes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              exact={route.exact}
+              component={route.sidebar}
+            />
+          ))}
+          <Switch>
             {routes.map((route, index) => (
               <Route
                 key={index}
@@ -87,8 +85,6 @@ export default class App extends Component {
               />
             ))}
           </Switch>
-          {/* A light-weight 3rd party alert component*/}
-          <Alert stack={{ limit: 1 }} />
         </div>
       </Router>
     );

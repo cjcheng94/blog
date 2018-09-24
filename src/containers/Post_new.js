@@ -2,19 +2,20 @@ import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import Alert from "react-s-alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 import ErrorPage from "../components/errorPage";
 import { createPost } from "../actions/posts";
 
 class PostNew extends Component {
-  showAlert(message) {
-    Alert.info(message, {
-      position: "top-right",
-      effect: "slide",
-      timeout: 2000,
-      offset: "50px"
-    });
+  state = {
+    open: false
+  };
+  showAlert() {
+    this.setState({open: true});
+  }
+  hideAlert() {
+    this.setState({open: false});
   }
 
   //Redux Form's renderField() method
@@ -53,7 +54,7 @@ class PostNew extends Component {
 
   onComponentSubmit(values) {
     this.props.createPost(values, () => {
-      this.showAlert("Post Successfully Added!");
+      this.showAlert();
       setTimeout(() => {
         this.props.history.push("/");
       }, 1000);
@@ -62,8 +63,9 @@ class PostNew extends Component {
 
   render() {
     // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit, error } = this.props;
-    const isDisabled = this.props.isPending ? "disabld" : "";
+    const { handleSubmit, error, isPending } = this.props;
+    const isDisabled = isPending ? "disabled" : "";
+    
     return (
       <div className="container">
         {
@@ -96,6 +98,19 @@ class PostNew extends Component {
             </Link>
           </div>
         </form>
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={this.state.open}
+          autoHideDuration={4000}
+          onClose={this.hideAlert.bind(this)}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">Create new post successfull!</span>}
+        />
       </div>
     );
   }
@@ -116,7 +131,7 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({ posts: { isPending }, error }) => ({
+const mapStateToProps = ({isPending , error}) => ({
   isPending,
   error
 });

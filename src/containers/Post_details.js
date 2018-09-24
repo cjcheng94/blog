@@ -1,10 +1,10 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
-import Alert from "react-s-alert";
+import Snackbar from "@material-ui/core/Snackbar";
 import moment from "moment";
 
-import DisqueComment from '../components/disqus'
+import DisqueComment from "../components/disqus";
 import Modal from "../components/modal";
 import ErrorPage from "../components/errorPage";
 import { fetchPost, deletePost } from "../actions/posts";
@@ -14,8 +14,16 @@ class PostDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false
+      showModal: false,
+      showAlert: false
     };
+  }
+
+  showAlert() {
+    this.setState({ showAlert: true });
+  }
+  hideAlert() {
+    this.setState({ showAlert: false });
   }
 
   componentDidMount() {
@@ -27,14 +35,6 @@ class PostDetails extends Component {
       const { _id } = this.props.match.params;
       this.props.fetchPost(_id);
     }
-  }
-
-  showAlert(message) {
-    Alert.info(message, {
-      position: "top-right",
-      effect: "slide",
-      timeout: 2000
-    });
   }
 
   handleModalShow() {
@@ -51,8 +51,8 @@ class PostDetails extends Component {
   handleDelete() {
     const { _id } = this.props.match.params;
     this.props.deletePost(_id, () => {
-      this.showAlert("Post deleted");
-      this.props.history.push("/");
+      this.showAlert();
+      setTimeout(() => {this.props.history.push("/")}, 1000);
     });
   }
 
@@ -76,7 +76,7 @@ class PostDetails extends Component {
     //Extract post id from url, and compose url for editing page
     const { _id } = this.props.match.params;
     const url = `/posts/edit/${_id}`;
-    
+
     return (
       <div className="container">
         {this.state.showModal ? (
@@ -110,8 +110,21 @@ class PostDetails extends Component {
             </Link>
           </div>
         ) : null}
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={this.state.showAlert}
+          autoHideDuration={3000}
+          onClose={this.hideAlert.bind(this)}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">Post deleted</span>}
+        />
         {/*Disqus plugin*/}
-        <DisqueComment identifier={_id} title={title}/>
+        <DisqueComment identifier={_id} title={title} />
       </div>
     );
   }

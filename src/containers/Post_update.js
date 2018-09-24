@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import Alert from "react-s-alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 import Modal from "../components/modal";
 import ErrorPage from "../components/errorPage";
@@ -12,8 +12,15 @@ class PostUpdate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false
+      showModal: false,
+      showAlert: false
     };
+  }
+  showAlert() {
+    this.setState({ showAlert: true });
+  }
+  hideAlert() {
+    this.setState({ showAlert: false });
   }
   componentDidMount() {
     //If all posts are already fetched, then don't waste network usage to fetch it again,
@@ -29,14 +36,6 @@ class PostUpdate extends Component {
   handleModalHide() {
     this.setState({
       showModal: false
-    });
-  }
-  showAlert(message) {
-    Alert.info(message, {
-      position: "top-right",
-      effect: "slide",
-      timeout: 2000,
-      offset: "50px"
     });
   }
 
@@ -95,8 +94,10 @@ class PostUpdate extends Component {
       .map(e => ({ propName: e, value: values[e] }));
 
     this.props.updatePost(_id, requestBody, () => {
-      this.showAlert("Post Successfully Updated!");
-      this.props.history.push("/");
+      this.showAlert();
+      setTimeout(() => {
+        this.props.history.push("/");
+      }, 1000);
     });
   }
   render() {
@@ -145,6 +146,19 @@ class PostUpdate extends Component {
             </Link>
           </div>
         </form>
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={this.state.showAlert}
+          autoHideDuration={3000}
+          onClose={this.hideAlert.bind(this)}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">Update successful!</span>}
+        />
       </div>
     );
   }

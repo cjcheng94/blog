@@ -69,18 +69,15 @@ class UserProfile extends Component {
   }
 }
 
-function mapStateToProps(
-  { posts, error, isPending, user: { isAuthenticated } },
-  ownProps
-) {
+const mapStateToProps = (state, ownProps) => {
   return {
-    posts,
-    isPending,
-    error,
-    isAuthenticated,
+    posts: state.posts,
+    isPending: state.isPending,
+    error: state.error,
+    isAuthenticated: state.user.isAuthenticated,
     userFilter: ownProps.match.params.username
   };
-}
+};
 
 export default compose(
   withStyles(styles, {

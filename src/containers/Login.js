@@ -1,33 +1,37 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
-import Alert from "react-s-alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
 import ErrorPage from "../components/errorPage";
 import { userLogin } from "../actions/user";
 
 class Login extends Component {
-  showAlert(message) {
-    Alert.info(message, {
-      position: "top-right",
-      effect: "slide",
-      timeout: 2000,
-      offset: "50px"
-    });
+  state = {
+    open: false
+  };
+
+  showAlert() {
+    this.setState({ open: true });
+  }
+  hideAlert() {
+    this.setState({ open: false });
   }
   onComponentSubmit(values) {
     this.props.userLogin(values, () => {
       //Callback to execute when the action is resolved
-      this.showAlert("Login successful!");
+      this.showAlert();
       setTimeout(() => this.props.history.push("/"), 1000);
     });
   }
-  
+
   //Redux Form's renderField() method
   renderField(field) {
-    //Provide "invalid" classNames when a field is both 'touched', 
+    //Provide "invalid" classNames when a field is both 'touched',
     //and has 'error', which is an object returned by the validate() function.
-    const { meta: { touched, error } } = field;
+    const {
+      meta: { touched, error }
+    } = field;
     const className = `${touched && error ? "invalid" : ""}`;
 
     const type = field.input.name === "password" ? "password" : "text";
@@ -49,10 +53,8 @@ class Login extends Component {
     const { handleSubmit, error } = this.props;
     return (
       <div className="container">
-        {
-          //the "error" here refers to the error in the application state(store)
-          error && error.status ? <ErrorPage type="login" /> : null
-        }
+        {//the "error" here refers to the error in the application state(store)
+        error && error.status ? <ErrorPage type="login" /> : null}
         <h1>Log in</h1>
         <form
           className="col s12"
@@ -72,6 +74,19 @@ class Login extends Component {
             className="btn waves-effect waves-light from-btn cyan darken-1"
           />
         </form>
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={this.state.open}
+          autoHideDuration={3000}
+          onClose={this.hideAlert.bind(this)}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">Login successful!</span>}
+        />
       </div>
     );
   }
@@ -92,7 +107,7 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({ error }) => ({ error });
+const mapStateToProps = state => ({ error: state.error });
 
 export default reduxForm({
   validate,

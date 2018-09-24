@@ -1,25 +1,27 @@
 import React, { Component } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
-import Alert from "react-s-alert";
+import Snackbar from "@material-ui/core/Snackbar";
 
-import { userSignup } from "../actions/user";
 import ErrorPage from "../components/errorPage";
+import { userSignup } from "../actions/user";
 
 class Signup extends Component {
-  showAlert(message) {
-    Alert.info(message, {
-      position: "top-right",
-      effect: "slide",
-      timeout: 2000,
-      offset: "50px"
-    });
+  state = {
+    open: false
+  };
+
+  showAlert() {
+    this.setState({ open: true });
+  }
+  hideAlert() {
+    this.setState({ open: false });
   }
 
   onComponentSubmit(values) {
     this.props.userSignup(values, () => {
-      this.showAlert("Sign up successful!");
-      setTimeout(()=>{this.props.history.push("/user/login")});
+      this.showAlert();
+      setTimeout(()=>{this.props.history.push("/user/login")}, 1000);
     });
   }
   //Redux Form's renderField() method
@@ -70,6 +72,19 @@ class Signup extends Component {
             className="btn waves-effect waves-light from-btn cyan darken-1"
           />
         </form>
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={this.state.open}
+          autoHideDuration={3000}
+          onClose={this.hideAlert.bind(this)}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">Sign up successful!</span>}
+        />
       </div>
     );
   }
