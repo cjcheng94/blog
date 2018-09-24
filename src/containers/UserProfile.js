@@ -1,9 +1,27 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
-
+import { compose } from "redux";
+import { Link } from "react-router-dom";
 import ErrorPage from "../components/errorPage";
 import Cards from "../components/cards";
 import { fetchPosts } from "../actions/posts";
+
+import Grid from "@material-ui/core/Grid";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import { withStyles } from "@material-ui/core";
+import Edit from "@material-ui/icons/Edit";
+
+const styles = {
+  root: {
+    margin: 24
+  },
+  fab: {
+    position: "fixed",
+    bottom: "2em",
+    right: "2em"
+  }
+};
 
 class UserProfile extends Component {
   componentDidMount() {
@@ -13,35 +31,63 @@ class UserProfile extends Component {
     }
   }
   render() {
-    const { error, userPosts, userFilter } = this.props;
+    const { error, posts, userFilter, isAuthenticated, classes } = this.props;
+
+    //filter all posts whose author prop matches the username in url
+    const userPosts = {};
+    for (let key in posts) {
+      if (posts[key]["author"] === userFilter) {
+        userPosts[key] = posts[key];
+      }
+    }
+
     return (
-      <div className="row container">
-        <h2 className="center-align">Posts By {userFilter}</h2>
+      <div className={classes.root}>
+        <Typography variant="headline" component="h2">
+          Posts By {userFilter}
+        </Typography>
         {error && error.status ? <ErrorPage /> : null}
-        <Cards posts={userPosts} />
+        <Grid container spacing={24}>
+          <Fragment>
+            <Cards posts={userPosts} />
+            {isAuthenticated && (
+              <Button
+                variant="fab"
+                color="secondary"
+                aria-label="Edit"
+                className={classes.fab}
+                component={Link}
+                to="/posts/new"
+              >
+                <Edit />
+              </Button>
+            )}
+          </Fragment>
+        </Grid>
       </div>
     );
   }
 }
 
-function mapStateToProps({ posts, error, isPending }, ownProps) {
-  //filter all posts whose author prop matches the username in url
-  const userPosts = {};
-  for (let key in posts) {
-    if (posts[key]["author"] === ownProps.match.params.username) {
-      userPosts[key] = posts[key];
-    }
-  }
+function mapStateToProps(
+  { posts, error, isPending, user: { isAuthenticated } },
+  ownProps
+) {
   return {
     posts,
-    userPosts,
     isPending,
     error,
+    isAuthenticated,
     userFilter: ownProps.match.params.username
   };
 }
 
-export default connect(
-  mapStateToProps,
-  { fetchPosts }
+export default compose(
+  withStyles(styles, {
+    name: "UserProfile"
+  }),
+  connect(
+    mapStateToProps,
+    { fetchPosts }
+  )
 )(UserProfile);
