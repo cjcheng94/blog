@@ -1,7 +1,8 @@
 //Router configuration
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import "../style/style.css";
+import { withStyles } from "@material-ui/core";
+import CssBaseline from '@material-ui/core/CssBaseline';
 
 import Header from "../containers/Header";
 import PostNew from "../containers/Post_new";
@@ -62,31 +63,47 @@ const routes = [
   }
 ];
 
-export default class App extends Component {
+const styles = {
+  root: {
+    fontFamily: "Roboto, sans-serif"
+  },
+  pageComponent: {
+    padding: 24
+  }
+};
+
+class App extends Component {
   render() {
+    const { classes } = this.props;
     return (
-      <Router>
-        <div>
-          {routes.map((route, index) => (
-            <Route
-              key={index}
-              path={route.path}
-              exact={route.exact}
-              component={route.sidebar}
-            />
-          ))}
-          <Switch>
+      <Fragment>
+        <CssBaseline />
+        <Router>
+          <div className={classes.root}>
             {routes.map((route, index) => (
               <Route
                 key={index}
                 path={route.path}
                 exact={route.exact}
-                component={route.main}
+                component={route.sidebar}
               />
             ))}
-          </Switch>
-        </div>
-      </Router>
+            <div className={classes.pageComponent}>
+              <Switch>
+                {routes.map((route, index) => (
+                  <Route
+                    key={index}
+                    path={route.path}
+                    exact={route.exact}
+                    component={route.main}
+                  />
+                ))}
+              </Switch>
+            </div>
+          </div>
+        </Router>
+      </Fragment>
     );
   }
 }
+export default withStyles(styles)(App);

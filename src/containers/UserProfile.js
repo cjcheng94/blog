@@ -13,9 +13,6 @@ import { withStyles } from "@material-ui/core";
 import Edit from "@material-ui/icons/Edit";
 
 const styles = {
-  root: {
-    margin: 24
-  },
   fab: {
     position: "fixed",
     bottom: "2em",
@@ -42,7 +39,7 @@ class UserProfile extends Component {
     }
 
     return (
-      <div className={classes.root}>
+      <Fragment>
         <Typography variant="headline" component="h2">
           Posts By {userFilter}
         </Typography>
@@ -64,7 +61,7 @@ class UserProfile extends Component {
             )}
           </Fragment>
         </Grid>
-      </div>
+      </Fragment>
     );
   }
 }

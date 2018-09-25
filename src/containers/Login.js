@@ -1,10 +1,29 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
+import { compose } from "redux";
 import Snackbar from "@material-ui/core/Snackbar";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import TextField from "@material-ui/core/TextField";
+import { withStyles } from "@material-ui/core";
 
 import ErrorPage from "../components/errorPage";
 import { userLogin } from "../actions/user";
+
+const styles = {
+  wrapper: {
+    maxWidth: 300,
+    margin: "0px auto"
+  },
+  button: {
+    display: "block",
+    margin: "30px auto"
+  },
+  KAGGIGER: {
+    color: "red"
+  }
+}
 
 class Login extends Component {
   state = {
@@ -25,55 +44,58 @@ class Login extends Component {
     });
   }
 
-  //Redux Form's renderField() method
+  //For Redux Form's Field Component
   renderField(field) {
-    //Provide "invalid" classNames when a field is both 'touched',
+    //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
     //and has 'error', which is an object returned by the validate() function.
     const {
+      input: { name },
       meta: { touched, error }
     } = field;
-    const className = `${touched && error ? "invalid" : ""}`;
+    const type = name === "password" ? "password" : "text";
+    const label = name === "password" ? "Password" : "Username";
 
-    const type = field.input.name === "password" ? "password" : "text";
     return (
-      <div className="input-field col s6">
-        <input
-          className={className}
-          id={field.input.name}
-          type={type}
-          {...field.input}
-        />
-        <label htmlFor={field.input.name}>{field.input.name}</label>
-        <span className="helper-text red-text">{touched ? error : ""}</span>
-      </div>
+      <TextField
+        error={!!(touched && error)}
+        label={label}
+        type={type}
+        helperText={touched ? error : ""}
+        margin="normal"
+        fullWidth
+        {...field.input}
+      />
     );
   }
 
   render() {
-    const { handleSubmit, error } = this.props;
+    const { handleSubmit, error, classes } = this.props;
     return (
-      <div className="container">
-        {//the "error" here refers to the error in the application state(store)
+      <Fragment>
+        {//the 'error' here refers to the error in the application state(store)
         error && error.status ? <ErrorPage type="login" /> : null}
-        <h1>Log in</h1>
-        <form
-          className="col s12"
-          onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
-          //                      ▲ ▲ ▲ ▲ ▲ ▲ ▲
-          // this.onComponentSubmit() referes to the method of this component
-        >
-          <div className="row">
+        <div className={classes.wrapper}>
+          <Typography variant="display2" align="center">
+            Log in
+          </Typography>
+          <form
+            onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
+            //                      ▲ ▲ ▲ ▲ ▲ ▲ ▲
+            // this.onComponentSubmit() referes to the method of this component
+          >
             <Field name="username" component={this.renderField} />
-          </div>
-          <div className="row">
             <Field name="password" component={this.renderField} />
-          </div>
-          <input
-            type="submit"
-            value="Log in"
-            className="btn waves-effect waves-light from-btn cyan darken-1"
-          />
-        </form>
+            <Button
+              className={classes.button}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              Log In
+            </Button>
+          </form>
+        </div>
+
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
@@ -87,7 +109,7 @@ class Login extends Component {
           }}
           message={<span id="message-id">Login successful!</span>}
         />
-      </div>
+      </Fragment>
     );
   }
 }
@@ -103,19 +125,23 @@ function validate(values) {
   if (!values.password) {
     errors.password = "Please enter a password";
   }
-  //if the "errors" object is empty, the form is valid and ok to submit
+  //if the 'errors' object is empty, the form is valid and ok to submit
   return errors;
 }
 
 const mapStateToProps = state => ({ error: state.error });
 
-export default reduxForm({
-  validate,
-  //value of "form" must be unique
-  form: "LoginForm"
-})(
+export default compose(
+  withStyles(styles, {
+    name: "Login"
+  }),
+  reduxForm({
+    validate,
+    //value of 'form' must be unique
+    form: "LoginForm"
+  }),
   connect(
     mapStateToProps,
     { userLogin }
-  )(Login)
-);
+  )
+)(Login);

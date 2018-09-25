@@ -1,4 +1,4 @@
-html,
+/* html,
 body {
   height: 100vh;
   font-family: "Roboto", sans-serif;
@@ -30,7 +30,6 @@ body {
 }
 .card-article {
   font-size: 1.2em;
-  /* white-space: pre-wrap; */
 }
 .card-link {
   color: inherit;
@@ -127,10 +126,4 @@ body {
   background-color: #fff;
   width: 60%;
   z-index: 3;
-}
-
-@media only screen and (max-width: 600px) {
-  .card{
-    height: 240px !important;
-  }
-}
+} */

@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link } from "react-router-dom";
@@ -15,9 +15,6 @@ import Button from "@material-ui/core/Button";
 import Edit from "@material-ui/icons/Edit";
 
 const styles = {
-  root: {
-    margin: 24
-  },
   fab: {
     position: "fixed",
     bottom: "2em",
@@ -38,7 +35,7 @@ class PostIndex extends Component {
   render() {
     const { error, isPending, posts, classes, isAuthenticated } = this.props;
     return (
-      <div className={classes.root}>
+      <Fragment>
         <Grid container spacing={24}>
           {//Show Error when there is any
           error && error.status ? <ErrorPage /> : null}
@@ -58,7 +55,7 @@ class PostIndex extends Component {
             </Button>
           )}
         </Grid>
-      </div>
+      </Fragment>
     );
   }
 }

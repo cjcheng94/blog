@@ -27,7 +27,7 @@ const styles = theme => ({
     backgroundColor: "hsl(187, 72%, 93%)"
   },
   author: {
-    margin: "1em 0"
+    margin: '10px 0'
   },
   article: {
     fontSize: "1.1em"
