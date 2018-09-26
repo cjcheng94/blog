@@ -14,11 +14,13 @@ import Snackbar from "@material-ui/core/Snackbar";
 import { compose } from "redux";
 
 const styles = {
+  toolBar:{
+    justifyContent: 'space-between'
+  },
   brand: {
     fontFamily: 'Notable, sans-serif',
     fontSize: "2.4em",
     textDecorationLine: 'none',
-    flexGrow: 1,
     marginTop: -16,
     textShadow: '0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)'
   },
@@ -52,9 +54,8 @@ class Header extends Component {
     return (
       <Fragment>
         <AppBar position="static">
-          <Toolbar>
+          <Toolbar className={classes.toolBar}>
             <Typography
-              variant="title"
               color="inherit"
               className={classes.brand}
               component={Link}
@@ -66,7 +67,7 @@ class Header extends Component {
             {/* Show different sets of buttons based on whether user is signed in or not*/}
             {isAuthenticated
             ? (
-              <Fragment>
+              <div>
                 <IconButton
                   aria-haspopup="true"
                   color="inherit"
@@ -82,10 +83,10 @@ class Header extends Component {
                 >
                   Log Out
                 </Button>
-              </Fragment>
+              </div>
             ) 
             : (
-              <Fragment>
+              <div>
                 <Button
                   aria-haspopup="true"
                   color="inherit"
@@ -102,7 +103,7 @@ class Header extends Component {
                 >
                   Sign Up
                 </Button>
-              </Fragment>
+              </div>
             )}
           </Toolbar>
         </AppBar>

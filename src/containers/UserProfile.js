@@ -40,7 +40,7 @@ class UserProfile extends Component {
 
     return (
       <Fragment>
-        <Typography variant="headline" component="h2">
+        <Typography variant="headline" gutterBottom align="center">
           Posts By {userFilter}
         </Typography>
         {error && error.status ? <ErrorPage /> : null}

@@ -1,12 +1,29 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import { compose } from "redux";
+
 import Snackbar from "@material-ui/core/Snackbar";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import { withStyles } from "@material-ui/core";
 
 import Modal from "../components/modal";
 import ErrorPage from "../components/errorPage";
 import { updatePost, fetchPost } from "../actions/posts";
+
+const styles = {
+  formEdit: {
+    maxWidth: 1000,
+    margin: "0px auto"
+  },
+  button: {
+    marginTop: 20,
+    marginRight: 20
+  }
+};
 
 class PostUpdate extends Component {
   constructor(props) {
@@ -39,40 +56,42 @@ class PostUpdate extends Component {
     });
   }
 
-  //Redux Form's renderField() method
+  //For Redux Form's Field Component
   renderField(field) {
-    //Provide "invalid" classNames when a field is both 'touched',
+    //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
     //and has 'error', which is an object returned by the validate() function.
     const {
       meta: { touched, error },
       input: { name }
     } = field;
-    const className = `${touched && error ? "invalid" : ""}`;
-    const txtAreaClassName = `materialize-textarea edit-textarea ${className}`;
     if (name === "content") {
       return (
-        <div className="input-field col s12" id="contentDiv">
-          <textarea
-            className={txtAreaClassName}
-            id={name}
-            type="text"
-            {...field.input}
-          />
-          <label className="active" htmlFor={name}>
-            {name}
-          </label>
-          <span className="helper-text red-text">{touched ? error : ""}</span>
-        </div>
+        <TextField
+          label={name}
+          helperText={touched ? error : ""}
+          error={!!(touched && error)}
+          multiline
+          rows="4"
+          rowsMax="900"
+          margin="normal"
+          type="text"
+          variant="outlined"
+          fullWidth
+          {...field.input}
+        />
       );
     }
     return (
-      <div className="input-field col s6">
-        <input className={className} id={name} type="text" {...field.input} />
-        <label className="active" htmlFor={name}>
-          {name}
-        </label>
-        <span className="helper-text red-text">{touched ? error : ""}</span>
-      </div>
+      <TextField
+        label={name}
+        helperText={touched ? error : ""}
+        error={!!(touched && error)}
+        margin="normal"
+        type="text"
+        variant="outlined"
+        fullWidth
+        {...field.input}
+      />
     );
   }
 
@@ -102,15 +121,18 @@ class PostUpdate extends Component {
   }
   render() {
     // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit, stateError } = this.props;
+    const { handleSubmit, stateError, classes } = this.props;
     return (
-      <div className="container">
+      <Fragment>
         <form
+          className={classes.formEdit}
           onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
           // this.onComponentSubmit() referes to the method of this component
-          className="col s12"
         >
+          <Typography variant="headline" gutterBottom align="center">
+            Edit Your Story
+          </Typography>
           {this.state.showModal ? (
             <Modal
               message="Submit changes?"
@@ -124,27 +146,25 @@ class PostUpdate extends Component {
             <ErrorPage type="postUpdate" />
           ) : null}
 
-          <div className="row">
-            <Field name="title" component={this.renderField} />
-          </div>
-          <div className="row">
-            <Field name="content" component={this.renderField} />
-          </div>
-          <div className=" col s12">
-            <button
-              className="btn waves-effect waves-light from-btn cyan darken-1"
-              onClick={this.handleModalShow.bind(this)}
-              type="button"
-            >
-              Submit
-            </button>
-            <Link
-              className="btn waves-effect waves-light red lighten-1 from-btn"
-              to="/"
-            >
-              Back
-            </Link>
-          </div>
+          <Field name="title" component={this.renderField} />
+          <Field name="content" component={this.renderField} />
+          <Button
+            className={classes.button}
+            onClick={this.handleModalShow.bind(this)}
+            variant="contained"
+            color="primary"
+          >
+            Submit
+          </Button>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="secondary"
+            component={Link}
+            to="/"
+          >
+            Back
+          </Button>
         </form>
         <Snackbar
           anchorOrigin={{
@@ -159,7 +179,7 @@ class PostUpdate extends Component {
           }}
           message={<span id="message-id">Update successful!</span>}
         />
-      </div>
+      </Fragment>
     );
   }
 }
@@ -189,14 +209,16 @@ const mapStateToProps = ({ error, posts, isPending }, ownProps) => ({
 });
 
 //See https://redux-form.com/7.4.2/examples/initializefromstate/
-PostUpdate = reduxForm({
-  validate,
-  form: "PostEditForm"
-})(PostUpdate);
-
-PostUpdate = connect(
-  mapStateToProps,
-  { fetchPost, updatePost }
+export default compose(
+  withStyles(styles, {
+    name: "PostUpdate"
+  }),
+  connect(
+    mapStateToProps,
+    { fetchPost, updatePost }
+  ),
+  reduxForm({
+    validate,
+    form: "PostEditForm"
+  })
 )(PostUpdate);
-
-export default PostUpdate;

@@ -1,54 +1,76 @@
-import React, { Component } from "react";
+import React, { Component, Fragment } from "react";
 import { Field, reduxForm } from "redux-form";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
+import { compose } from "redux";
+
 import Snackbar from "@material-ui/core/Snackbar";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import Typography from "@material-ui/core/Typography";
+import { withStyles } from "@material-ui/core";
 
 import ErrorPage from "../components/errorPage";
 import { createPost } from "../actions/posts";
 
+
+const styles = {
+  formNew: {
+    maxWidth: 1000,
+    margin: '0px auto'
+  },
+  button: {
+    marginTop: 20,
+    marginRight: 20
+  }
+}
 class PostNew extends Component {
   state = {
     open: false
   };
   showAlert() {
-    this.setState({open: true});
+    this.setState({ open: true });
   }
   hideAlert() {
-    this.setState({open: false});
+    this.setState({ open: false });
   }
 
-  //Redux Form's renderField() method
+  //For Redux Form's Field Component
   renderField(field) {
-    //Provide "invalid" classNames when a field is both 'touched',
+    //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
     //and has 'error', which is an object returned by the validate() function.
     const {
       input: { name },
       meta: { touched, error }
     } = field;
-    const className = `${touched && error ? "invalid" : ""}`;
-    const txtAreaClassName = `materialize-textarea ${className}`;
-
     if (name === "content") {
       return (
-        <div className="input-field col s12" id="contentDiv">
-          <textarea
-            className={txtAreaClassName}
-            id={name}
-            type="text"
-            {...field.input}
-          />
-          <label htmlFor={name}>{name}</label>
-          <span className="helper-text red-text">{touched ? error : ""}</span>
-        </div>
+        <TextField
+          label={name}
+          helperText={touched ? error : ""}
+          error={!!(touched && error)}
+          multiline
+          rows="4"
+          rowsMax="900"
+          margin="normal"
+          type="text"
+          variant="outlined"
+          fullWidth
+          {...field.input}
+        />
       );
     }
     return (
-      <div className="input-field col s6">
-        <input className={className} id={name} type="text" {...field.input} />
-        <label htmlFor={name}>{name}</label>
-        <span className="helper-text red-text">{touched ? error : ""}</span>
-      </div>
+      <TextField
+        label={name}
+        helperText={touched ? error : ""}
+        error={!!(touched && error)}
+        margin="normal"
+        type="text"
+        variant="outlined"
+        fullWidth
+        {...field.input}
+      />
     );
   }
 
@@ -63,40 +85,44 @@ class PostNew extends Component {
 
   render() {
     // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit, error, isPending } = this.props;
-    const isDisabled = isPending ? "disabled" : "";
-    
+    const { handleSubmit, error, classes } = this.props;
+
     return (
-      <div className="container">
-        {
-          //error here refers to state error
-          error && error.status ? <ErrorPage type="postNew" /> : null}
+      <Fragment>
+        {//error here refers to state error
+        error && error.status ? <ErrorPage type="postNew" /> : null}
+        <Typography
+          variant='headline'
+          gutterBottom
+          align='center'
+        >
+          Write Your Story
+        </Typography>
         <form
+          className={classes.formNew}
           onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
           // this.onComponentSubmit() referes to the method of this component
-          className="col s12"
         >
-          <div className="row">
-            <Field name="title" component={this.renderField} />
-          </div>
-          <div className="row">
-            <Field name="content" component={this.renderField} />
-          </div>
-          <div className=" col s12">
-            <button
-              className={`btn waves-effect waves-light from-btn cyan darken-1 ${isDisabled}`}
-              type="submit"
-            >
-              Submit
-            </button>
-            <Link
-              className="btn waves-effect waves-light red lighten-1 from-btn"
-              to="/"
-            >
-              Back
-            </Link>
-          </div>
+          <Field name="title" component={this.renderField} />
+          <Field name="content" component={this.renderField} />
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
+            Submit
+          </Button>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="secondary"
+            component={Link}
+            to="/"
+          >
+            Back
+          </Button>
         </form>
         <Snackbar
           anchorOrigin={{
@@ -111,7 +137,7 @@ class PostNew extends Component {
           }}
           message={<span id="message-id">Create new post successfull!</span>}
         />
-      </div>
+      </Fragment>
     );
   }
 }
@@ -131,18 +157,22 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({isPending , error}) => ({
+const mapStateToProps = ({ isPending, error }) => ({
   isPending,
   error
 });
 
-export default reduxForm({
-  validate,
-  //value of "form" must be unique
-  form: "PostsNewForm"
-})(
+export default compose(
+  withStyles(styles, {
+    name: "PostNew"
+  }),
+  reduxForm({
+    validate,
+    //value of "form" must be unique
+    form: "PostsNewForm"
+  }),
   connect(
     mapStateToProps,
     { createPost }
-  )(PostNew)
-);
+  )
+)(PostNew);

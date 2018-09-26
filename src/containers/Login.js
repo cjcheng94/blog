@@ -2,6 +2,7 @@ import React, { Component, Fragment } from "react";
 import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { compose } from "redux";
+
 import Snackbar from "@material-ui/core/Snackbar";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
@@ -19,9 +20,6 @@ const styles = {
   button: {
     display: "block",
     margin: "30px auto"
-  },
-  KAGGIGER: {
-    color: "red"
   }
 }
 
