@@ -1,5 +1,6 @@
 import React from "react";
 import { DiscussionEmbed } from "disqus-react";
+import  Divider  from "@material-ui/core/Divider";
 
 export default class DisqueComment extends React.Component {
   render() {
@@ -12,7 +13,7 @@ export default class DisqueComment extends React.Component {
 
     return (
       <div className="comments">
-        <div className="divider" style={{ marginTop: "120px" }} />
+        <Divider style={{margin:'40px 0'}}/>
         <small>
           Comments powered by Disqus (需梯子访问)
           <span role="img" aria-label="smilling emoji">

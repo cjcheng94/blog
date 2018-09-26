@@ -11,6 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core";
 
 import ErrorPage from "../components/errorPage";
+import AlertDialogSlide from "../components/alertDialog";
 import { createPost } from "../actions/posts";
 
 
@@ -25,16 +26,30 @@ const styles = {
   }
 }
 class PostNew extends Component {
-  state = {
-    open: false
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      showAlertDialogSlide: false,
+      showAlert: false,
+      clickedConfirm: false
+    };
+  }
   showAlert() {
-    this.setState({ open: true });
+    this.setState({ showAlert: true });
   }
   hideAlert() {
-    this.setState({ open: false });
+    this.setState({ showAlert: false });
   }
-
+  handleAlertDialogSlideShow() {
+    this.setState({
+      showAlertDialogSlide: true
+    });
+  }
+  handleAlertDialogSlideHide() {
+    this.setState({
+      showAlertDialogSlide: false
+    });
+  }
   //For Redux Form's Field Component
   renderField(field) {
     //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
@@ -99,6 +114,7 @@ class PostNew extends Component {
           Write Your Story
         </Typography>
         <form
+          id='create-form'
           className={classes.formNew}
           onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
@@ -108,9 +124,9 @@ class PostNew extends Component {
           <Field name="content" component={this.renderField} />
           <Button
             className={classes.button}
+            onClick={this.handleAlertDialogSlideShow.bind(this)}
             variant="contained"
             color="primary"
-            type="submit"
           >
             Submit
           </Button>
@@ -124,12 +140,20 @@ class PostNew extends Component {
             Back
           </Button>
         </form>
+        <AlertDialogSlide
+            dialogTitle="Create Story?"
+            open={this.state.showAlertDialogSlide}
+            handleClose={this.handleAlertDialogSlideHide.bind(this)}
+            isDisabled={this.state.clickedConfirm}
+            formId='create-form'
+            type='submit'
+          />
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
             horizontal: "left"
           }}
-          open={this.state.open}
+          open={this.state.showAlert}
           autoHideDuration={4000}
           onClose={this.hideAlert.bind(this)}
           ContentProps={{

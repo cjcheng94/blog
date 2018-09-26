@@ -10,7 +10,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core";
 
-import Modal from "../components/modal";
+import AlertDialogSlide from "../components/alertDialog";
 import ErrorPage from "../components/errorPage";
 import { updatePost, fetchPost } from "../actions/posts";
 
@@ -29,15 +29,10 @@ class PostUpdate extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
-      showAlert: false
+      showAlertDialogSlide: false,
+      showAlert: false,
+      clickedConfirm: false
     };
-  }
-  showAlert() {
-    this.setState({ showAlert: true });
-  }
-  hideAlert() {
-    this.setState({ showAlert: false });
   }
   componentDidMount() {
     //If all posts are already fetched, then don't waste network usage to fetch it again,
@@ -45,14 +40,20 @@ class PostUpdate extends Component {
     const { _id } = this.props.match.params;
     this.props.fetchPost(_id);
   }
-  handleModalShow() {
+  showAlert() {
+    this.setState({ showAlert: true });
+  }
+  hideAlert() {
+    this.setState({ showAlert: false });
+  }
+  handleAlertDialogSlideShow() {
     this.setState({
-      showModal: true
+      showAlertDialogSlide: true
     });
   }
-  handleModalHide() {
+  handleAlertDialogSlideHide() {
     this.setState({
-      showModal: false
+      showAlertDialogSlide: false
     });
   }
 
@@ -96,6 +97,9 @@ class PostUpdate extends Component {
   }
 
   onComponentSubmit(values) {
+    //Disable confirm button once it's clicked
+    this.setState({ clickedConfirm: true });
+
     const { _id } = this.props.match.params;
     //Map changes into an array that looks like this:
     // [
@@ -125,6 +129,7 @@ class PostUpdate extends Component {
     return (
       <Fragment>
         <form
+          id="update-form"
           className={classes.formEdit}
           onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
@@ -133,14 +138,7 @@ class PostUpdate extends Component {
           <Typography variant="headline" gutterBottom align="center">
             Edit Your Story
           </Typography>
-          {this.state.showModal ? (
-            <Modal
-              message="Submit changes?"
-              handleModalHide={this.handleModalHide.bind(this)}
-              buttonType="submit"
-              isPending={this.props.isPending}
-            />
-          ) : null}
+
           {//stateError can not be named "error" here, it will conflict with Redux Form's "error"
           stateError && stateError.status ? (
             <ErrorPage type="postUpdate" />
@@ -150,7 +148,7 @@ class PostUpdate extends Component {
           <Field name="content" component={this.renderField} />
           <Button
             className={classes.button}
-            onClick={this.handleModalShow.bind(this)}
+            onClick={this.handleAlertDialogSlideShow.bind(this)}
             variant="contained"
             color="primary"
           >
@@ -166,6 +164,14 @@ class PostUpdate extends Component {
             Back
           </Button>
         </form>
+        <AlertDialogSlide
+            dialogTitle="Submit changes?"
+            open={this.state.showAlertDialogSlide}
+            handleClose={this.handleAlertDialogSlideHide.bind(this)}
+            isDisabled={this.state.clickedConfirm}
+            formId='update-form'
+            type='submit'
+          />
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
@@ -199,12 +205,11 @@ function validate(values) {
   return errors;
 }
 
-const mapStateToProps = ({ error, posts, isPending }, ownProps) => ({
+const mapStateToProps = ({ error, posts }, ownProps) => ({
   //Provide initialValues to prepopulate the form
   //See https://redux-form.com/7.4.2/examples/initializefromstate/
   initialValues: posts[ownProps.match.params._id],
   posts: posts[ownProps.match.params._id],
-  isPending,
   stateError: error
 });
 

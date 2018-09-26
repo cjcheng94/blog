@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import Edit from "@material-ui/icons/Edit";
 
 import DisqueComment from "../components/disqus";
-import Modal from "../components/modal";
+import AlertDialogSlide from "../components/alertDialog";
 import ErrorPage from "../components/errorPage";
 import { fetchPost, deletePost } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
@@ -27,22 +27,22 @@ const styles = theme => ({
     color: "#000"
   },
   content: {
-    marginTop: theme.spacing.unit*2,
-    marginBottom: theme.spacing.unit*2,
+    marginTop: theme.spacing.unit * 2,
+    marginBottom: theme.spacing.unit * 2,
     fontSize: 18,
     whiteSpace: "pre-wrap",
     lineHeight: 1.58,
     letterSpacing: -"0.003em"
   },
-  author:{
-    "&:visited":{
-      color: 'blue'
+  author: {
+    "&:visited": {
+      color: "blue"
     }
   },
   button: {
-    marginTop: theme.spacing.unit*2,
+    marginTop: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit,
-    fontWeight: 'bold'
+    fontWeight: "bold"
   },
   fab: {
     position: "fixed",
@@ -55,18 +55,11 @@ class PostDetails extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      showModal: false,
-      showAlert: false
+      showAlertDialogSlide: false,
+      showAlert: false,
+      clickedConfirm: false
     };
   }
-
-  showAlert() {
-    this.setState({ showAlert: true });
-  }
-  hideAlert() {
-    this.setState({ showAlert: false });
-  }
-
   componentDidMount() {
     //Reset to top of the page
     window.scrollTo(0, 0);
@@ -77,20 +70,31 @@ class PostDetails extends Component {
       this.props.fetchPost(_id);
     }
   }
-
-  handleModalShow() {
+  componentWillUnmount() {
+    //Clear the progress bar on unmount
+    this.props.clearLoader();
+  }
+  showAlert() {
+    this.setState({ showAlert: true });
+  }
+  hideAlert() {
+    this.setState({ showAlert: false });
+  }
+  handleAlertDialogSlideShow() {
     this.setState({
-      showModal: true
+      showAlertDialogSlide: true
     });
   }
-  handleModalHide() {
+  handleAlertDialogSlideHide() {
     this.setState({
-      showModal: false
+      showAlertDialogSlide: false
     });
   }
 
   handleDelete() {
     const { _id } = this.props.match.params;
+    //Disable confirm button once it's clicked
+    this.setState({clickedConfirm: true})
     this.props.deletePost(_id, () => {
       this.showAlert();
       setTimeout(() => {
@@ -99,10 +103,6 @@ class PostDetails extends Component {
     });
   }
 
-  componentWillUnmount() {
-    //Clear the progress bar on unmount
-    this.props.clearLoader();
-  }
   render() {
     // Show error page if any
     const { error, classes } = this.props;
@@ -114,7 +114,9 @@ class PostDetails extends Component {
     }
 
     const { title, author, content, date } = this.props.posts;
-    const {user:{isAuthenticated}} = this.props;
+    const {
+      user: { isAuthenticated }
+    } = this.props;
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
     //Extract post id from url, and compose url for editing page
@@ -124,22 +126,17 @@ class PostDetails extends Component {
     return (
       <Fragment>
         <div className={classes.wrapper}>
-          {this.state.showModal ? (
-            <Modal
-              handler={this.handleDelete.bind(this)}
-              handleModalHide={this.handleModalHide.bind(this)}
-              message="Are you sure you want to delete this article?"
-              isPending={this.props.isPending}
-            />
-          ) : null}
-
+          
           {error && error.status ? <ErrorPage type="postDetail" /> : null}
 
           <Typography variant="display2" className={classes.title} gutterBottom>
             {title}
           </Typography>
           <Typography variant="body2">
-            By <Link className={classes.author} to={`/user/profile/${author}`}>{author}</Link>
+            By{" "}
+            <Link className={classes.author} to={`/user/profile/${author}`}>
+              {author}
+            </Link>
           </Typography>
           <Typography variant="body2" gutterBottom>
             {postTime}
@@ -148,13 +145,12 @@ class PostDetails extends Component {
           <Typography variant="body1" className={classes.content}>
             {content}
           </Typography>
-          <Divider />
 
           {author === this.props.user.username ? (
             <Fragment>
               <Button
                 className={classes.button}
-                onClick={this.handleModalShow.bind(this)}
+                onClick={this.handleAlertDialogSlideShow.bind(this)}
                 variant="contained"
                 color="secondary"
               >
@@ -172,17 +168,24 @@ class PostDetails extends Component {
             </Fragment>
           ) : null}
           {isAuthenticated && (
-              <Button
-                variant="fab"
-                color="secondary"
-                aria-label="Edit"
-                className={classes.fab}
-                component={Link}
-                to="/posts/new"
-              >
-                <Edit />
-              </Button>
-            )}
+            <Button
+              variant="fab"
+              color="secondary"
+              aria-label="Edit"
+              className={classes.fab}
+              component={Link}
+              to="/posts/new"
+            >
+              <Edit />
+            </Button>
+          )}
+          <AlertDialogSlide
+            dialogTitle="Delete this Article?"
+            open={this.state.showAlertDialogSlide}
+            handleClose={this.handleAlertDialogSlideHide.bind(this)}
+            handleConfirm={this.handleDelete.bind(this)}
+            isDisabled={this.state.clickedConfirm}
+          />
           <Snackbar
             anchorOrigin={{
               vertical: "bottom",
@@ -204,12 +207,11 @@ class PostDetails extends Component {
   }
 }
 
-function mapStateToProps({ posts, user, error, isPending }, ownProps) {
+function mapStateToProps({ posts, user, error }, ownProps) {
   return {
     //Filter posts by id (from url) to find the post we're looking for
     posts: posts[ownProps.match.params._id],
     user,
-    isPending,
     error
   };
 }

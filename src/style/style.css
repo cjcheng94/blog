@@ -58,7 +58,7 @@ body {
 .detail-buttons * {
   margin-right: 12px;
 }
-.modal {
+.alertDialog {
   display: block !important;
   z-index: 2;
 }
@@ -87,7 +87,7 @@ body {
   width: 100%;
   height: 4px;
 }
-.modal-container {
+.alertDialog-container {
   position: fixed;
   width: 100%;
   height: 100%;
@@ -98,7 +98,7 @@ body {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 2;
 }
-.modal {
+.alertDialog {
   position: absolute;
   top: 30%;
 }
