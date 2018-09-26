@@ -11,7 +11,7 @@ import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core";
 
 import AlertDialogSlide from "../components/alertDialog";
-import ErrorPage from "../components/errorPage";
+import ErrorAlert from "../components/errorAlert";
 import { updatePost, fetchPost } from "../actions/posts";
 
 const styles = {
@@ -141,7 +141,7 @@ class PostUpdate extends Component {
 
           {//stateError can not be named "error" here, it will conflict with Redux Form's "error"
           stateError && stateError.status ? (
-            <ErrorPage type="postUpdate" />
+            <ErrorAlert type="postUpdate" />
           ) : null}
 
           <Field name="title" component={this.renderField} />

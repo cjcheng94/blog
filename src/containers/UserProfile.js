@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link } from "react-router-dom";
-import ErrorPage from "../components/errorPage";
+import ErrorAlert from "../components/errorAlert";
 import Cards from "../components/cards";
 import { fetchPosts } from "../actions/posts";
 
@@ -43,7 +43,7 @@ class UserProfile extends Component {
         <Typography variant="headline" gutterBottom align="center">
           Posts By {userFilter}
         </Typography>
-        {error && error.status ? <ErrorPage /> : null}
+        {error && error.status ? <ErrorAlert /> : null}
         <Grid container spacing={24}>
           <Fragment>
             <Cards posts={userPosts} />

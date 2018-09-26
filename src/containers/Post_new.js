@@ -10,7 +10,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core";
 
-import ErrorPage from "../components/errorPage";
+import ErrorAlert from "../components/errorAlert";
 import AlertDialogSlide from "../components/alertDialog";
 import { createPost } from "../actions/posts";
 
@@ -104,8 +104,8 @@ class PostNew extends Component {
 
     return (
       <Fragment>
-        {//error here refers to state error
-        error && error.status ? <ErrorPage type="postNew" /> : null}
+
+        {error && error.status ? <ErrorAlert type="postNew" /> : null}
         <Typography
           variant='headline'
           gutterBottom

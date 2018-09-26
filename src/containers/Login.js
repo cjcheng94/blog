@@ -9,7 +9,7 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core";
 
-import ErrorPage from "../components/errorPage";
+import ErrorAlert from "../components/errorAlert";
 import { userLogin } from "../actions/user";
 
 const styles = {
@@ -71,7 +71,7 @@ class Login extends Component {
     return (
       <Fragment>
         {//the 'error' here refers to the error in the application state(store)
-        error && error.status ? <ErrorPage type="login" /> : null}
+        error && error.status ? <ErrorAlert type="login" /> : null}
         <div className={classes.wrapper}>
           <Typography variant="display2" align="center">
             Log in

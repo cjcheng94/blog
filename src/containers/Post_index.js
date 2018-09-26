@@ -2,7 +2,7 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link } from "react-router-dom";
-import ErrorPage from "../components/errorPage";
+import ErrorAlert from "../components/errorAlert";
 import Cards from "../components/cards";
 import CardPlaceHolder from "../components/cardPlaceholder";
 
@@ -38,7 +38,7 @@ class PostIndex extends Component {
       <Fragment>
         <Grid container spacing={24}>
           {//Show Error when there is any
-          error && error.status ? <ErrorPage /> : null}
+          error && error.status ? <ErrorAlert /> : null}
           {//Show placeholders when loading
           isPending ? <CardPlaceHolder /> : <Cards posts={posts} />}
           {//Show Write new FAB when user is authenticated

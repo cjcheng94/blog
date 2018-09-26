@@ -8,7 +8,7 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 import { withStyles } from "@material-ui/core";
 
-import ErrorPage from "../components/errorPage";
+import ErrorAlert from "../components/errorAlert";
 import { userSignup } from "../actions/user";
 
 const styles = {
@@ -54,7 +54,7 @@ class Signup extends Component {
       meta: { touched, error }
     } = field;
     const type = name === "username" ? "text" : "password";
-    const label = name === "password" ? "Password" : "Username";
+    const label = name === "username" ? "Username" : "Password";
 
     return (
       <TextField
@@ -73,7 +73,7 @@ class Signup extends Component {
     return (
       <Fragment>
         {//the "error" here refers to the error in the application state(store)
-        error && error.status ? <ErrorPage type="signup" /> : null}
+        error && error.status ? <ErrorAlert type="signup" /> : null}
         <div className={classes.wrapper}>
           <Typography variant="display2" align="center">
             Sign up

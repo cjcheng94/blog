@@ -12,7 +12,7 @@ import Edit from "@material-ui/icons/Edit";
 
 import DisqueComment from "../components/disqus";
 import AlertDialogSlide from "../components/alertDialog";
-import ErrorPage from "../components/errorPage";
+import ErrorAlert from "../components/errorAlert";
 import { fetchPost, deletePost } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
 
@@ -107,8 +107,8 @@ class PostDetails extends Component {
     // Show error page if any
     const { error, classes } = this.props;
     if (!this.props.posts) {
-      if (error && error.status) {
-        return <ErrorPage type="postDetail" />;
+      if (error.status) {
+        return <ErrorAlert type="postDetail" />
       }
       return null;
     }
@@ -127,7 +127,7 @@ class PostDetails extends Component {
       <Fragment>
         <div className={classes.wrapper}>
           
-          {error && error.status ? <ErrorPage type="postDetail" /> : null}
+          {error && error.status ? <ErrorAlert type="postDetail" /> : null}
 
           <Typography variant="display2" className={classes.title} gutterBottom>
             {title}
@@ -145,7 +145,6 @@ class PostDetails extends Component {
           <Typography variant="body1" className={classes.content}>
             {content}
           </Typography>
-
           {author === this.props.user.username ? (
             <Fragment>
               <Button
