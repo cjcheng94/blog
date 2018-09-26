@@ -2,15 +2,16 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link } from "react-router-dom";
-import ErrorAlert from "../components/errorAlert";
-import Cards from "../components/cards";
-import { fetchPosts } from "../actions/posts";
 
+import { withStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
-import { withStyles } from "@material-ui/core";
 import Edit from "@material-ui/icons/Edit";
+
+import ErrorAlert from "../components/errorAlert";
+import Cards from "../components/cards";
+import { fetchPosts } from "../actions/posts";
 
 const styles = {
   fab: {

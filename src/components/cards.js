@@ -2,12 +2,13 @@ import React, { Component } from "react";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
 
+import { withStyles } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-import { withStyles } from "@material-ui/core/styles";
+
 
 const styles = theme => ({
   card: {
@@ -24,7 +25,7 @@ const styles = theme => ({
     paddingLeft: 2,
     paddingRight: 4,
     fontWeight: 700,
-    backgroundColor: "hsl(187, 72%, 93%)"
+    backgroundColor: "hsl(230, 100%, 94%)"
   },
   author: {
     margin: '10px 0'

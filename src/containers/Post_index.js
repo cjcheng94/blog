@@ -2,17 +2,18 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link } from "react-router-dom";
+
+import { withStyles } from "@material-ui/core";
 import ErrorAlert from "../components/errorAlert";
 import Cards from "../components/cards";
 import CardPlaceHolder from "../components/cardPlaceholder";
 
-import { fetchPosts } from "../actions/posts";
-import { clearLoader } from "../actions/clearLoader";
-
-import { withStyles } from "@material-ui/core";
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
 import Edit from "@material-ui/icons/Edit";
+
+import { fetchPosts } from "../actions/posts";
+import { clearLoader } from "../actions/clearLoader";
 
 const styles = {
   fab: {

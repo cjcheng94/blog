@@ -1,7 +1,10 @@
 import React, { Fragment } from "react";
-import Header from "../containers/Header";
+
 import { withStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
+
+import Header from "../containers/Header";
+
 const styles = {
   nmAppbar: {
     position: "fixed",

@@ -4,6 +4,7 @@ import { compose } from "redux";
 import { Link } from "react-router-dom";
 import moment from "moment";
 
+import { withStyles } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
@@ -16,7 +17,7 @@ import ErrorAlert from "../components/errorAlert";
 import { fetchPost, deletePost } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
 
-import { withStyles } from "@material-ui/core";
+
 
 const styles = theme => ({
   wrapper: {

@@ -3,11 +3,11 @@ import { Field, reduxForm } from "redux-form";
 import { connect } from "react-redux";
 import { compose } from "redux";
 
+import { withStyles } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
-import { withStyles } from "@material-ui/core";
 
 import ErrorAlert from "../components/errorAlert";
 import { userLogin } from "../actions/user";

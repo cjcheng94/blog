@@ -1,7 +1,8 @@
 import React, { Component, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { userLogout } from "../actions/user";
+import { compose } from "redux";
+
 import { withStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
@@ -11,7 +12,8 @@ import AccountCircle from "@material-ui/icons/AccountCircle";
 import Button from "@material-ui/core/Button";
 import LinearProgress from "@material-ui/core/LinearProgress";
 import Snackbar from "@material-ui/core/Snackbar";
-import { compose } from "redux";
+
+import { userLogout } from "../actions/user";
 
 const styles = {
   toolBar:{
