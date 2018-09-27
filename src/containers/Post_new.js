@@ -10,44 +10,41 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
-import ErrorAlert from "../components/errorAlert";
-import AlertDialogSlide from "../components/alertDialog";
+import ErrorAlert from "../containers/ErrorAlert";
+import CustomDialog from "../components/customDialog";
 import { createPost } from "../actions/posts";
-
 
 const styles = {
   formNew: {
     maxWidth: 1000,
-    margin: '0px auto'
+    margin: "0px auto"
   },
   button: {
     marginTop: 20,
     marginRight: 20
   }
-}
+};
 class PostNew extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showAlertDialogSlide: false,
-      showAlert: false,
-      clickedConfirm: false
-    };
-  }
+  state = {
+    showCustomDialog: false,
+    showAlert: false,
+    clickedConfirm: false
+  };
+
   showAlert() {
     this.setState({ showAlert: true });
   }
   hideAlert() {
     this.setState({ showAlert: false });
   }
-  handleAlertDialogSlideShow() {
+  handleCustomDialogShow() {
     this.setState({
-      showAlertDialogSlide: true
+      showCustomDialog: true
     });
   }
-  handleAlertDialogSlideHide() {
+  handleCustomDialogHide() {
     this.setState({
-      showAlertDialogSlide: false
+      showCustomDialog: false
     });
   }
   //For Redux Form's Field Component
@@ -104,17 +101,12 @@ class PostNew extends Component {
 
     return (
       <Fragment>
-
         {error && error.status ? <ErrorAlert type="postNew" /> : null}
-        <Typography
-          variant='headline'
-          gutterBottom
-          align='center'
-        >
+        <Typography variant="headline" gutterBottom align="center">
           Write Your Story
         </Typography>
         <form
-          id='create-form'
+          id="create-form"
           className={classes.formNew}
           onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
@@ -124,7 +116,7 @@ class PostNew extends Component {
           <Field name="content" component={this.renderField} />
           <Button
             className={classes.button}
-            onClick={this.handleAlertDialogSlideShow.bind(this)}
+            onClick={this.handleCustomDialogShow.bind(this)}
             variant="contained"
             color="primary"
           >
@@ -140,14 +132,14 @@ class PostNew extends Component {
             Back
           </Button>
         </form>
-        <AlertDialogSlide
-            dialogTitle="Create Story?"
-            open={this.state.showAlertDialogSlide}
-            handleClose={this.handleAlertDialogSlideHide.bind(this)}
-            isDisabled={this.state.clickedConfirm}
-            formId='create-form'
-            type='submit'
-          />
+        <CustomDialog
+          dialogTitle="Create Story?"
+          open={this.state.showCustomDialog}
+          handleClose={this.handleCustomDialogHide.bind(this)}
+          isDisabled={this.state.clickedConfirm}
+          formId="create-form"
+          type="submit"
+        />
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",

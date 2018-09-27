@@ -8,16 +8,15 @@ import { withStyles } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import Typography from "@material-ui/core/Typography";
 import Divider from "@material-ui/core/Divider";
+import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import Edit from "@material-ui/icons/Edit";
 
 import DisqueComment from "../components/disqus";
-import AlertDialogSlide from "../components/alertDialog";
-import ErrorAlert from "../components/errorAlert";
+import CustomDialog from "../components/customDialog";
+import ErrorAlert from "../containers/ErrorAlert";
 import { fetchPost, deletePost } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
-
-
 
 const styles = theme => ({
   wrapper: {
@@ -53,14 +52,12 @@ const styles = theme => ({
 });
 
 class PostDetails extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showAlertDialogSlide: false,
-      showAlert: false,
-      clickedConfirm: false
-    };
-  }
+  state = {
+    showCustomDialog: false,
+    showAlert: false,
+    clickedConfirm: false
+  };
+
   componentDidMount() {
     //Reset to top of the page
     window.scrollTo(0, 0);
@@ -81,21 +78,21 @@ class PostDetails extends Component {
   hideAlert() {
     this.setState({ showAlert: false });
   }
-  handleAlertDialogSlideShow() {
+  handleCustomDialogShow() {
     this.setState({
-      showAlertDialogSlide: true
+      showCustomDialog: true
     });
   }
-  handleAlertDialogSlideHide() {
+  handleCustomDialogHide() {
     this.setState({
-      showAlertDialogSlide: false
+      showCustomDialog: false
     });
   }
 
   handleDelete() {
     const { _id } = this.props.match.params;
     //Disable confirm button once it's clicked
-    this.setState({clickedConfirm: true})
+    this.setState({ clickedConfirm: true });
     this.props.deletePost(_id, () => {
       this.showAlert();
       setTimeout(() => {
@@ -109,7 +106,7 @@ class PostDetails extends Component {
     const { error, classes } = this.props;
     if (!this.props.posts) {
       if (error.status) {
-        return <ErrorAlert type="postDetail" />
+        return <ErrorAlert type="postDetail" />;
       }
       return null;
     }
@@ -127,7 +124,6 @@ class PostDetails extends Component {
     return (
       <Fragment>
         <div className={classes.wrapper}>
-          
           {error && error.status ? <ErrorAlert type="postDetail" /> : null}
 
           <Typography variant="display2" className={classes.title} gutterBottom>
@@ -150,7 +146,7 @@ class PostDetails extends Component {
             <Fragment>
               <Button
                 className={classes.button}
-                onClick={this.handleAlertDialogSlideShow.bind(this)}
+                onClick={this.handleCustomDialogShow.bind(this)}
                 variant="contained"
                 color="secondary"
               >
@@ -168,21 +164,23 @@ class PostDetails extends Component {
             </Fragment>
           ) : null}
           {isAuthenticated && (
-            <Button
-              variant="fab"
-              color="secondary"
-              aria-label="Edit"
-              className={classes.fab}
-              component={Link}
-              to="/posts/new"
-            >
-              <Edit />
-            </Button>
+            <Tooltip title="Write a story">
+              <Button
+                variant="fab"
+                color="secondary"
+                aria-label="Edit"
+                className={classes.fab}
+                component={Link}
+                to="/posts/new"
+              >
+                <Edit />
+              </Button>
+            </Tooltip>
           )}
-          <AlertDialogSlide
+          <CustomDialog
             dialogTitle="Delete this Article?"
-            open={this.state.showAlertDialogSlide}
-            handleClose={this.handleAlertDialogSlideHide.bind(this)}
+            open={this.state.showCustomDialog}
+            handleClose={this.handleCustomDialogHide.bind(this)}
             handleConfirm={this.handleDelete.bind(this)}
             isDisabled={this.state.clickedConfirm}
           />

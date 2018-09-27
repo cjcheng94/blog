@@ -1,8 +1,8 @@
 //Router configuration
-import React, { Component, Fragment } from "react";
+import React, { Fragment } from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
-import CssBaseline from '@material-ui/core/CssBaseline';
+import CssBaseline from "@material-ui/core/CssBaseline";
 
 import Header from "../containers/Header";
 import PostNew from "../containers/Post_new";
@@ -68,42 +68,42 @@ const styles = {
     fontFamily: "Roboto, sans-serif"
   },
   pageComponent: {
+
     padding: 24
   }
 };
 
-class App extends Component {
-  render() {
-    const { classes } = this.props;
-    return (
-      <Fragment>
-        <CssBaseline />
-        <Router>
-          <div className={classes.root}>
-            {routes.map((route, index) => (
-              <Route
-                key={index}
-                path={route.path}
-                exact={route.exact}
-                component={route.sidebar}
-              />
-            ))}
-            <div className={classes.pageComponent}>
-              <Switch>
-                {routes.map((route, index) => (
-                  <Route
-                    key={index}
-                    path={route.path}
-                    exact={route.exact}
-                    component={route.main}
-                  />
-                ))}
-              </Switch>
-            </div>
+const App = props => {
+  const { classes } = props;
+  return (
+    <Fragment>
+      <CssBaseline />
+      <Router>
+        <div className={classes.root}>
+          {routes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              exact={route.exact}
+              component={route.sidebar}
+            />
+          ))}
+          <div className={classes.pageComponent}>
+            <Switch>
+              {routes.map((route, index) => (
+                <Route
+                  key={index}
+                  path={route.path}
+                  exact={route.exact}
+                  component={route.main}
+                />
+              ))}
+            </Switch>
           </div>
-        </Router>
-      </Fragment>
-    );
-  }
-}
+        </div>
+      </Router>
+    </Fragment>
+  );
+};
+
 export default withStyles(styles)(App);

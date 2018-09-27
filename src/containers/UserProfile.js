@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import Edit from "@material-ui/icons/Edit";
 
-import ErrorAlert from "../components/errorAlert";
+import ErrorAlert from "../containers/ErrorAlert";
 import Cards from "../components/cards";
 import { fetchPosts } from "../actions/posts";
 

@@ -4,12 +4,13 @@ import { compose } from "redux";
 import { Link } from "react-router-dom";
 
 import { withStyles } from "@material-ui/core";
-import ErrorAlert from "../components/errorAlert";
+import ErrorAlert from "../containers/ErrorAlert";
 import Cards from "../components/cards";
 import CardPlaceHolder from "../components/cardPlaceholder";
 
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
+import Tooltip from "@material-ui/core/Tooltip";
 import Edit from "@material-ui/icons/Edit";
 
 import { fetchPosts } from "../actions/posts";
@@ -44,16 +45,18 @@ class PostIndex extends Component {
           isPending ? <CardPlaceHolder /> : <Cards posts={posts} />}
           {//Show Write new FAB when user is authenticated
           isAuthenticated && (
-            <Button
-              variant="fab"
-              color="secondary"
-              aria-label="Edit"
-              className={classes.fab}
-              component={Link}
-              to="/posts/new"
-            >
-              <Edit />
-            </Button>
+            <Tooltip title="Write a story">
+              <Button
+                variant="fab"
+                color="secondary"
+                aria-label="Edit"
+                className={classes.fab}
+                component={Link}
+                to="/posts/new"
+              >
+                <Edit />
+              </Button>
+            </Tooltip>
           )}
         </Grid>
       </Fragment>

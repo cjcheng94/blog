@@ -38,7 +38,6 @@ const styles = theme => ({
 const CardPlaceHolders = (props)=> {
     const { classes } = props;
     const placeholders = [];
-    //this.props.posts is an object
     for (let i = 0; i < 12; i++) {
       placeholders.push(
         <Grid item xs={12} sm={6} md={4} lg={3} key={i}>

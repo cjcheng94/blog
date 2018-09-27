@@ -10,8 +10,8 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
-import AlertDialogSlide from "../components/alertDialog";
-import ErrorAlert from "../components/errorAlert";
+import CustomDialog from "../components/customDialog";
+import ErrorAlert from "../containers/ErrorAlert";
 import { updatePost, fetchPost } from "../actions/posts";
 
 const styles = {
@@ -26,14 +26,12 @@ const styles = {
 };
 
 class PostUpdate extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      showAlertDialogSlide: false,
-      showAlert: false,
-      clickedConfirm: false
-    };
-  }
+  state = {
+    showCustomDialog: false,
+    showAlert: false,
+    clickedConfirm: false
+  };
+
   componentDidMount() {
     //If all posts are already fetched, then don't waste network usage to fetch it again,
     //simply find the post by id in state
@@ -46,14 +44,14 @@ class PostUpdate extends Component {
   hideAlert() {
     this.setState({ showAlert: false });
   }
-  handleAlertDialogSlideShow() {
+  handleCustomDialogShow() {
     this.setState({
-      showAlertDialogSlide: true
+      showCustomDialog: true
     });
   }
-  handleAlertDialogSlideHide() {
+  handleCustomDialogHide() {
     this.setState({
-      showAlertDialogSlide: false
+      showCustomDialog: false
     });
   }
 
@@ -148,7 +146,7 @@ class PostUpdate extends Component {
           <Field name="content" component={this.renderField} />
           <Button
             className={classes.button}
-            onClick={this.handleAlertDialogSlideShow.bind(this)}
+            onClick={this.handleCustomDialogShow.bind(this)}
             variant="contained"
             color="primary"
           >
@@ -164,14 +162,14 @@ class PostUpdate extends Component {
             Back
           </Button>
         </form>
-        <AlertDialogSlide
-            dialogTitle="Submit changes?"
-            open={this.state.showAlertDialogSlide}
-            handleClose={this.handleAlertDialogSlideHide.bind(this)}
-            isDisabled={this.state.clickedConfirm}
-            formId='update-form'
-            type='submit'
-          />
+        <CustomDialog
+          dialogTitle="Submit changes?"
+          open={this.state.showCustomDialog}
+          handleClose={this.handleCustomDialogHide.bind(this)}
+          isDisabled={this.state.clickedConfirm}
+          formId="update-form"
+          type="submit"
+        />
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
