@@ -11,7 +11,7 @@ export const FETCH_POSTS_FULFILLED = "FETCH_POSTS_FULFILLED";
 export const FETCH_POST_FULFILLED = "FETCH_POST_FULFILLED";
 export const FETCH_PROFILE_FULFILLED = "FETCH_PROFILE_FULFILLED";
 
-const ROOT_URL = "https://alexsapiblog.herokuapp.com";
+const ROOT_URL = "https://alexsblogapi.herokuapp.com";
 
 //Fetchs all posts
 export function fetchPosts() {

@@ -7,7 +7,7 @@ export const USER_LOGOUT = "USER_LOGOUT";
 export const USER_LOGIN_FULFILLED = "USER_LOGIN_FULFILLED";
 export const USER_LOGIN_REJECTED = "USER_LOGIN_REJECTED";
 
-const ROOT_URL = "https://alexsapiblog.herokuapp.com";
+const ROOT_URL = "https://alexsblogapi.herokuapp.com";
 
 export function userSignup(signUpData, callback) {
   const request = axios({
