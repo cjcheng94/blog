@@ -17,7 +17,7 @@ const styles = theme => ({
     width: "100%"
   },
   title: {
-    height: 24,
+    height: 28,
     width: 150,
     backgroundColor: "hsl(230, 100%, 94%)"
   },
@@ -35,26 +35,26 @@ const styles = theme => ({
   }
 });
 
-const CardPlaceHolders = (props)=> {
-    const { classes } = props;
-    const placeholders = [];
-    for (let i = 0; i < 12; i++) {
-      placeholders.push(
-        <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
-          <CardActionArea className={classes.cardButton}>
-            <Card className={classes.card}>
-              <CardContent>
-                <div className={classes.title} />
-                <div className={classes.author} />
-                <div className={classes.article} />
-                <div className={classes.article} />
-                <div className={classes.article} />
-              </CardContent>
-            </Card>
-          </CardActionArea>
-        </Grid>
-      );
-    }    
-    return placeholders;
-}
+const CardPlaceHolders = props => {
+  const { classes } = props;
+  //Render 12 "empty" cards:
+  //Create an ITERABLE array with a length of 12, and then .map()
+  return [...Array(12)].map((e, i) => {
+    return (
+      <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+        <CardActionArea className={classes.cardButton}>
+          <Card className={classes.card}>
+            <CardContent>
+              <div className={classes.title} />
+              <div className={classes.author} />
+              <div className={classes.article} />
+              <div className={classes.article} />
+              <div className={classes.article} />
+            </CardContent>
+          </Card>
+        </CardActionArea>
+      </Grid>
+    );
+  });
+};
 export default withStyles(styles)(CardPlaceHolders);

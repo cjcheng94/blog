@@ -102,63 +102,67 @@ class Header extends Component {
             >
               {logo}
             </Typography>
-
+            
             {/* Show different sets of buttons based on whether user is signed in or not*/}
-            {isAuthenticated ? (
-              <div>
-                <Tooltip title="My Account">
-                  <IconButton
+            <div id="conditional-buttons">
+              {isAuthenticated ? (
+                <Fragment>
+                  <Tooltip title="My Account">
+                    <IconButton
+                      aria-haspopup="true"
+                      color="inherit"
+                      onClick={this.showMenu.bind(this)}
+                    >
+                      <AccountCircle />
+                    </IconButton>
+                  </Tooltip>
+                  
+                  <Menu
+                    id="simple-menu"
+                    anchorEl={anchorEl}
+                    open={!!anchorEl}
+                    onClose={this.hideMenu.bind(this)}
+                  >
+                    <MenuItem button={false}>{username}</MenuItem>
+                    <MenuItem component={Link} to={`/user/profile/${username}`}>
+                      My Posts
+                    </MenuItem>
+                    <MenuItem
+                      onClick={this.showCustomDialog.bind(this)}
+                      color="inherit"
+                    >
+                      Log Out
+                    </MenuItem>
+                  </Menu>
+                </Fragment>
+              ) : (
+                <Fragment>
+                  <Button
                     aria-haspopup="true"
                     color="inherit"
-                    onClick={this.showMenu.bind(this)}
+                    component={Link}
+                    to="/user/login"
                   >
-                    <AccountCircle />
-                  </IconButton>
-                </Tooltip>
-
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
-                  open={!!anchorEl}
-                  onClose={this.hideMenu.bind(this)}
-                >
-                  <MenuItem button={false}>{username}</MenuItem>
-                  <MenuItem component={Link} to={`/user/profile/${username}`}>
-                    My Posts
-                  </MenuItem>
-                  <MenuItem
-                    onClick={this.showCustomDialog.bind(this)}
+                    Log In
+                  </Button>
+                  <Button
+                    aria-haspopup="true"
                     color="inherit"
+                    component={Link}
+                    to="/user/signup"
                   >
-                    Log Out
-                  </MenuItem>
-                </Menu>
-              </div>
-            ) : (
-              <div>
-                <Button
-                  aria-haspopup="true"
-                  color="inherit"
-                  component={Link}
-                  to="/user/login"
-                >
-                  Log In
-                </Button>
-                <Button
-                  aria-haspopup="true"
-                  color="inherit"
-                  component={Link}
-                  to="/user/signup"
-                >
-                  Sign Up
-                </Button>
-              </div>
-            )}
+                    Sign Up
+                  </Button>
+                </Fragment>
+              )}
+            </div>
           </Toolbar>
+
           <div className={classes.progressContainer}>
             {/* Show Progress Bar */}
             {isPending && <LinearProgress color="secondary" />}
           </div>
+          
         </AppBar>
         {/* material-ui's Alert Component */}
         <Snackbar

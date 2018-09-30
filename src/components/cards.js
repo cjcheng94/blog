@@ -1,4 +1,5 @@
 import React from "react";
+import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
 
@@ -27,7 +28,8 @@ const styles = theme => ({
     backgroundColor: "hsl(230, 100%, 94%)"
   },
   author: {
-    margin: "10px 0"
+    margin: "8px 0",
+    fontSize: "0.8em"
   },
   article: {
     fontSize: "1.1em"
@@ -35,9 +37,13 @@ const styles = theme => ({
 });
 
 const Cards = props => {
-  const { classes } = props;
-  //this.props.posts is an object
-  return map(props.posts, post => {
+  const { classes, latestFirst } = props;
+
+  //Sort posts by time based on props.latestFirst
+  const order = latestFirst ? "desc" : "asc";
+  const ordered = orderBy(props.posts, ["date"], [order]);
+  
+  return map(ordered, post => {
     const url = `/posts/detail/${post._id}`;
     return (
       <Grid item xs={12} sm={6} md={4} lg={3} key={post._id}>
