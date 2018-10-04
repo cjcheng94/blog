@@ -53,7 +53,11 @@ export default function register() {
 }
 
 function registerValidSW(swUrl) {
-  navigator.serviceWorker
+  // From Alex:
+  // Make the whole registering process a promise, so later we can
+  // listen to it and alert user if a new version is available
+  window.isUpdateAvailable = new Promise(function(resolve, reject){
+    navigator.serviceWorker
     .register(swUrl)
     .then(registration => {
       registration.onupdatefound = () => {
@@ -65,12 +69,14 @@ function registerValidSW(swUrl) {
               // the fresh content will have been added to the cache.
               // It's the perfect time to display a "New content is
               // available; please refresh." message in your web app.
-              console.log('New content is available; please refresh.');
+              console.log('New content is available; please refresh. ');
+              resolve(true)
             } else {
               // At this point, everything has been precached.
               // It's the perfect time to display a
               // "Content is cached for offline use." message.
               console.log('Content is cached for offline use.');
+              resolve(false)
             }
           }
         };
@@ -79,6 +85,8 @@ function registerValidSW(swUrl) {
     .catch(error => {
       console.error('Error during service worker registration:', error);
     });
+  })
+  
 }
 
 function checkValidServiceWorker(swUrl) {

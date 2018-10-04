@@ -1,109 +1,80 @@
 //Router configuration
-import React, { Fragment } from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { withStyles } from "@material-ui/core";
+import React, { Component } from "react";
+
 import CssBaseline from "@material-ui/core/CssBaseline";
+import Snackbar from "@material-ui/core/Snackbar";
 
-import Header from "../containers/Header";
-import PostNew from "../containers/Post_new";
-import PostIndex from "../containers/Post_index";
-import PostDetails from "../containers/Post_details";
-import PostUpdate from "../containers/Post_update";
-import Login from "../containers/Login";
-import Signup from "../containers/Signup";
-import NoMatch from "../components/noMatch";
+import Routes from './routes'
 
-import AsyncComponent from "./AsyncComponent";
+export default class App extends Component {
+  state = {
+    showAlert: false,
+    alertMessage: "",
+    alertDuration: 0
+  };
+  componentDidMount() {
+    const isOnline = window.navigator.onLine;
 
-//As this app is quite small, we don't need to unnassisarily split the code into too many chunks,
-//but I'll leave AsyncUserProfile spit as a demonstration
-const AsyncUserProfile = AsyncComponent(() =>
-  import("../containers/UserProfile")
-);
+    caches.has("posts").then(isCached => {
+      if (isCached && isOnline) {
+        setTimeout(() => {
+          this.setState({
+            showAlert: true,
+            alertMessage: "Posts cached for offline use",
+            alertDuration: 2000
+          });
+        }, 1500);
+      } else if (isCached && !isOnline) {
+        setTimeout(() => {
+          this.setState({
+            showAlert: true,
+            alertMessage: "You are in offline mode",
+            alertDuration: 2000
+          });
+        }, 1500);
+      }
+    });
 
-const routes = [
-  {
-    path: "/posts/detail/:_id",
-    sidebar: Header,
-    main: PostDetails
-  },
-  {
-    path: "/posts/new",
-    sidebar: Header,
-    main: PostNew
-  },
-  {
-    path: "/posts/edit/:_id",
-    sidebar: Header,
-    main: PostUpdate
-  },
-  {
-    path: "/user/login",
-    sidebar: Header,
-    main: Login
-  },
-  {
-    path: "/user/signup",
-    sidebar: Header,
-    main: Signup
-  },
-  {
-    path: "/user/profile/:username",
-    sidebar: Header,
-    main: AsyncUserProfile
-  },
-  {
-    path: "/",
-    exact: true,
-    sidebar: Header,
-    main: PostIndex
-  },
-  {
-    main: NoMatch
+    setTimeout(() => {
+      try {
+        window.isUpdateAvailable.then(isAvailable => {
+          if (isAvailable) {
+            this.setState({
+              showAlert: true,
+              alertMessage: "New version available, please refresh!",
+              alertDuration: 2000
+            });
+          }
+        });
+      } catch (err) {
+        //ignore
+      }
+    }, 4000);
   }
-];
-
-const styles = {
-  root: {
-    fontFamily: "Roboto, sans-serif"
-  },
-  pageComponent: {
-
-    padding: 24
+  hideAlert() {
+    this.setState({ showAlert: false });
   }
-};
+  render() {
 
-const App = props => {
-  const { classes } = props;
-  return (
-    <Fragment>
-      <CssBaseline />
-      <Router>
-        <div className={classes.root}>
-          {routes.map((route, index) => (
-            <Route
-              key={index}
-              path={route.path}
-              exact={route.exact}
-              component={route.sidebar}
-            />
-          ))}
-          <div className={classes.pageComponent}>
-            <Switch>
-              {routes.map((route, index) => (
-                <Route
-                  key={index}
-                  path={route.path}
-                  exact={route.exact}
-                  component={route.main}
-                />
-              ))}
-            </Switch>
-          </div>
-        </div>
-      </Router>
-    </Fragment>
-  );
-};
-
-export default withStyles(styles)(App);
+    const { showAlert, alertMessage, alertDuration } = this.state;
+    return (
+      <div>
+        <CssBaseline />
+        <Routes />
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={showAlert}
+          autoHideDuration={alertDuration}
+          onClose={this.hideAlert.bind(this)}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">{alertMessage}</span>}
+        />
+      </div>
+    );
+  }
+}

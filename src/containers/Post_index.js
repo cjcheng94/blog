@@ -23,18 +23,18 @@ const styles = {
     bottom: "2em",
     right: "2em"
   },
-  switch:{
+  switch: {
     width: "100%",
     marginTop: "-12px",
     marginBottom: "-12px",
-    fontSize: '0.6em'
+    fontSize: "0.6em"
   }
 };
 
 class PostIndex extends Component {
-  state={
+  state = {
     orderChecked: false
-  }
+  };
   componentDidMount() {
     //Get posts on mount
     this.props.fetchPosts();
@@ -48,26 +48,30 @@ class PostIndex extends Component {
   };
   render() {
     const { error, isPending, posts, classes, isAuthenticated } = this.props;
-    const {orderChecked} = this.state;
+    const { orderChecked } = this.state;
     return (
       <Fragment>
         <Grid container spacing={24}>
-
           {//Show Error when there is any
           error && error.status ? <ErrorAlert /> : null}
 
           {/* Sorting switch */}
           <div className={classes.switch}>
             <Switch
-            checked={orderChecked}
-            onChange={this.handleChange('orderChecked')}
-            value="orderChecked"
-          />
-          Sorting by: {orderChecked? 'latest': 'oldest'} first
+              checked={orderChecked}
+              onChange={this.handleChange("orderChecked")}
+              value="orderChecked"
+            />
+            Sorting by:{" "}
+            <strong>{orderChecked ? "latest" : "oldest"} first</strong>
           </div>
 
           {//Show placeholders when loading
-          isPending ? <CardPlaceHolder /> : <Cards posts={posts} latestFirst={orderChecked} />}
+          isPending ? (
+            <CardPlaceHolder />
+          ) : (
+            <Cards posts={posts} latestFirst={orderChecked} />
+          )}
 
           {//Show Write-new FAB when user is authenticated
           isAuthenticated && (

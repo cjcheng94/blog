@@ -12,6 +12,7 @@ import Typography from "@material-ui/core/Typography";
 
 import ErrorAlert from "../containers/ErrorAlert";
 import CustomDialog from "../components/customDialog";
+// import MyEditor from "../components/editor";
 import { createPost } from "../actions/posts";
 
 const styles = {
@@ -98,6 +99,7 @@ class PostNew extends Component {
   render() {
     // handleSubmit is from Redux Form, it handles validation etc.
     const { handleSubmit, error, classes } = this.props;
+    const { showAlert, showCustomDialog, clickedConfirm } = this.state;
 
     return (
       <Fragment>
@@ -114,6 +116,7 @@ class PostNew extends Component {
         >
           <Field name="title" component={this.renderField} />
           <Field name="content" component={this.renderField} />
+          {/* <MyEditor /> */}
           <Button
             className={classes.button}
             onClick={this.handleCustomDialogShow.bind(this)}
@@ -134,9 +137,9 @@ class PostNew extends Component {
         </form>
         <CustomDialog
           dialogTitle="Create Story?"
-          open={this.state.showCustomDialog}
+          open={showCustomDialog}
           handleClose={this.handleCustomDialogHide.bind(this)}
-          isDisabled={this.state.clickedConfirm}
+          isDisabled={clickedConfirm}
           formId="create-form"
           type="submit"
         />
@@ -145,7 +148,7 @@ class PostNew extends Component {
             vertical: "bottom",
             horizontal: "left"
           }}
-          open={this.state.showAlert}
+          open={showAlert}
           autoHideDuration={4000}
           onClose={this.hideAlert.bind(this)}
           ContentProps={{

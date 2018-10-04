@@ -15,7 +15,7 @@ import Edit from "@material-ui/icons/Edit";
 import DisqueComment from "../components/disqus";
 import CustomDialog from "../components/customDialog";
 import ErrorAlert from "../containers/ErrorAlert";
-import { fetchPost, deletePost } from "../actions/posts";
+import { fetchPost, fetchPosts, deletePost } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
 
 const styles = theme => ({
@@ -61,11 +61,17 @@ class PostDetails extends Component {
   componentDidMount() {
     //Reset to top of the page
     window.scrollTo(0, 0);
-    //If all posts are already fetched, then don't waste network usage to fetch it again,
-    //simply find the post by id in state
-    if (!this.props.posts) {
-      const { _id } = this.props.match.params;
-      this.props.fetchPost(_id);
+
+    if (window.navigator.onLine) {
+      if (!this.props.posts) {
+        // If a user refreshs a detail page or lands here via url,
+        // only fetch the post whose id corresponds to the id in the url
+        const { _id } = this.props.match.params;
+        this.props.fetchPost(_id);
+      }
+    } else {
+      //In offline mode, fetch posts from runtime cache
+      this.props.fetchPosts();
     }
   }
   componentWillUnmount() {
@@ -220,6 +226,6 @@ export default compose(
   }),
   connect(
     mapStateToProps,
-    { fetchPost, deletePost, clearLoader }
+    { fetchPost, fetchPosts, deletePost, clearLoader }
   )
 )(PostDetails);

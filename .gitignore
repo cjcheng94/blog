@@ -22,3 +22,6 @@ yarn-error.log*
 
 localActions.js
 posts.json
+
+src/styles
+editor.js
