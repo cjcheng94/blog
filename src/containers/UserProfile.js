@@ -38,11 +38,13 @@ class UserProfile extends Component {
         userPosts[key] = posts[key];
       }
     }
+    const postCount = Object.keys(userPosts).length;
 
     return (
       <Fragment>
         <Typography variant="headline" gutterBottom align="center">
-          Posts By {userFilter}
+          There are {postCount} post
+          {postCount > 1 && "s"} by {userFilter}
         </Typography>
         {error && error.status ? <ErrorAlert /> : null}
         <Grid container spacing={24}>
@@ -73,7 +75,7 @@ const mapStateToProps = (state, ownProps) => {
     isPending: state.isPending,
     error: state.error,
     isAuthenticated: state.user.isAuthenticated,
-    userFilter: ownProps.match.params.username
+    userFilter: decodeURIComponent(ownProps.match.params.username)
   };
 };
 

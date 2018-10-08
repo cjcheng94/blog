@@ -124,7 +124,7 @@ class Header extends Component {
                     onClose={this.hideMenu.bind(this)}
                   >
                     <MenuItem button={false}>{username}</MenuItem>
-                    <MenuItem component={Link} to={`/user/profile/${username}`}>
+                    <MenuItem component={Link} to={`/user/profile/${encodeURIComponent(username)}`}>
                       My Posts
                     </MenuItem>
                     <MenuItem

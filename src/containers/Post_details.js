@@ -137,7 +137,7 @@ class PostDetails extends Component {
           </Typography>
           <Typography variant="body2">
             By{" "}
-            <Link className={classes.author} to={`/user/profile/${author}`}>
+            <Link className={classes.author} to={`/user/profile/${encodeURIComponent(author)}`}>
               {author}
             </Link>
           </Typography>
