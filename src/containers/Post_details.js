@@ -12,8 +12,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import Button from "@material-ui/core/Button";
 import Edit from "@material-ui/icons/Edit";
 
-import DisqueComment from "../components/disqus";
-import CustomDialog from "../components/customDialog";
+import DisqueComment from "../components/Disqus";
+import CustomDialog from "../components/CustomDialog";
 import ErrorAlert from "../containers/ErrorAlert";
 import { fetchPost, fetchPosts, deletePost } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
@@ -121,7 +121,9 @@ class PostDetails extends Component {
     const {
       user: { isAuthenticated }
     } = this.props;
+
     const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
+    const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
     //Extract post id from url, and compose url for editing page
     const { _id } = this.props.match.params;
@@ -132,12 +134,15 @@ class PostDetails extends Component {
         <div className={classes.wrapper}>
           {error && error.status ? <ErrorAlert type="postDetail" /> : null}
 
-          <Typography variant="display2" className={classes.title} gutterBottom>
+          <Typography variant="h3" className={classes.title} gutterBottom>
             {title}
           </Typography>
           <Typography variant="body2">
             By{" "}
-            <Link className={classes.author} to={`/user/profile/${encodeURIComponent(author)}`}>
+            <Link
+              className={classes.author}
+              to={`/user/profile/${encodeURIComponent(author)}`}
+            >
               {author}
             </Link>
           </Typography>
@@ -148,7 +153,9 @@ class PostDetails extends Component {
           <Typography variant="body1" className={classes.content}>
             {content}
           </Typography>
-          {author === this.props.user.username ? (
+
+          {/* Conditionally render 'Edit' and 'Delete' buttons*/}
+          {author === this.props.user.username && isAuthenticated ? (
             <Fragment>
               <Button
                 className={classes.button}
@@ -169,20 +176,21 @@ class PostDetails extends Component {
               </Button>
             </Fragment>
           ) : null}
-          {isAuthenticated && (
-            <Tooltip title="Write a story">
-              <Button
-                variant="fab"
-                color="secondary"
-                aria-label="Edit"
-                className={classes.fab}
-                component={Link}
-                to="/posts/new"
-              >
-                <Edit />
-              </Button>
-            </Tooltip>
-          )}
+
+          {/* 'Write new' FAB. Direct user to sign up page or if already signed in, write new page */}
+          <Tooltip title="Write a story">
+            <Button
+              variant="fab"
+              color="secondary"
+              aria-label="Edit"
+              className={classes.fab}
+              component={Link}
+              to={writeButtonPath}
+            >
+              <Edit />
+            </Button>
+          </Tooltip>
+
           <CustomDialog
             dialogTitle="Delete this Article?"
             open={this.state.showCustomDialog}
@@ -190,6 +198,7 @@ class PostDetails extends Component {
             handleConfirm={this.handleDelete.bind(this)}
             isDisabled={this.state.clickedConfirm}
           />
+
           <Snackbar
             anchorOrigin={{
               vertical: "bottom",
@@ -203,6 +212,7 @@ class PostDetails extends Component {
             }}
             message={<span id="message-id">Post deleted</span>}
           />
+
           {/*Disqus plugin*/}
           <DisqueComment identifier={_id} title={title} />
         </div>

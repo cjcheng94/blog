@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
 import ErrorAlert from "../containers/ErrorAlert";
-import CustomDialog from "../components/customDialog";
+import CustomDialog from "../components/CustomDialog";
 // import MyEditor from "../components/editor";
 import { createPost } from "../actions/posts";
 
@@ -103,10 +103,13 @@ class PostNew extends Component {
 
     return (
       <Fragment>
+
         {error && error.status ? <ErrorAlert type="postNew" /> : null}
-        <Typography variant="headline" gutterBottom align="center">
+
+        <Typography variant="h4" gutterBottom align="center">
           Write Your Story
         </Typography>
+
         <form
           id="create-form"
           className={classes.formNew}
@@ -135,6 +138,7 @@ class PostNew extends Component {
             Back
           </Button>
         </form>
+
         <CustomDialog
           dialogTitle="Create Story?"
           open={showCustomDialog}

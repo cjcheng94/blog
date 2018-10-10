@@ -16,7 +16,7 @@ export default props => {
       <Divider style={{ margin: "40px 0" }} />
       <small>
         Comments powered by Disqus (需梯子访问)
-        <span role="img" aria-label="smilling emoji">
+        <span role="img" aria-label="smiling emoji">
           😀
         </span>
       </small>

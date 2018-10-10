@@ -5,8 +5,8 @@ import { Link } from "react-router-dom";
 
 import { withStyles } from "@material-ui/core";
 import ErrorAlert from "../containers/ErrorAlert";
-import Cards from "../components/cards";
-import CardPlaceHolder from "../components/cardPlaceholder";
+import Cards from "../components/Cards";
+import CardPlaceHolder from "../components/CardPlaceholder";
 
 import Grid from "@material-ui/core/Grid";
 import Button from "@material-ui/core/Button";
@@ -49,6 +49,7 @@ class PostIndex extends Component {
   render() {
     const { error, isPending, posts, classes, isAuthenticated } = this.props;
     const { orderChecked } = this.state;
+    const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
     return (
       <Fragment>
         <Grid container spacing={24}>
@@ -73,8 +74,7 @@ class PostIndex extends Component {
             <Cards posts={posts} latestFirst={orderChecked} />
           )}
 
-          {//Show Write-new FAB when user is authenticated
-          isAuthenticated && (
+          {/* 'Write new' FAB. Direct user to sign up page or if already signed in, write new page */}
             <Tooltip title="Write a story">
               <Button
                 variant="fab"
@@ -82,12 +82,12 @@ class PostIndex extends Component {
                 aria-label="Edit"
                 className={classes.fab}
                 component={Link}
-                to="/posts/new"
+                to={writeButtonPath}
               >
                 <Edit />
               </Button>
             </Tooltip>
-          )}
+          
         </Grid>
       </Fragment>
     );

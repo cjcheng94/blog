@@ -55,8 +55,7 @@ const Cards = props => {
           <Card className={classes.card}>
             <CardContent>
               <Typography
-                variant="headline"
-                component="h2"
+                variant="h5"
                 className={classes.title}
               >
                 {post.title}
@@ -64,7 +63,7 @@ const Cards = props => {
               <Typography className={classes.author}>
                 By {post.author}
               </Typography>
-              <Typography component="p" className={classes.article}>
+              <Typography className={classes.article}>
                 {post.content.slice(0, 60)}
                 ...
               </Typography>

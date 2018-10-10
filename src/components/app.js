@@ -1,12 +1,24 @@
 //Router configuration
 import React, { Component } from "react";
+import { Route } from "react-router-dom";
 
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Snackbar from "@material-ui/core/Snackbar";
+import { withStyles } from "@material-ui/core";
 
-import Routes from "./routes";
+import Header from "../containers/Header";
+import Main from "./Main";
 
-export default class App extends Component {
+const styles = {
+  root: {
+    fontFamily: "Roboto, sans-serif"
+  },
+  pageComponent: {
+    padding: 24
+  }
+};
+
+class App extends Component {
   state = {
     showAlert: false,
     alertMessage: "",
@@ -71,11 +83,17 @@ export default class App extends Component {
     this.setState({ showAlert: false });
   }
   render() {
+    const { classes } = this.props;
     const { showAlert, alertMessage, alertDuration } = this.state;
     return (
-      <div>
+      <div className={classes.root}>
         <CssBaseline />
-        <Routes />
+
+        {/* Header and main components */}
+        <Route component={Header} />
+        <Main />
+        {/*----------------------------*/}
+        
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
@@ -93,3 +111,5 @@ export default class App extends Component {
     );
   }
 }
+
+export default withStyles(styles)(App);

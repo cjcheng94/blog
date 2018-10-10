@@ -10,7 +10,7 @@ import Typography from "@material-ui/core/Typography";
 import Edit from "@material-ui/icons/Edit";
 
 import ErrorAlert from "../containers/ErrorAlert";
-import Cards from "../components/cards";
+import Cards from "../components/Cards";
 import { fetchPosts } from "../actions/posts";
 
 const styles = {
@@ -42,7 +42,7 @@ class UserProfile extends Component {
 
     return (
       <Fragment>
-        <Typography variant="headline" gutterBottom align="center">
+        <Typography variant="h5" gutterBottom align="center">
           There are {postCount} post
           {postCount > 1 && "s"} by {userFilter}
         </Typography>

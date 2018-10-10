@@ -72,8 +72,9 @@ class Login extends Component {
       <Fragment>
         {//the 'error' here refers to the error in the application state(store)
         error && error.status ? <ErrorAlert type="login" /> : null}
+        
         <div className={classes.wrapper}>
-          <Typography variant="display2" align="center">
+          <Typography variant="h3" align="center">
             Log in
           </Typography>
           <form

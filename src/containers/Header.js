@@ -16,7 +16,7 @@ import Menu from "@material-ui/core/Menu";
 import MenuItem from "@material-ui/core/MenuItem";
 import Tooltip from "@material-ui/core/Tooltip";
 
-import CustomDialog from "../components/customDialog";
+import CustomDialog from "../components/CustomDialog";
 import { userLogout } from "../actions/user";
 
 const styles = theme => ({

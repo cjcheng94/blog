@@ -10,7 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
-import CustomDialog from "../components/customDialog";
+import CustomDialog from "../components/CustomDialog";
 import ErrorAlert from "../containers/ErrorAlert";
 import { updatePost, fetchPost } from "../actions/posts";
 
@@ -133,7 +133,7 @@ class PostUpdate extends Component {
           //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
           // this.onComponentSubmit() referes to the method of this component
         >
-          <Typography variant="headline" gutterBottom align="center">
+          <Typography variant="h4" gutterBottom align="center">
             Edit Your Story
           </Typography>
 
@@ -162,6 +162,7 @@ class PostUpdate extends Component {
             Back
           </Button>
         </form>
+        
         <CustomDialog
           dialogTitle="Submit changes?"
           open={this.state.showCustomDialog}
