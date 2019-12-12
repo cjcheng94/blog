@@ -23,9 +23,6 @@ const styles = theme => ({
     maxWidth: 1000,
     margin: "0px auto"
   },
-  title: {
-    color: "#000"
-  },
   content: {
     marginTop: theme.spacing.unit * 2,
     marginBottom: theme.spacing.unit * 2,
@@ -134,7 +131,7 @@ class PostDetails extends Component {
         <div className={classes.wrapper}>
           {error && error.status ? <ErrorAlert type="postDetail" /> : null}
 
-          <Typography variant="h3" className={classes.title} gutterBottom>
+          <Typography variant="h3" gutterBottom>
             {title}
           </Typography>
           <Typography variant="body2">
@@ -234,8 +231,5 @@ export default compose(
   withStyles(styles, {
     name: "PostDetails"
   }),
-  connect(
-    mapStateToProps,
-    { fetchPost, fetchPosts, deletePost, clearLoader }
-  )
+  connect(mapStateToProps, { fetchPost, fetchPosts, deletePost, clearLoader })
 )(PostDetails);
