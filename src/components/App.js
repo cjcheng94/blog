@@ -2,12 +2,22 @@
 import React, { Component } from "react";
 import { Route } from "react-router-dom";
 
+import { MuiThemeProvider, createMuiTheme } from "@material-ui/core/styles";
 import CssBaseline from "@material-ui/core/CssBaseline";
 import Snackbar from "@material-ui/core/Snackbar";
 import { withStyles } from "@material-ui/core";
 
 import Header from "../containers/Header";
 import Main from "./Main";
+
+const theme = createMuiTheme({
+  typography: {
+    useNextVariants: true
+  },
+  palette: {
+    // type: "dark"
+  }
+});
 
 const styles = {
   root: {
@@ -86,28 +96,30 @@ class App extends Component {
     const { classes } = this.props;
     const { showAlert, alertMessage, alertDuration } = this.state;
     return (
-      <div className={classes.root}>
-        <CssBaseline />
+      <MuiThemeProvider theme={theme}>
+        <div className={classes.root}>
+          <CssBaseline />
 
-        {/* Header and main components */}
-        <Route component={Header} />
-        <Main />
-        {/*----------------------------*/}
-        
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={showAlert}
-          autoHideDuration={alertDuration}
-          onClose={this.hideAlert.bind(this)}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">{alertMessage}</span>}
-        />
-      </div>
+          {/* Header and main components */}
+          <Route component={Header} />
+          <Main />
+          {/*----------------------------*/}
+
+          <Snackbar
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left"
+            }}
+            open={showAlert}
+            autoHideDuration={alertDuration}
+            onClose={this.hideAlert.bind(this)}
+            ContentProps={{
+              "aria-describedby": "message-id"
+            }}
+            message={<span id="message-id">{alertMessage}</span>}
+          />
+        </div>
+      </MuiThemeProvider>
     );
   }
 }
