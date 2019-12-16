@@ -5,16 +5,19 @@ import { Link } from "react-router-dom";
 import moment from "moment";
 
 import { withStyles } from "@material-ui/core";
-import Snackbar from "@material-ui/core/Snackbar";
-import Typography from "@material-ui/core/Typography";
-import Divider from "@material-ui/core/Divider";
-import Tooltip from "@material-ui/core/Tooltip";
-import Button from "@material-ui/core/Button";
-import Edit from "@material-ui/icons/Edit";
+import {
+  Snackbar,
+  Typography,
+  Divider,
+  Tooltip,
+  Button
+} from "@material-ui/core";
 
 import DisqueComment from "../components/Disqus";
 import CustomDialog from "../components/CustomDialog";
 import ErrorAlert from "../containers/ErrorAlert";
+import NewPostButton from "../components/NewPostButton";
+
 import { fetchPost, fetchPosts, deletePost } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
 
@@ -22,9 +25,6 @@ const styles = theme => ({
   wrapper: {
     maxWidth: 1000,
     margin: "0px auto"
-  },
-  title: {
-    color: "#000"
   },
   content: {
     marginTop: theme.spacing.unit * 2,
@@ -43,11 +43,6 @@ const styles = theme => ({
     marginTop: theme.spacing.unit * 2,
     marginRight: theme.spacing.unit,
     fontWeight: "bold"
-  },
-  fab: {
-    position: "fixed",
-    bottom: "2em",
-    right: "2em"
   }
 });
 
@@ -134,7 +129,7 @@ class PostDetails extends Component {
         <div className={classes.wrapper}>
           {error && error.status ? <ErrorAlert type="postDetail" /> : null}
 
-          <Typography variant="h3" className={classes.title} gutterBottom>
+          <Typography variant="h3" gutterBottom>
             {title}
           </Typography>
           <Typography variant="body2">
@@ -177,18 +172,9 @@ class PostDetails extends Component {
             </Fragment>
           ) : null}
 
-          {/* 'Write new' FAB. Direct user to sign up page or if already signed in, write new page */}
+          {/* Direct user to sign up page or if already signed in, write new page */}
           <Tooltip title="Write a story">
-            <Button
-              variant="fab"
-              color="secondary"
-              aria-label="Edit"
-              className={classes.fab}
-              component={Link}
-              to={writeButtonPath}
-            >
-              <Edit />
-            </Button>
+            <NewPostButton destination={writeButtonPath} />
           </Tooltip>
 
           <CustomDialog
@@ -234,8 +220,5 @@ export default compose(
   withStyles(styles, {
     name: "PostDetails"
   }),
-  connect(
-    mapStateToProps,
-    { fetchPost, fetchPosts, deletePost, clearLoader }
-  )
+  connect(mapStateToProps, { fetchPost, fetchPosts, deletePost, clearLoader })
 )(PostDetails);

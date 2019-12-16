@@ -1,30 +1,41 @@
-//Router configuration
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
 import { Route } from "react-router-dom";
-
-import CssBaseline from "@material-ui/core/CssBaseline";
-import Snackbar from "@material-ui/core/Snackbar";
-import { withStyles } from "@material-ui/core";
+import {
+  MuiThemeProvider,
+  createMuiTheme,
+  makeStyles
+} from "@material-ui/core/styles";
+import { CssBaseline, Snackbar } from "@material-ui/core";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import Header from "../containers/Header";
 import Main from "./Main";
 
-const styles = {
+const useStyles = makeStyles(theme => ({
   root: {
     fontFamily: "Roboto, sans-serif"
-  },
-  pageComponent: {
-    padding: 24
   }
-};
+}));
 
-class App extends Component {
-  state = {
-    showAlert: false,
-    alertMessage: "",
-    alertDuration: 0
-  };
-  componentDidMount() {
+const App = () => {
+  const classes = useStyles();
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: prefersDarkMode ? "dark" : "light"
+        }
+      }),
+    [prefersDarkMode]
+  );
+
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+  const [alertDuration, setAlertDuration] = useState(0);
+
+  useEffect(() => {
     const isOnline = window.navigator.onLine;
 
     // Check if api request to "https://alexsblogapi.herokuapp.com/posts" is cached:
@@ -44,11 +55,9 @@ class App extends Component {
           } else {
             // Alert user that they're in offline mode
             setTimeout(() => {
-              this.setState({
-                showAlert: true,
-                alertMessage: "You are in offline mode",
-                alertDuration: 2000
-              });
+              setShowAlert(true);
+              setAlertMessage("You are in offline mode");
+              setAlertDuration(2000);
             }, 1500);
           }
         }
@@ -62,38 +71,32 @@ class App extends Component {
     //  1. To allow the 'posts cached' alert to display first, without interruption;
     //  2. There might be a race condition between this check and service worker registration,
     //     otherwise window.isUpdateAvailable will be undefined
-    setTimeout(() => {
+    const timeoutId = setTimeout(() => {
       try {
         window.isUpdateAvailable.then(isAvailable => {
           if (isAvailable) {
             // Alert user new version available
-            this.setState({
-              showAlert: true,
-              alertMessage: "New version available, please refresh!",
-              alertDuration: 2000
-            });
+            setShowAlert(true);
+            setAlertMessage("New version available, please refresh!");
+            setAlertDuration(2000);
           }
         });
       } catch (err) {
         //ignore errors
       }
     }, 4000);
-  }
-  hideAlert() {
-    this.setState({ showAlert: false });
-  }
-  render() {
-    const { classes } = this.props;
-    const { showAlert, alertMessage, alertDuration } = this.state;
-    return (
-      <div className={classes.root}>
-        <CssBaseline />
 
-        {/* Header and main components */}
+    return () => {
+      clearTimeout(timeoutId);
+    };
+  }, []);
+
+  return (
+    <MuiThemeProvider theme={theme}>
+      <CssBaseline />
+      <div className={classes.root}>
         <Route component={Header} />
         <Main />
-        {/*----------------------------*/}
-        
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
@@ -101,15 +104,17 @@ class App extends Component {
           }}
           open={showAlert}
           autoHideDuration={alertDuration}
-          onClose={this.hideAlert.bind(this)}
+          onClose={() => {
+            setShowAlert(false);
+          }}
           ContentProps={{
             "aria-describedby": "message-id"
           }}
           message={<span id="message-id">{alertMessage}</span>}
         />
       </div>
-    );
-  }
-}
+    </MuiThemeProvider>
+  );
+};
 
-export default withStyles(styles)(App);
+export default App;

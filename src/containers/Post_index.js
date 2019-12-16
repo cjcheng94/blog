@@ -1,35 +1,24 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import { Link } from "react-router-dom";
 
-import { withStyles } from "@material-ui/core";
+import { withStyles, Grid, Button, Tooltip, Switch } from "@material-ui/core";
 import ErrorAlert from "../containers/ErrorAlert";
 import Cards from "../components/Cards";
 import CardPlaceHolder from "../components/CardPlaceholder";
-
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Tooltip from "@material-ui/core/Tooltip";
-import Switch from "@material-ui/core/Switch";
-import Edit from "@material-ui/icons/Edit";
+import NewPostButton from "../components/NewPostButton";
 
 import { fetchPosts } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
 
-const styles = {
-  fab: {
-    position: "fixed",
-    bottom: "2em",
-    right: "2em"
-  },
+const styles = theme => ({
   switch: {
     width: "100%",
     marginTop: "-12px",
     marginBottom: "-12px",
     fontSize: "0.6em"
   }
-};
+});
 
 class PostIndex extends Component {
   state = {
@@ -52,7 +41,7 @@ class PostIndex extends Component {
     const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
     return (
       <Fragment>
-        <Grid container spacing={24}>
+        <Grid container spacing={3}>
           {//Show Error when there is any
           error && error.status ? <ErrorAlert /> : null}
 
@@ -74,20 +63,10 @@ class PostIndex extends Component {
             <Cards posts={posts} latestFirst={orderChecked} />
           )}
 
-          {/* 'Write new' FAB. Direct user to sign up page or if already signed in, write new page */}
-            <Tooltip title="Write a story">
-              <Button
-                variant="fab"
-                color="secondary"
-                aria-label="Edit"
-                className={classes.fab}
-                component={Link}
-                to={writeButtonPath}
-              >
-                <Edit />
-              </Button>
-            </Tooltip>
-          
+          {/* Direct user to sign up page or if already signed in, write new page */}
+          <Tooltip title="Write a story">
+            <NewPostButton destination={writeButtonPath} />
+          </Tooltip>
         </Grid>
       </Fragment>
     );
@@ -105,8 +84,5 @@ export default compose(
   withStyles(styles, {
     name: "PostIndex"
   }),
-  connect(
-    mapStateToProps,
-    { fetchPosts, clearLoader }
-  )
+  connect(mapStateToProps, { fetchPosts, clearLoader })
 )(PostIndex);

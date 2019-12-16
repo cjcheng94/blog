@@ -1,25 +1,15 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import { Link } from "react-router-dom";
 
-import { withStyles } from "@material-ui/core";
-import Grid from "@material-ui/core/Grid";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import Edit from "@material-ui/icons/Edit";
+import { withStyles, Grid, Typography } from "@material-ui/core";
 
 import ErrorAlert from "../containers/ErrorAlert";
 import Cards from "../components/Cards";
+import NewPostButton from "../components/NewPostButton";
 import { fetchPosts } from "../actions/posts";
 
-const styles = {
-  fab: {
-    position: "fixed",
-    bottom: "2em",
-    right: "2em"
-  }
-};
+const styles = {};
 
 class UserProfile extends Component {
   componentDidMount() {
@@ -47,21 +37,10 @@ class UserProfile extends Component {
           {postCount > 1 && "s"} by {userFilter}
         </Typography>
         {error && error.status ? <ErrorAlert /> : null}
-        <Grid container spacing={24}>
+        <Grid container spacing={3}>
           <Fragment>
             <Cards posts={userPosts} />
-            {isAuthenticated && (
-              <Button
-                variant="fab"
-                color="secondary"
-                aria-label="Edit"
-                className={classes.fab}
-                component={Link}
-                to="/posts/new"
-              >
-                <Edit />
-              </Button>
-            )}
+            {isAuthenticated && <NewPostButton destination="/posts/new" />}
           </Fragment>
         </Grid>
       </Fragment>
@@ -83,8 +62,5 @@ export default compose(
   withStyles(styles, {
     name: "UserProfile"
   }),
-  connect(
-    mapStateToProps,
-    { fetchPosts }
-  )
+  connect(mapStateToProps, { fetchPosts })
 )(UserProfile);
