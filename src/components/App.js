@@ -1,24 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Route } from "react-router-dom";
-
 import {
   MuiThemeProvider,
   createMuiTheme,
   makeStyles
 } from "@material-ui/core/styles";
 import { CssBaseline, Snackbar } from "@material-ui/core";
+import useMediaQuery from "@material-ui/core/useMediaQuery";
 
 import Header from "../containers/Header";
 import Main from "./Main";
-
-const theme = createMuiTheme({
-  typography: {
-    useNextVariants: true
-  },
-  palette: {
-    type: "dark"
-  }
-});
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -28,6 +19,18 @@ const useStyles = makeStyles(theme => ({
 
 const App = () => {
   const classes = useStyles();
+  const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  const theme = React.useMemo(
+    () =>
+      createMuiTheme({
+        palette: {
+          type: prefersDarkMode ? "dark" : "light"
+        }
+      }),
+    [prefersDarkMode]
+  );
+
   const [showAlert, setShowAlert] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [alertDuration, setAlertDuration] = useState(0);
