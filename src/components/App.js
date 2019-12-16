@@ -97,9 +97,8 @@ class App extends Component {
     const { showAlert, alertMessage, alertDuration } = this.state;
     return (
       <MuiThemeProvider theme={theme}>
+        <CssBaseline />
         <div className={classes.root}>
-          <CssBaseline />
-
           {/* Header and main components */}
           <Route component={Header} />
           <Main />

@@ -17,18 +17,24 @@ import Edit from "@material-ui/icons/Edit";
 import { fetchPosts } from "../actions/posts";
 import { clearLoader } from "../actions/clearLoader";
 
-const styles = {
-  fab: {
-    position: "fixed",
-    bottom: "2em",
-    right: "2em"
-  },
-  switch: {
-    width: "100%",
-    marginTop: "-12px",
-    marginBottom: "-12px",
-    fontSize: "0.6em"
-  }
+const styles = theme => {
+  const isDarkTheme = theme.palette.type === "dark";
+  const { main, dark } = theme.palette.secondary;
+  return {
+    fab: {
+      position: "fixed",
+      bottom: "2em",
+      right: "2em",
+      backgroundColor: isDarkTheme ? dark : main,
+      color: "#fff"
+    },
+    switch: {
+      width: "100%",
+      marginTop: "-12px",
+      marginBottom: "-12px",
+      fontSize: "0.6em"
+    }
+  };
 };
 
 class PostIndex extends Component {
@@ -75,19 +81,17 @@ class PostIndex extends Component {
           )}
 
           {/* 'Write new' FAB. Direct user to sign up page or if already signed in, write new page */}
-            <Tooltip title="Write a story">
-              <Button
-                variant="fab"
-                color="secondary"
-                aria-label="Edit"
-                className={classes.fab}
-                component={Link}
-                to={writeButtonPath}
-              >
-                <Edit />
-              </Button>
-            </Tooltip>
-          
+          <Tooltip title="Write a story">
+            <Button
+              variant="fab"
+              aria-label="Edit"
+              className={classes.fab}
+              component={Link}
+              to={writeButtonPath}
+            >
+              <Edit />
+            </Button>
+          </Tooltip>
         </Grid>
       </Fragment>
     );
@@ -105,8 +109,5 @@ export default compose(
   withStyles(styles, {
     name: "PostIndex"
   }),
-  connect(
-    mapStateToProps,
-    { fetchPosts, clearLoader }
-  )
+  connect(mapStateToProps, { fetchPosts, clearLoader })
 )(PostIndex);

@@ -19,37 +19,42 @@ import Tooltip from "@material-ui/core/Tooltip";
 import CustomDialog from "../components/CustomDialog";
 import { userLogout } from "../actions/user";
 
-const styles = theme => ({
-  toolBar: {
-    justifyContent: "space-between"
-  },
-  brand: {
-    fontFamily: "Notable, sans-serif",
-    fontSize: "2.4em",
-    textDecorationLine: "none",
-    marginTop: -16,
-    textShadow:
-      "0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
-  },
-  menuButton: {
-    marginLeft: -12,
-    marginRight: 20
-  },
-  //A transparent place holder for progress bar,
-  //avoids page jumping issues
-  progressContainer: {
-    height: 5,
-    width: "100%",
-    position: "fixed",
-    top: 56,
-    [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
-      top: 48
+const styles = theme => {
+  const isDarkTheme = theme.palette.type === "dark";
+
+  return {
+    toolBar: {
+      justifyContent: "space-between",
+      backgroundColor: isDarkTheme ? "#333" : theme.palette.primary.main
     },
-    [theme.breakpoints.up("sm")]: {
-      top: 64
+    brand: {
+      fontFamily: "Notable, sans-serif",
+      fontSize: "2.4em",
+      textDecorationLine: "none",
+      marginTop: -16,
+      textShadow:
+        "0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
+    },
+    menuButton: {
+      marginLeft: -12,
+      marginRight: 20
+    },
+    //A transparent place holder for progress bar,
+    //avoids page jumping issues
+    progressContainer: {
+      height: 5,
+      width: "100%",
+      position: "fixed",
+      top: 56,
+      [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
+        top: 48
+      },
+      [theme.breakpoints.up("sm")]: {
+        top: 64
+      }
     }
-  }
-});
+  };
+};
 
 class Header extends Component {
   state = {
@@ -102,7 +107,7 @@ class Header extends Component {
             >
               {logo}
             </Typography>
-            
+
             {/* Show different sets of buttons based on whether user is signed in or not*/}
             <div id="conditional-buttons">
               {isAuthenticated ? (
@@ -116,7 +121,7 @@ class Header extends Component {
                       <AccountCircle />
                     </IconButton>
                   </Tooltip>
-                  
+
                   <Menu
                     id="simple-menu"
                     anchorEl={anchorEl}
@@ -124,7 +129,10 @@ class Header extends Component {
                     onClose={this.hideMenu.bind(this)}
                   >
                     <MenuItem button={false}>{username}</MenuItem>
-                    <MenuItem component={Link} to={`/user/profile/${encodeURIComponent(username)}`}>
+                    <MenuItem
+                      component={Link}
+                      to={`/user/profile/${encodeURIComponent(username)}`}
+                    >
                       My Posts
                     </MenuItem>
                     <MenuItem
@@ -162,7 +170,6 @@ class Header extends Component {
             {/* Show Progress Bar */}
             {isPending && <LinearProgress color="secondary" />}
           </div>
-          
         </AppBar>
         {/* material-ui's Alert Component */}
         <Snackbar
@@ -200,8 +207,5 @@ export default compose(
   withStyles(styles, {
     name: "Header"
   }),
-  connect(
-    mapStateToProps,
-    { userLogout }
-  )
+  connect(mapStateToProps, { userLogout })
 )(Header);
