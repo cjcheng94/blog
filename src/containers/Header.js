@@ -1,9 +1,8 @@
-import React, { Component, Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
-import { compose } from "redux";
 
-import { withStyles } from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
 import AppBar from "@material-ui/core/AppBar";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
@@ -19,9 +18,8 @@ import Tooltip from "@material-ui/core/Tooltip";
 import CustomDialog from "../components/CustomDialog";
 import { userLogout } from "../actions/user";
 
-const styles = theme => {
+const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
-
   return {
     toolBar: {
       justifyContent: "space-between",
@@ -54,148 +52,148 @@ const styles = theme => {
       }
     }
   };
-};
+});
 
-class Header extends Component {
-  state = {
-    openAlert: false,
-    openCustomDialog: false,
-    anchorEl: null
+const Header = ({ userLogout, isAuthenticated, username, isPending }) => {
+  const classes = useStyles();
+
+  const [openAlert, setOpenAlert] = useState(false);
+  const [openCustomDialog, setOpenCustomDialog] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const showAlert = () => {
+    setOpenAlert(true);
   };
-
-  showAlert() {
-    this.setState({ openAlert: true });
-  }
-  hideAlert() {
-    this.setState({ openAlert: false });
-  }
-  showMenu(e) {
-    this.setState({ anchorEl: e.currentTarget });
-  }
-  hideMenu() {
-    this.setState({ anchorEl: null });
-  }
-  showCustomDialog() {
-    this.setState({ openCustomDialog: true });
-  }
-  hideCustomDialog() {
-    this.setState({ openCustomDialog: false });
-  }
-  handleLogoutClick(e) {
+  const hideAlert = () => {
+    setOpenAlert(false);
+  };
+  const showMenu = e => {
+    setAnchorEl(e.currentTarget);
+  };
+  const hideMenu = () => {
+    setAnchorEl(null);
+  };
+  const showCustomDialog = () => {
+    setOpenCustomDialog(true);
+  };
+  const hideCustomDialog = () => {
+    setOpenCustomDialog(false);
+  };
+  const handleLogoutClick = e => {
     e.preventDefault();
-    this.props.userLogout(() => {
-      this.hideCustomDialog();
-      this.showAlert();
+    userLogout(() => {
+      hideCustomDialog();
+      showAlert();
       setTimeout(() => this.props.history.push("/"), 1000);
     });
-  }
+  };
 
-  render() {
-    const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
-    const { openAlert, openCustomDialog, anchorEl } = this.state;
-    const { classes, isAuthenticated, username, isPending } = this.props;
+  const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
 
-    return (
-      <Fragment>
-        <AppBar position="sticky">
-          <Toolbar className={classes.toolBar}>
-            <Typography
+  return (
+    <Fragment>
+      <AppBar position="sticky">
+        <Toolbar className={classes.toolBar}>
+          <Typography
+            color="inherit"
+            className={classes.brand}
+            component={Link}
+            to="/"
+          >
+            {logo}
+          </Typography>
+
+          {/* Show different sets of buttons based on whether user is signed in or not*/}
+          <div id="conditional-buttons">
+            <IconButton
+              aria-haspopup="true"
               color="inherit"
-              className={classes.brand}
-              component={Link}
-              to="/"
+              //onClick={}
             >
-              {logo}
-            </Typography>
-
-            {/* Show different sets of buttons based on whether user is signed in or not*/}
-            <div id="conditional-buttons">
-              {isAuthenticated ? (
-                <Fragment>
-                  <Tooltip title="My Account">
-                    <IconButton
-                      aria-haspopup="true"
-                      color="inherit"
-                      onClick={this.showMenu.bind(this)}
-                    >
-                      <AccountCircle />
-                    </IconButton>
-                  </Tooltip>
-
-                  <Menu
-                    id="simple-menu"
-                    anchorEl={anchorEl}
-                    open={!!anchorEl}
-                    onClose={this.hideMenu.bind(this)}
-                  >
-                    <MenuItem button={false}>{username}</MenuItem>
-                    <MenuItem
-                      component={Link}
-                      to={`/user/profile/${encodeURIComponent(username)}`}
-                    >
-                      My Posts
-                    </MenuItem>
-                    <MenuItem
-                      onClick={this.showCustomDialog.bind(this)}
-                      color="inherit"
-                    >
-                      Log Out
-                    </MenuItem>
-                  </Menu>
-                </Fragment>
-              ) : (
-                <Fragment>
-                  <Button
+              <AccountCircle />
+            </IconButton>
+            {isAuthenticated ? (
+              <Fragment>
+                <Tooltip title="My Account">
+                  <IconButton
                     aria-haspopup="true"
                     color="inherit"
-                    component={Link}
-                    to="/user/login"
+                    onClick={showMenu}
                   >
-                    Log In
-                  </Button>
-                  <Button
-                    aria-haspopup="true"
-                    color="inherit"
-                    component={Link}
-                    to="/user/signup"
-                  >
-                    Sign Up
-                  </Button>
-                </Fragment>
-              )}
-            </div>
-          </Toolbar>
+                    <AccountCircle />
+                  </IconButton>
+                </Tooltip>
 
-          <div className={classes.progressContainer}>
-            {/* Show Progress Bar */}
-            {isPending && <LinearProgress color="secondary" />}
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  open={!!anchorEl}
+                  onClose={hideMenu}
+                >
+                  <MenuItem button={false}>{username}</MenuItem>
+                  <MenuItem
+                    component={Link}
+                    to={`/user/profile/${encodeURIComponent(username)}`}
+                  >
+                    My Posts
+                  </MenuItem>
+                  <MenuItem onClick={showCustomDialog} color="inherit">
+                    Log Out
+                  </MenuItem>
+                </Menu>
+              </Fragment>
+            ) : (
+              <Fragment>
+                <Button
+                  aria-haspopup="true"
+                  color="inherit"
+                  component={Link}
+                  to="/user/login"
+                >
+                  Log In
+                </Button>
+                <Button
+                  aria-haspopup="true"
+                  color="inherit"
+                  component={Link}
+                  to="/user/signup"
+                >
+                  Sign Up
+                </Button>
+              </Fragment>
+            )}
           </div>
-        </AppBar>
-        {/* material-ui's Alert Component */}
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={openAlert}
-          autoHideDuration={4000}
-          onClose={this.hideAlert.bind(this)}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">Logout successful</span>}
-        />
-        <CustomDialog
-          dialogTitle="Log Out?"
-          open={openCustomDialog}
-          handleClose={this.hideCustomDialog.bind(this)}
-          handleConfirm={this.handleLogoutClick.bind(this)}
-          isDisabled={false}
-        />
-      </Fragment>
-    );
-  }
-}
+        </Toolbar>
+
+        <div className={classes.progressContainer}>
+          {/* Show Progress Bar */}
+          {isPending && <LinearProgress color="secondary" />}
+        </div>
+      </AppBar>
+      {/* material-ui's Alert Component */}
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        open={openAlert}
+        autoHideDuration={4000}
+        onClose={hideAlert}
+        ContentProps={{
+          "aria-describedby": "message-id"
+        }}
+        message={<span id="message-id">Logout successful</span>}
+      />
+      <CustomDialog
+        dialogTitle="Log Out?"
+        open={openCustomDialog}
+        handleClose={hideCustomDialog}
+        handleConfirm={handleLogoutClick}
+        isDisabled={false}
+      />
+    </Fragment>
+  );
+};
 
 const mapStateToProps = state => ({
   isAuthenticated: state.user.isAuthenticated,
@@ -203,9 +201,4 @@ const mapStateToProps = state => ({
   isPending: state.isPending
 });
 
-export default compose(
-  withStyles(styles, {
-    name: "Header"
-  }),
-  connect(mapStateToProps, { userLogout })
-)(Header);
+export default connect(mapStateToProps, { userLogout })(Header);
