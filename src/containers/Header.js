@@ -2,21 +2,23 @@ import React, { useState, Fragment } from "react";
 import { Link } from "react-router-dom";
 import { connect } from "react-redux";
 
+import {
+  Tooltip,
+  AppBar,
+  Toolbar,
+  Typography,
+  IconButton,
+  Button,
+  LinearProgress,
+  Snackbar,
+  Menu,
+  MenuItem
+} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
-import AppBar from "@material-ui/core/AppBar";
-import Toolbar from "@material-ui/core/Toolbar";
-import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
-import AccountCircle from "@material-ui/icons/AccountCircle";
-import Button from "@material-ui/core/Button";
-import LinearProgress from "@material-ui/core/LinearProgress";
-import Snackbar from "@material-ui/core/Snackbar";
-import Menu from "@material-ui/core/Menu";
-import MenuItem from "@material-ui/core/MenuItem";
-import Tooltip from "@material-ui/core/Tooltip";
+import { AccountCircle, Brightness4 } from "@material-ui/icons";
 
 import CustomDialog from "../components/CustomDialog";
-import { userLogout } from "../actions/user";
+import { userLogout, toggleDarkMode } from "../actions/user";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -54,7 +56,14 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-const Header = ({ userLogout, isAuthenticated, username, isPending }) => {
+const Header = ({
+  userLogout,
+  toggleDarkMode,
+  isAuthenticated,
+  username,
+  isPending,
+  history
+}) => {
   const classes = useStyles();
 
   const [openAlert, setOpenAlert] = useState(false);
@@ -84,7 +93,11 @@ const Header = ({ userLogout, isAuthenticated, username, isPending }) => {
     userLogout(() => {
       hideCustomDialog();
       showAlert();
-      setTimeout(() => this.props.history.push("/"), 1000);
+      setTimeout(() => {
+        console.log(history);
+
+        history.push("/");
+      }, 1000);
     });
   };
 
@@ -108,9 +121,9 @@ const Header = ({ userLogout, isAuthenticated, username, isPending }) => {
             <IconButton
               aria-haspopup="true"
               color="inherit"
-              //onClick={}
+              onClick={toggleDarkMode}
             >
-              <AccountCircle />
+              <Brightness4 />
             </IconButton>
             {isAuthenticated ? (
               <Fragment>
@@ -201,4 +214,4 @@ const mapStateToProps = state => ({
   isPending: state.isPending
 });
 
-export default connect(mapStateToProps, { userLogout })(Header);
+export default connect(mapStateToProps, { userLogout, toggleDarkMode })(Header);

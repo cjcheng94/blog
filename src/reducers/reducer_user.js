@@ -2,6 +2,7 @@ import {
   USER_LOGIN_FULFILLED,
   USER_LOGIN_REJECTED,
   USER_LOGOUT,
+  TOGGLE_DARK_MODE
 } from "../actions/user";
 
 import checkIfExpired from "../middlewares/checkTokenExpired";
@@ -9,15 +10,16 @@ import checkIfExpired from "../middlewares/checkTokenExpired";
 const initialUserState = {
   //Check user auth state immediately when app boots up
   isAuthenticated: !checkIfExpired(),
-  username: localStorage.getItem("username")
+  username: localStorage.getItem("username"),
+  isDarkMode: false
 };
 
- const userReducer = (state = initialUserState, action)=> {
+const userReducer = (state = initialUserState, action) => {
   switch (action.type) {
     case USER_LOGIN_REJECTED:
       return {
         ...state,
-        isAuthenticated: false,
+        isAuthenticated: false
       };
     case USER_LOGIN_FULFILLED:
       return {
@@ -31,8 +33,13 @@ const initialUserState = {
         isAuthenticated: false,
         username: null
       };
+    case TOGGLE_DARK_MODE:
+      return {
+        ...state,
+        isDarkMode: !state.isDarkMode
+      };
     default:
       return state;
   }
-}
+};
 export default userReducer;
