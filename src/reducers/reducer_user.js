@@ -2,7 +2,8 @@ import {
   USER_LOGIN_FULFILLED,
   USER_LOGIN_REJECTED,
   USER_LOGOUT,
-  TOGGLE_DARK_MODE
+  TOGGLE_DARK_MODE,
+  SET_DARK_MODE
 } from "../actions/user";
 
 import checkIfExpired from "../middlewares/checkTokenExpired";
@@ -37,6 +38,11 @@ const userReducer = (state = initialUserState, action) => {
       return {
         ...state,
         isDarkMode: !state.isDarkMode
+      };
+    case SET_DARK_MODE:
+      return {
+        ...state,
+        isDarkMode: action.payload
       };
     default:
       return state;

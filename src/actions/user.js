@@ -7,6 +7,7 @@ export const USER_LOGOUT = "USER_LOGOUT";
 export const USER_LOGIN_FULFILLED = "USER_LOGIN_FULFILLED";
 export const USER_LOGIN_REJECTED = "USER_LOGIN_REJECTED";
 export const TOGGLE_DARK_MODE = "TOGGLE_DARK_MODE";
+export const SET_DARK_MODE = "SET_DARK_MODE";
 
 const ROOT_URL = "https://alexsblogapi.herokuapp.com";
 
@@ -63,5 +64,11 @@ export function userLogout(callback) {
 export function toggleDarkMode() {
   return dispatch => {
     dispatch({ type: TOGGLE_DARK_MODE });
+  };
+}
+
+export function setDarkMode(setting) {
+  return dispatch => {
+    dispatch({ type: SET_DARK_MODE, payload: setting });
   };
 }

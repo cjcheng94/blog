@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
-import { Route } from "react-router-dom";
+import { connect } from "react-redux";
+import { Route, withRouter } from "react-router-dom";
+
 import {
   MuiThemeProvider,
   createMuiTheme,
   makeStyles
 } from "@material-ui/core/styles";
-import { CssBaseline, Snackbar } from "@material-ui/core";
-import useMediaQuery from "@material-ui/core/useMediaQuery";
+import { CssBaseline, Snackbar, useMediaQuery } from "@material-ui/core";
 
 import Header from "../containers/Header";
 import Main from "./Main";
+
+import { setDarkMode } from "../actions/user";
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -17,7 +20,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const App = () => {
+const App = ({ userDarkModeSetting, setDarkMode }) => {
   const classes = useStyles();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
@@ -25,10 +28,10 @@ const App = () => {
     () =>
       createMuiTheme({
         palette: {
-          type: prefersDarkMode ? "dark" : "light"
+          type: userDarkModeSetting ? "dark" : "light"
         }
       }),
-    [prefersDarkMode]
+    [userDarkModeSetting]
   );
 
   const [showAlert, setShowAlert] = useState(false);
@@ -91,6 +94,11 @@ const App = () => {
     };
   }, []);
 
+  // set dark mode by detecting system preference
+  useEffect(() => {
+    setDarkMode(prefersDarkMode);
+  }, [prefersDarkMode]);
+
   return (
     <MuiThemeProvider theme={theme}>
       <CssBaseline />
@@ -117,4 +125,11 @@ const App = () => {
   );
 };
 
-export default App;
+const connectedApp = connect(
+  state => ({
+    userDarkModeSetting: state.user.isDarkMode
+  }),
+  { setDarkMode }
+)(App);
+
+export default withRouter(connectedApp);
