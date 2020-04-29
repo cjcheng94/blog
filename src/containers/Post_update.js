@@ -12,7 +12,6 @@ import Typography from "@material-ui/core/Typography";
 
 import CustomDialog from "../components/CustomDialog";
 import ErrorAlert from "../containers/ErrorAlert";
-import { updatePost, fetchPost } from "../actions/posts";
 
 const styles = {
   formEdit: {
@@ -36,7 +35,7 @@ class PostUpdate extends Component {
     //If all posts are already fetched, then don't waste network usage to fetch it again,
     //simply find the post by id in state
     const { _id } = this.props.match.params;
-    this.props.fetchPost(_id);
+    this.props.dispatch.posts.fetchPost({ _id });
   }
   showAlert() {
     this.setState({ showAlert: true });
@@ -114,11 +113,17 @@ class PostUpdate extends Component {
       .filter(key => key === "title" || key === "content")
       .map(e => ({ propName: e, value: values[e] }));
 
-    this.props.updatePost(_id, requestBody, () => {
+    const updateCallback = () => {
       this.showAlert();
       setTimeout(() => {
         this.props.history.push("/");
       }, 1000);
+    };
+
+    this.props.dispatch.posts.updatePost({
+      _id,
+      requestBody,
+      callback: updateCallback
     });
   }
   render() {
@@ -137,10 +142,12 @@ class PostUpdate extends Component {
             Edit Your Story
           </Typography>
 
-          {//stateError can not be named "error" here, it will conflict with Redux Form's "error"
-          stateError && stateError.status ? (
-            <ErrorAlert type="postUpdate" />
-          ) : null}
+          {
+            //stateError can not be named "error" here, it will conflict with Redux Form's "error"
+            stateError && stateError.status ? (
+              <ErrorAlert type="postUpdate" />
+            ) : null
+          }
 
           <Field name="title" component={this.renderField} />
           <Field name="content" component={this.renderField} />
@@ -162,7 +169,7 @@ class PostUpdate extends Component {
             Back
           </Button>
         </form>
-        
+
         <CustomDialog
           dialogTitle="Submit changes?"
           open={this.state.showCustomDialog}
@@ -217,10 +224,7 @@ export default compose(
   withStyles(styles, {
     name: "PostUpdate"
   }),
-  connect(
-    mapStateToProps,
-    { fetchPost, updatePost }
-  ),
+  connect(mapStateToProps),
   reduxForm({
     validate,
     form: "PostEditForm"

@@ -10,8 +10,6 @@ import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
 
-import { clearError } from "../actions/clearError";
-
 function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
@@ -24,7 +22,7 @@ const customMessage = {
 };
 class ErrorAlert extends React.Component {
   render() {
-    const { type, status, statusText, message, clearError } = this.props;
+    const { type, status, statusText, message, dispatch } = this.props;
     return (
       <div>
         <Dialog
@@ -37,29 +35,25 @@ class ErrorAlert extends React.Component {
         >
           <DialogTitle>Oops, Something went wrong...</DialogTitle>
           <DialogContent>
-            {//Only use custom messages when status is 401 or 409, otherwise show status & messages sent from server.
-            status === 401 || status === 409 ? (
-              <DialogContentText>{customMessage[type]}</DialogContentText>
-            ) : (
-              <Fragment>
-                <DialogContentText>
-                  {status + " " + statusText}
-                </DialogContentText>
-                <DialogContentText>{message}</DialogContentText>
-              </Fragment>
-            )}
+            {
+              //Only use custom messages when status is 401 or 409, otherwise show status & messages sent from server.
+              status === 401 || status === 409 ? (
+                <DialogContentText>{customMessage[type]}</DialogContentText>
+              ) : (
+                <Fragment>
+                  <DialogContentText>
+                    {status + " " + statusText}
+                  </DialogContentText>
+                  <DialogContentText>{message}</DialogContentText>
+                </Fragment>
+              )
+            }
           </DialogContent>
           <DialogActions>
             <Button component={Link} to="/" color="secondary">
               Home
             </Button>
-            <Button
-              onClick={() => {
-                //Call clearError() action
-                clearError();
-              }}
-              color="primary"
-            >
+            <Button onClick={dispatch.error.clearError} color="primary">
               Back
             </Button>
           </DialogActions>
@@ -75,7 +69,4 @@ const mapStateToProps = state => ({
   message: state.error.message
 });
 
-export default connect(
-  mapStateToProps,
-  { clearError }
-)(ErrorAlert);
+export default connect(mapStateToProps)(ErrorAlert);

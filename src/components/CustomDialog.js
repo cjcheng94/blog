@@ -45,10 +45,8 @@ export default props => {
           >
             Confirm
           </Button>
-          )}
         </DialogActions>
       </Dialog>
     </div>
   );
 };
-

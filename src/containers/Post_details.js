@@ -18,9 +18,6 @@ import CustomDialog from "../components/CustomDialog";
 import ErrorAlert from "../containers/ErrorAlert";
 import NewPostButton from "../components/NewPostButton";
 
-import { fetchPost, fetchPosts, deletePost } from "../actions/posts";
-import { clearLoader } from "../actions/clearLoader";
-
 const styles = theme => ({
   wrapper: {
     maxWidth: 1000,
@@ -62,16 +59,16 @@ class PostDetails extends Component {
         // If a user refreshs a detail page or lands here via url,
         // only fetch the post whose id corresponds to the id in the url
         const { _id } = this.props.match.params;
-        this.props.fetchPost(_id);
+        this.props.dispatch.posts.fetchPost({ _id });
       }
     } else {
       //In offline mode, fetch posts from runtime cache
-      this.props.fetchPosts();
+      this.props.dispatch.posts.fetchPosts();
     }
   }
   componentWillUnmount() {
     //Clear the progress bar on unmount
-    this.props.clearLoader();
+    // this.props.clearLoader();
   }
   showAlert() {
     this.setState({ showAlert: true });
@@ -94,12 +91,13 @@ class PostDetails extends Component {
     const { _id } = this.props.match.params;
     //Disable confirm button once it's clicked
     this.setState({ clickedConfirm: true });
-    this.props.deletePost(_id, () => {
+    const deletCallback = () => {
       this.showAlert();
       setTimeout(() => {
         this.props.history.push("/");
       }, 1000);
-    });
+    };
+    this.props.dispatch.posts.deletePost({ _id, callback: deletCallback });
   }
 
   render() {
@@ -220,5 +218,5 @@ export default compose(
   withStyles(styles, {
     name: "PostDetails"
   }),
-  connect(mapStateToProps, { fetchPost, fetchPosts, deletePost, clearLoader })
+  connect(mapStateToProps)
 )(PostDetails);

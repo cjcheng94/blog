@@ -18,7 +18,6 @@ import { makeStyles } from "@material-ui/core/styles";
 import { AccountCircle, Brightness4 } from "@material-ui/icons";
 
 import CustomDialog from "../components/CustomDialog";
-import { userLogout, toggleDarkMode } from "../actions/user";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -57,8 +56,7 @@ const useStyles = makeStyles(theme => {
 });
 
 const Header = ({
-  userLogout,
-  toggleDarkMode,
+  dispatch,
   isAuthenticated,
   username,
   isPending,
@@ -90,14 +88,17 @@ const Header = ({
   };
   const handleLogoutClick = e => {
     e.preventDefault();
-    userLogout(() => {
+
+    const logoutCallback = () => {
       hideCustomDialog();
       showAlert();
       setTimeout(() => {
-        console.log(history);
-
         history.push("/");
       }, 1000);
+    };
+
+    dispatch.user.logout({
+      callback: logoutCallback
     });
   };
 
@@ -121,7 +122,7 @@ const Header = ({
             <IconButton
               aria-haspopup="true"
               color="inherit"
-              onClick={toggleDarkMode}
+              onClick={dispatch.user.toggleDarkMode}
             >
               <Brightness4 />
             </IconButton>
@@ -214,4 +215,4 @@ const mapStateToProps = state => ({
   isPending: state.isPending
 });
 
-export default connect(mapStateToProps, { userLogout, toggleDarkMode })(Header);
+export default connect(mapStateToProps)(Header);

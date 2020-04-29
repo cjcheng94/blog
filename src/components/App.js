@@ -12,15 +12,13 @@ import { CssBaseline, Snackbar, useMediaQuery } from "@material-ui/core";
 import Header from "../containers/Header";
 import Main from "./Main";
 
-import { setDarkMode } from "../actions/user";
-
 const useStyles = makeStyles(theme => ({
   root: {
     fontFamily: "Roboto, sans-serif"
   }
 }));
 
-const App = ({ userDarkModeSetting, setDarkMode }) => {
+const App = ({ userDarkModeSetting, dispatch }) => {
   const classes = useStyles();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
@@ -96,7 +94,7 @@ const App = ({ userDarkModeSetting, setDarkMode }) => {
 
   // set dark mode by detecting system preference
   useEffect(() => {
-    setDarkMode(prefersDarkMode);
+    dispatch.user.setDarkMode({ setting: prefersDarkMode });
   }, [prefersDarkMode]);
 
   return (
@@ -125,11 +123,8 @@ const App = ({ userDarkModeSetting, setDarkMode }) => {
   );
 };
 
-const connectedApp = connect(
-  state => ({
-    userDarkModeSetting: state.user.isDarkMode
-  }),
-  { setDarkMode }
-)(App);
+const connectedApp = connect(state => ({
+  userDarkModeSetting: state.user.isDarkMode
+}))(App);
 
 export default withRouter(connectedApp);

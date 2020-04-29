@@ -8,9 +8,6 @@ import Cards from "../components/Cards";
 import CardPlaceHolder from "../components/CardPlaceholder";
 import NewPostButton from "../components/NewPostButton";
 
-import { fetchPosts } from "../actions/posts";
-import { clearLoader } from "../actions/clearLoader";
-
 const styles = theme => ({
   switch: {
     width: "100%",
@@ -26,11 +23,11 @@ class PostIndex extends Component {
   };
   componentDidMount() {
     //Get posts on mount
-    this.props.fetchPosts();
+    this.props.dispatch.posts.fetchPosts();
   }
   componentWillUnmount() {
     //Clear the progress bar on unmount
-    this.props.clearLoader();
+    this.props.dispatch.isPending.setIsPending(false);
   }
   handleChange = name => event => {
     this.setState({ [name]: event.target.checked });
@@ -42,8 +39,10 @@ class PostIndex extends Component {
     return (
       <Fragment>
         <Grid container spacing={3}>
-          {//Show Error when there is any
-          error && error.status ? <ErrorAlert /> : null}
+          {
+            //Show Error when there is any
+            error && error.status ? <ErrorAlert /> : null
+          }
 
           {/* Sorting switch */}
           <div className={classes.switch}>
@@ -56,12 +55,14 @@ class PostIndex extends Component {
             <strong>{orderChecked ? "latest" : "oldest"} first</strong>
           </div>
 
-          {//Show placeholders when loading
-          isPending ? (
-            <CardPlaceHolder />
-          ) : (
-            <Cards posts={posts} latestFirst={orderChecked} />
-          )}
+          {
+            //Show placeholders when loading
+            isPending ? (
+              <CardPlaceHolder />
+            ) : (
+              <Cards posts={posts} latestFirst={orderChecked} />
+            )
+          }
 
           {/* Direct user to sign up page or if already signed in, write new page */}
           <Tooltip title="Write a story">
@@ -84,5 +85,5 @@ export default compose(
   withStyles(styles, {
     name: "PostIndex"
   }),
-  connect(mapStateToProps, { fetchPosts, clearLoader })
+  connect(mapStateToProps)
 )(PostIndex);

@@ -7,7 +7,6 @@ import { withStyles, Grid, Typography } from "@material-ui/core";
 import ErrorAlert from "../containers/ErrorAlert";
 import Cards from "../components/Cards";
 import NewPostButton from "../components/NewPostButton";
-import { fetchPosts } from "../actions/posts";
 
 const styles = {};
 
@@ -15,7 +14,7 @@ class UserProfile extends Component {
   componentDidMount() {
     //if this.props.posts is already there, don't waste network usage on fetching again
     if (Object.keys(this.props.posts).length === 0) {
-      this.props.fetchPosts();
+      this.props.dispatch.posts.fetchPosts();
     }
   }
   render() {
@@ -62,5 +61,5 @@ export default compose(
   withStyles(styles, {
     name: "UserProfile"
   }),
-  connect(mapStateToProps, { fetchPosts })
+  connect(mapStateToProps)
 )(UserProfile);

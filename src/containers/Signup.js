@@ -10,7 +10,6 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 
 import ErrorAlert from "../containers/ErrorAlert";
-import { userSignup } from "../actions/user";
 
 const styles = {
   wrapper: {
@@ -39,11 +38,15 @@ class Signup extends Component {
   }
 
   onComponentSubmit(values) {
-    this.props.userSignup(values, () => {
+    const signupCallback = () => {
       this.showAlert();
       setTimeout(() => {
         this.props.history.push("/user/login");
       }, 1000);
+    };
+    this.props.dispatch.user.userSignup({
+      signupData: values,
+      callback: signupCallback
     });
   }
   //For Redux Form's Field Component
@@ -73,8 +76,10 @@ class Signup extends Component {
     const { handleSubmit, error, classes } = this.props;
     return (
       <Fragment>
-        {//the "error" here refers to the error in the application state(store)
-        error && error.status ? <ErrorAlert type="signup" /> : null}
+        {
+          //the "error" here refers to the error in the application state(store)
+          error && error.status ? <ErrorAlert type="signup" /> : null
+        }
         <div className={classes.wrapper}>
           <Typography variant="h3" align="center">
             Sign up
@@ -148,8 +153,5 @@ export default compose(
     //value of 'form' must be unique
     form: "SignUpForm"
   }),
-  connect(
-    mapStateToProps,
-    { userSignup }
-  )
+  connect(mapStateToProps)
 )(Signup);

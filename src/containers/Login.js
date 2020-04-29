@@ -10,7 +10,6 @@ import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 
 import ErrorAlert from "../containers/ErrorAlert";
-import { userLogin } from "../actions/user";
 
 const styles = {
   wrapper: {
@@ -21,7 +20,7 @@ const styles = {
     display: "block",
     margin: "30px auto"
   }
-}
+};
 
 class Login extends Component {
   state = {
@@ -35,10 +34,15 @@ class Login extends Component {
     this.setState({ open: false });
   }
   onComponentSubmit(values) {
-    this.props.userLogin(values, () => {
+    const loginCallback = () => {
       //Callback to execute when the action is resolved
       this.showAlert();
       setTimeout(() => this.props.history.push("/"), 1000);
+    };
+
+    this.props.dispatch.user.login({
+      loginData: values,
+      callback: loginCallback
     });
   }
 
@@ -70,9 +74,11 @@ class Login extends Component {
     const { handleSubmit, error, classes } = this.props;
     return (
       <Fragment>
-        {//the 'error' here refers to the error in the application state(store)
-        error && error.status ? <ErrorAlert type="login" /> : null}
-        
+        {
+          //the 'error' here refers to the error in the application state(store)
+          error && error.status ? <ErrorAlert type="login" /> : null
+        }
+
         <div className={classes.wrapper}>
           <Typography variant="h3" align="center">
             Log in
@@ -139,8 +145,5 @@ export default compose(
     //value of 'form' must be unique
     form: "LoginForm"
   }),
-  connect(
-    mapStateToProps,
-    { userLogin }
-  )
+  connect(mapStateToProps)
 )(Login);

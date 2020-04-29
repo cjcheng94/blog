@@ -13,7 +13,6 @@ import Typography from "@material-ui/core/Typography";
 import ErrorAlert from "../containers/ErrorAlert";
 import CustomDialog from "../components/CustomDialog";
 // import MyEditor from "../components/editor";
-import { createPost } from "../actions/posts";
 
 const styles = {
   formNew: {
@@ -88,12 +87,13 @@ class PostNew extends Component {
   }
 
   onComponentSubmit(values) {
-    this.props.createPost(values, () => {
+    const createCallback = () => {
       this.showAlert();
       setTimeout(() => {
         this.props.history.push("/");
       }, 1000);
-    });
+    };
+    this.props.dispatch.posts.createPost({ values, callback: createCallback });
   }
 
   render() {
@@ -103,7 +103,6 @@ class PostNew extends Component {
 
     return (
       <Fragment>
-
         {error && error.status ? <ErrorAlert type="postNew" /> : null}
 
         <Typography variant="h4" gutterBottom align="center">
@@ -194,8 +193,5 @@ export default compose(
     //value of "form" must be unique
     form: "PostsNewForm"
   }),
-  connect(
-    mapStateToProps,
-    { createPost }
-  )
+  connect(mapStateToProps)
 )(PostNew);
