@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
 import CustomDialog from "../components/CustomDialog";
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 
 const styles = {
   formEdit: {

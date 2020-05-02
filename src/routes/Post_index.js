@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 
 import { withStyles, Grid, Button, Tooltip, Switch } from "@material-ui/core";
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 import Cards from "../components/Cards";
 import CardPlaceHolder from "../components/CardPlaceholder";
 import NewPostButton from "../components/NewPostButton";

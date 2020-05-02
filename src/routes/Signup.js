@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 
 const styles = {
   wrapper: {
@@ -19,10 +19,13 @@ const styles = {
   button: {
     display: "block",
     margin: "30px auto"
+  },
+  KAGGIGER: {
+    color: "red"
   }
 };
 
-class Login extends Component {
+class Signup extends Component {
   state = {
     open: false
   };
@@ -33,19 +36,19 @@ class Login extends Component {
   hideAlert() {
     this.setState({ open: false });
   }
-  onComponentSubmit(values) {
-    const loginCallback = () => {
-      //Callback to execute when the action is resolved
-      this.showAlert();
-      setTimeout(() => this.props.history.push("/"), 1000);
-    };
 
-    this.props.dispatch.user.login({
-      loginData: values,
-      callback: loginCallback
+  onComponentSubmit(values) {
+    const signupCallback = () => {
+      this.showAlert();
+      setTimeout(() => {
+        this.props.history.push("/user/login");
+      }, 1000);
+    };
+    this.props.dispatch.user.userSignup({
+      signupData: values,
+      callback: signupCallback
     });
   }
-
   //For Redux Form's Field Component
   renderField(field) {
     //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
@@ -54,8 +57,8 @@ class Login extends Component {
       input: { name },
       meta: { touched, error }
     } = field;
-    const type = name === "password" ? "password" : "text";
-    const label = name === "password" ? "Password" : "Username";
+    const type = name === "username" ? "text" : "password";
+    const label = name === "username" ? "Username" : "Password";
 
     return (
       <TextField
@@ -69,19 +72,17 @@ class Login extends Component {
       />
     );
   }
-
   render() {
     const { handleSubmit, error, classes } = this.props;
     return (
       <Fragment>
         {
-          //the 'error' here refers to the error in the application state(store)
-          error && error.status ? <ErrorAlert type="login" /> : null
+          //the "error" here refers to the error in the application state(store)
+          error && error.status ? <ErrorAlert type="signup" /> : null
         }
-
         <div className={classes.wrapper}>
           <Typography variant="h3" align="center">
-            Log in
+            Sign up
           </Typography>
           <form
             onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
@@ -90,17 +91,18 @@ class Login extends Component {
           >
             <Field name="username" component={this.renderField} />
             <Field name="password" component={this.renderField} />
+            <Field name="confirm password" component={this.renderField} />
+
             <Button
               className={classes.button}
               variant="contained"
               color="primary"
               type="submit"
             >
-              Log In
+              Sign Up
             </Button>
           </form>
         </div>
-
         <Snackbar
           anchorOrigin={{
             vertical: "bottom",
@@ -112,7 +114,7 @@ class Login extends Component {
           ContentProps={{
             "aria-describedby": "message-id"
           }}
-          message={<span id="message-id">Login successful!</span>}
+          message={<span id="message-id">Sign up successful!</span>}
         />
       </Fragment>
     );
@@ -130,20 +132,26 @@ function validate(values) {
   if (!values.password) {
     errors.password = "Please enter a password";
   }
-  //if the 'errors' object is empty, the form is valid and ok to submit
+  if (!values["confirm password"]) {
+    errors["confirm password"] = "Please confirm your password";
+  }
+  if (values.password !== values["confirm password"]) {
+    errors["confirm password"] = "Passwords doesn't match";
+  }
+  //if the "errors" object is empty, the form is valid and ok to submit
   return errors;
 }
 
-const mapStateToProps = state => ({ error: state.error });
+const mapStateToProps = ({ error }) => ({ error });
 
 export default compose(
   withStyles(styles, {
-    name: "Login"
+    name: "Signup"
   }),
   reduxForm({
     validate,
     //value of 'form' must be unique
-    form: "LoginForm"
+    form: "SignUpForm"
   }),
   connect(mapStateToProps)
-)(Login);
+)(Signup);

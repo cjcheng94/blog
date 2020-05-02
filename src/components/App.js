@@ -9,7 +9,7 @@ import {
 } from "@material-ui/core/styles";
 import { CssBaseline, Snackbar, useMediaQuery } from "@material-ui/core";
 
-import Header from "../containers/Header";
+import Header from "../components/Header";
 import Main from "./Main";
 
 const useStyles = makeStyles(theme => ({

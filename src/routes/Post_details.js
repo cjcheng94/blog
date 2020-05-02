@@ -15,7 +15,7 @@ import {
 
 import DisqueComment from "../components/Disqus";
 import CustomDialog from "../components/CustomDialog";
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 import NewPostButton from "../components/NewPostButton";
 
 const styles = theme => ({
