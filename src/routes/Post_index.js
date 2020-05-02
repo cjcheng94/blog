@@ -17,7 +17,16 @@ const styles = theme => ({
   }
 });
 
-class PostIndex extends Component {
+@connect(state => ({
+  posts: state.posts,
+  isPending: state.isPending,
+  error: state.error,
+  isAuthenticated: state.user.isAuthenticated
+}))
+@withStyles(styles, {
+  name: "PostIndex"
+})
+export default class PostIndex extends Component {
   state = {
     orderChecked: false
   };
@@ -73,17 +82,3 @@ class PostIndex extends Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  posts: state.posts,
-  isPending: state.isPending,
-  error: state.error,
-  isAuthenticated: state.user.isAuthenticated
-});
-
-export default compose(
-  withStyles(styles, {
-    name: "PostIndex"
-  }),
-  connect(mapStateToProps)
-)(PostIndex);

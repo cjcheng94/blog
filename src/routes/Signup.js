@@ -25,7 +25,16 @@ const styles = {
   }
 };
 
-class Signup extends Component {
+@connect(({ error }) => ({ error }))
+@reduxForm({
+  validate,
+  //value of 'form' must be unique
+  form: "SignUpForm"
+})
+@withStyles(styles, {
+  name: "Signup"
+})
+export default class Signup extends Component {
   state = {
     open: false
   };
@@ -141,17 +150,3 @@ function validate(values) {
   //if the "errors" object is empty, the form is valid and ok to submit
   return errors;
 }
-
-const mapStateToProps = ({ error }) => ({ error });
-
-export default compose(
-  withStyles(styles, {
-    name: "Signup"
-  }),
-  reduxForm({
-    validate,
-    //value of 'form' must be unique
-    form: "SignUpForm"
-  }),
-  connect(mapStateToProps)
-)(Signup);

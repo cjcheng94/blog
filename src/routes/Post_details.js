@@ -42,8 +42,13 @@ const styles = theme => ({
     fontWeight: "bold"
   }
 });
-
-class PostDetails extends Component {
+@connect((state, ownProps) => ({
+  post: state.posts[ownProps.match.params._id],
+  user: state.user,
+  error: state.error
+}))
+@withStyles(styles, { name: "PostDetails" })
+export default class PostDetails extends Component {
   state = {
     showCustomDialog: false,
     showAlert: false,
@@ -55,7 +60,7 @@ class PostDetails extends Component {
     window.scrollTo(0, 0);
 
     if (window.navigator.onLine) {
-      if (!this.props.posts) {
+      if (!this.props.post) {
         // If a user refreshs a detail page or lands here via url,
         // only fetch the post whose id corresponds to the id in the url
         const { _id } = this.props.match.params;
@@ -103,14 +108,14 @@ class PostDetails extends Component {
   render() {
     // Show error page if any
     const { error, classes } = this.props;
-    if (!this.props.posts) {
+    if (!this.props.post) {
       if (error.status) {
         return <ErrorAlert type="postDetail" />;
       }
       return null;
     }
 
-    const { title, author, content, date } = this.props.posts;
+    const { title, author, content, date } = this.props.post;
     const {
       user: { isAuthenticated }
     } = this.props;
@@ -204,19 +209,3 @@ class PostDetails extends Component {
     );
   }
 }
-
-function mapStateToProps({ posts, user, error }, ownProps) {
-  return {
-    //Filter posts by id (from url) to find the post we're looking for
-    posts: posts[ownProps.match.params._id],
-    user,
-    error
-  };
-}
-
-export default compose(
-  withStyles(styles, {
-    name: "PostDetails"
-  }),
-  connect(mapStateToProps)
-)(PostDetails);

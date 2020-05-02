@@ -10,7 +10,17 @@ import NewPostButton from "../components/NewPostButton";
 
 const styles = {};
 
-class UserProfile extends Component {
+@connect((state, ownProps) => ({
+  posts: state.posts,
+  isPending: state.isPending,
+  error: state.error,
+  isAuthenticated: state.user.isAuthenticated,
+  userFilter: decodeURIComponent(ownProps.match.params.username)
+}))
+@withStyles(styles, {
+  name: "UserProfile"
+})
+export default class UserProfile extends Component {
   componentDidMount() {
     //if this.props.posts is already there, don't waste network usage on fetching again
     if (Object.keys(this.props.posts).length === 0) {
@@ -46,20 +56,3 @@ class UserProfile extends Component {
     );
   }
 }
-
-const mapStateToProps = (state, ownProps) => {
-  return {
-    posts: state.posts,
-    isPending: state.isPending,
-    error: state.error,
-    isAuthenticated: state.user.isAuthenticated,
-    userFilter: decodeURIComponent(ownProps.match.params.username)
-  };
-};
-
-export default compose(
-  withStyles(styles, {
-    name: "UserProfile"
-  }),
-  connect(mapStateToProps)
-)(UserProfile);

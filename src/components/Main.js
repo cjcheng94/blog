@@ -58,8 +58,8 @@ const routes = [
     main: NoMatch
   }
 ];
-
-class Main extends Component {
+@withStyles(styles)
+export default class Main extends Component {
   render() {
     const { classes } = this.props;
     return (
@@ -78,5 +78,3 @@ class Main extends Component {
     );
   }
 }
-
-export default withStyles(styles)(Main);
