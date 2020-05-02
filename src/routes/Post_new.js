@@ -10,7 +10,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 import CustomDialog from "../components/CustomDialog";
 // import MyEditor from "../components/editor";
 
@@ -24,7 +24,19 @@ const styles = {
     marginRight: 20
   }
 };
-class PostNew extends Component {
+@connect(state => ({
+  isPending: state.isPending,
+  error: state.error
+}))
+@reduxForm({
+  validate,
+  //value of "form" must be unique
+  form: "PostsNewForm"
+})
+@withStyles(styles, {
+  name: "PostNew"
+})
+export default class PostNew extends Component {
   state = {
     showCustomDialog: false,
     showAlert: false,
@@ -178,20 +190,3 @@ function validate(values) {
   //if the "errors" object is empty, the form is valid and ok to submit
   return errors;
 }
-
-const mapStateToProps = ({ isPending, error }) => ({
-  isPending,
-  error
-});
-
-export default compose(
-  withStyles(styles, {
-    name: "PostNew"
-  }),
-  reduxForm({
-    validate,
-    //value of "form" must be unique
-    form: "PostsNewForm"
-  }),
-  connect(mapStateToProps)
-)(PostNew);

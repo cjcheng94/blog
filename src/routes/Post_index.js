@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 
 import { withStyles, Grid, Button, Tooltip, Switch } from "@material-ui/core";
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 import Cards from "../components/Cards";
 import CardPlaceHolder from "../components/CardPlaceholder";
 import NewPostButton from "../components/NewPostButton";
@@ -17,7 +17,16 @@ const styles = theme => ({
   }
 });
 
-class PostIndex extends Component {
+@connect(state => ({
+  posts: state.posts,
+  isPending: state.isPending,
+  error: state.error,
+  isAuthenticated: state.user.isAuthenticated
+}))
+@withStyles(styles, {
+  name: "PostIndex"
+})
+export default class PostIndex extends Component {
   state = {
     orderChecked: false
   };
@@ -73,17 +82,3 @@ class PostIndex extends Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  posts: state.posts,
-  isPending: state.isPending,
-  error: state.error,
-  isAuthenticated: state.user.isAuthenticated
-});
-
-export default compose(
-  withStyles(styles, {
-    name: "PostIndex"
-  }),
-  connect(mapStateToProps)
-)(PostIndex);

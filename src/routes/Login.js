@@ -9,7 +9,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 import TextField from "@material-ui/core/TextField";
 
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 
 const styles = {
   wrapper: {
@@ -21,8 +21,16 @@ const styles = {
     margin: "30px auto"
   }
 };
-
-class Login extends Component {
+@connect(state => ({ error: state.error }))
+@reduxForm({
+  validate,
+  //value of 'form' must be unique
+  form: "LoginForm"
+})
+@withStyles(styles, {
+  name: "Login"
+})
+export default class Login extends Component {
   state = {
     open: false
   };
@@ -133,17 +141,3 @@ function validate(values) {
   //if the 'errors' object is empty, the form is valid and ok to submit
   return errors;
 }
-
-const mapStateToProps = state => ({ error: state.error });
-
-export default compose(
-  withStyles(styles, {
-    name: "Login"
-  }),
-  reduxForm({
-    validate,
-    //value of 'form' must be unique
-    form: "LoginForm"
-  }),
-  connect(mapStateToProps)
-)(Login);

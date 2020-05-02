@@ -9,6 +9,7 @@
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
+    "declaration": true,
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
     "noImplicitReturns": true,
@@ -18,9 +19,11 @@
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
-    "allowSyntheticDefaultImports":true
+    "allowSyntheticDefaultImports":true,
+    "experimentalDecorators": true,
   },
   "exclude": [
+    "config",
     "node_modules",
     "build",
     "scripts",

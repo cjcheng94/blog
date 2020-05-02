@@ -20,7 +20,12 @@ const customMessage = {
   postUpdate: "Unauthorized or Login expired, please log in again",
   postDetail: "Unauthorized or Login expired, please log in again"
 };
-class ErrorAlert extends React.Component {
+@connect(state => ({
+  status: state.error.status,
+  statusText: state.error.statusText,
+  message: state.error.message
+}))
+export default class ErrorAlert extends React.Component {
   render() {
     const { type, status, statusText, message, dispatch } = this.props;
     return (
@@ -62,11 +67,3 @@ class ErrorAlert extends React.Component {
     );
   }
 }
-
-const mapStateToProps = state => ({
-  status: state.error.status,
-  statusText: state.error.statusText,
-  message: state.error.message
-});
-
-export default connect(mapStateToProps)(ErrorAlert);

@@ -11,7 +11,7 @@ import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
 import CustomDialog from "../components/CustomDialog";
-import ErrorAlert from "../containers/ErrorAlert";
+import ErrorAlert from "../components/ErrorAlert";
 
 const styles = {
   formEdit: {
@@ -24,7 +24,22 @@ const styles = {
   }
 };
 
-class PostUpdate extends Component {
+@connect(({ error, posts }, ownProps) => ({
+  //Provide initialValues to prepopulate the form
+  //See https://redux-form.com/7.4.2/examples/initializefromstate/
+  initialValues: posts[ownProps.match.params._id],
+  posts: posts[ownProps.match.params._id],
+  stateError: error
+}))
+//See https://redux-form.com/7.4.2/examples/initializefromstate/
+@reduxForm({
+  validate,
+  form: "PostEditForm"
+})
+@withStyles(styles, {
+  name: "PostUpdate"
+})
+export default class PostUpdate extends Component {
   state = {
     showCustomDialog: false,
     showAlert: false,
@@ -210,23 +225,3 @@ function validate(values) {
   //if the "errors" object is empty, the form is valid and ok to submit
   return errors;
 }
-
-const mapStateToProps = ({ error, posts }, ownProps) => ({
-  //Provide initialValues to prepopulate the form
-  //See https://redux-form.com/7.4.2/examples/initializefromstate/
-  initialValues: posts[ownProps.match.params._id],
-  posts: posts[ownProps.match.params._id],
-  stateError: error
-});
-
-//See https://redux-form.com/7.4.2/examples/initializefromstate/
-export default compose(
-  withStyles(styles, {
-    name: "PostUpdate"
-  }),
-  connect(mapStateToProps),
-  reduxForm({
-    validate,
-    form: "PostEditForm"
-  })
-)(PostUpdate);

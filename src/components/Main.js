@@ -2,20 +2,18 @@ import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
 
-import PostNew from "../containers/Post_new";
-import PostIndex from "../containers/Post_index";
-import PostDetails from "../containers/Post_details";
-import PostUpdate from "../containers/Post_update";
-import Login from "../containers/Login";
-import Signup from "../containers/Signup";
-import NoMatch from "../components/NoMatch";
+import PostNew from "../routes/Post_new";
+import PostIndex from "../routes/Post_index";
+import PostDetails from "../routes/Post_details";
+import PostUpdate from "../routes/Post_update";
+import Login from "../routes/Login";
+import Signup from "../routes/Signup";
+import NoMatch from "../routes/NoMatch";
 import AsyncComponent from "./AsyncComponent";
 
 //As this app is quite small, we don't need to unnassisarily split the code into too many chunks,
 //but I'll leave AsyncUserProfile spit as a demonstration
-const AsyncUserProfile = AsyncComponent(() =>
-  import("../containers/UserProfile")
-);
+const AsyncUserProfile = AsyncComponent(() => import("../routes/UserProfile"));
 
 const styles = {
   root: {
@@ -60,8 +58,8 @@ const routes = [
     main: NoMatch
   }
 ];
-
-class Main extends Component {
+@withStyles(styles)
+export default class Main extends Component {
   render() {
     const { classes } = this.props;
     return (
@@ -80,5 +78,3 @@ class Main extends Component {
     );
   }
 }
-
-export default withStyles(styles)(Main);
