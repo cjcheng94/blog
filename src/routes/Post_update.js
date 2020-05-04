@@ -10,8 +10,8 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
-import CustomDialog from "../components/CustomDialog";
-import ErrorAlert from "../components/ErrorAlert";
+import CustomDialog from "@components/CustomDialog";
+import ErrorAlert from "@components/ErrorAlert";
 
 const styles = {
   formEdit: {

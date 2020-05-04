@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { Route, Switch } from "react-router-dom";
 import { withStyles } from "@material-ui/core";
 
-import PostNew from "../routes/Post_new";
-import PostIndex from "../routes/Post_index";
-import PostDetails from "../routes/Post_details";
-import PostUpdate from "../routes/Post_update";
-import Login from "../routes/Login";
-import Signup from "../routes/Signup";
-import NoMatch from "../routes/NoMatch";
-import AsyncComponent from "./AsyncComponent";
+import PostNew from "@routes/Post_new";
+import PostIndex from "@routes/Post_index";
+import PostDetails from "@routes/Post_details";
+import PostUpdate from "@routes/Post_update";
+import Login from "@routes/Login";
+import Signup from "@routes/Signup";
+import NoMatch from "@routes/NoMatch";
+import AsyncComponent from "@components/AsyncComponent";
 
 //As this app is quite small, we don't need to unnassisarily split the code into too many chunks,
 //but I'll leave AsyncUserProfile spit as a demonstration
