@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "baseUrl": ".",
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",
@@ -21,7 +20,13 @@
     "noUnusedLocals": true,
     "allowSyntheticDefaultImports":true,
     "experimentalDecorators": true,
+    "baseUrl": "./src",
+    "paths":{
+      "@components/*": ["components/*"],
+      "@routes/*": ["routes/*"]
+    }
   },
+  "include":["src"],
   "exclude": [
     "config",
     "node_modules",
@@ -31,5 +36,5 @@
     "webpack",
     "jest",
     "src/setupTests.ts"
-  ]
+  ]  
 }

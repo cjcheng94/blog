@@ -17,7 +17,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 import { AccountCircle, Brightness4 } from "@material-ui/icons";
 
-import CustomDialog from "../components/CustomDialog";
+import CustomDialog from "@components/CustomDialog";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";

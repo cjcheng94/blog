@@ -13,10 +13,10 @@ import {
   Button
 } from "@material-ui/core";
 
-import DisqueComment from "../components/Disqus";
-import CustomDialog from "../components/CustomDialog";
-import ErrorAlert from "../components/ErrorAlert";
-import NewPostButton from "../components/NewPostButton";
+import DisqueComment from "@components/Disqus";
+import CustomDialog from "@components/CustomDialog";
+import ErrorAlert from "@components/ErrorAlert";
+import NewPostButton from "@components/NewPostButton";
 
 const styles = theme => ({
   wrapper: {
