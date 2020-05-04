@@ -14,7 +14,7 @@ import {
 } from "@material-ui/core";
 
 import {
-  DisqueComment,
+  DisqusComment,
   CustomDialog,
   ErrorAlert,
   NewPostButton
@@ -205,7 +205,7 @@ export default class PostDetails extends Component {
           />
 
           {/*Disqus plugin*/}
-          <DisqueComment identifier={_id} title={title} />
+          <DisqusComment identifier={_id} title={title} />
         </div>
       </Fragment>
     );

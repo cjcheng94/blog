@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 
 import { withStyles, Grid, Button, Tooltip, Switch } from "@material-ui/core";
-import { ErrorAlert, Cards, CardPlaceHolder, NewPostButton } from "@components";
+import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 
 const styles = theme => ({
   switch: {
@@ -64,7 +64,7 @@ export default class PostIndex extends Component {
           {
             //Show placeholders when loading
             isPending ? (
-              <CardPlaceHolder />
+              <CardPlaceholder />
             ) : (
               <Cards posts={posts} latestFirst={orderChecked} />
             )

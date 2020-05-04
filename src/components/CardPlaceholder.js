@@ -35,7 +35,7 @@ const styles = theme => ({
   }
 });
 
-const CardPlaceHolders = props => {
+const CardPlaceholder = props => {
   const { classes } = props;
   //Render 12 "empty" cards:
   //Create an ITERABLE array with a length of 12, and then .map()
@@ -57,4 +57,4 @@ const CardPlaceHolders = props => {
     );
   });
 };
-export default withStyles(styles)(CardPlaceHolders);
+export default withStyles(styles)(CardPlaceholder);
