@@ -4,9 +4,7 @@ import { compose } from "redux";
 
 import { withStyles, Grid, Typography } from "@material-ui/core";
 
-import ErrorAlert from "@components/ErrorAlert";
-import Cards from "@components/Cards";
-import NewPostButton from "@components/NewPostButton";
+import { ErrorAlert, Cards, NewPostButton } from "@components";
 
 const styles = {};
 
