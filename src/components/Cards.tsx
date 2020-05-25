@@ -3,7 +3,12 @@ import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
 
-import { withStyles, Theme } from "@material-ui/core/styles";
+import {
+  withStyles,
+  createStyles,
+  Theme,
+  WithStyles
+} from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
@@ -14,7 +19,7 @@ import { PostsHub } from "PostTypes";
 
 const styles = (theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
-  return {
+  return createStyles({
     card: {
       width: "100%",
       [theme.breakpoints.up("sm")]: {
@@ -38,14 +43,13 @@ const styles = (theme: Theme) => {
     article: {
       fontSize: "1.1em"
     }
-  };
+  });
 };
 
-type Props = {
-  classes: any;
+interface Props extends WithStyles<typeof styles> {
   latestFirst: boolean;
   posts: PostsHub;
-};
+}
 
 const Cards: React.FC<Props> = props => {
   const { classes, latestFirst, posts } = props;

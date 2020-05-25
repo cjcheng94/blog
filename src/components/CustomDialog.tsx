@@ -5,12 +5,26 @@ import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
+import { TransitionProps } from "@material-ui/core/transitions";
 
-function Transition(props) {
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & { children?: React.ReactElement<any, any> },
+  ref: React.Ref<unknown>
+) {
   return <Slide direction="up" {...props} />;
-}
+});
 
-export default props => {
+type DialogProps = {
+  dialogTitle: string;
+  open: boolean;
+  isDisabled: boolean;
+  type: "submit" | "reset" | "button";
+  formId: string;
+  handleClose: () => void;
+  handleConfirm: () => void;
+};
+
+const CustomDialog: React.FC<DialogProps> = props => {
   const {
     dialogTitle,
     open,
@@ -50,3 +64,5 @@ export default props => {
     </div>
   );
 };
+
+export default CustomDialog;
