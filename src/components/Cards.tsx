@@ -3,14 +3,16 @@ import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
 
-import { withStyles } from "@material-ui/core/styles";
+import { withStyles, Theme } from "@material-ui/core/styles";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 
-const styles = theme => {
+import { PostsHub } from "PostTypes";
+
+const styles = (theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
   return {
     card: {
@@ -39,14 +41,20 @@ const styles = theme => {
   };
 };
 
-const Cards = props => {
-  const { classes, latestFirst } = props;
+type Props = {
+  classes: any;
+  latestFirst: boolean;
+  posts: PostsHub;
+};
+
+const Cards: React.FC<Props> = props => {
+  const { classes, latestFirst, posts } = props;
 
   //Sort posts by time based on props.latestFirst
   const order = latestFirst ? "desc" : "asc";
-  const ordered = orderBy(props.posts, ["date"], [order]);
+  const ordered = orderBy(posts, ["date"], [order]);
 
-  return map(ordered, post => {
+  const cards = map(ordered, post => {
     const url = `/posts/detail/${post._id}`;
     return (
       <Grid item xs={12} sm={6} md={4} lg={3} key={post._id}>
@@ -73,6 +81,8 @@ const Cards = props => {
       </Grid>
     );
   });
+
+  return <>{cards}</>;
 };
 
 export default withStyles(styles)(Cards);
