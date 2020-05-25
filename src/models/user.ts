@@ -1,35 +1,15 @@
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import axios from "axios";
 import { Dispatch } from "../store";
+import {
+  UserState,
+  SignupPayload,
+  LoginPayload,
+  LogoutPayload,
+  UserResponse
+} from "UserTypes";
 
 const ROOT_URL = "https://alexsblogapi.herokuapp.com";
-
-export type UserState = {
-  isAuthenticated: boolean;
-  username: string;
-  isDarkMode: boolean;
-};
-
-export type UserCredential = {
-  username: string;
-  password: string;
-};
-export type SignupPayload = {
-  signupData: UserCredential;
-  callback: () => {};
-};
-export type LoginPayload = {
-  loginData: UserCredential;
-  callback: () => {};
-};
-export type LogoutPayload = {
-  callback: () => {};
-};
-export type UserResponse = {
-  message: string;
-  token: string;
-  username: string;
-};
 
 export const user = {
   state: {
