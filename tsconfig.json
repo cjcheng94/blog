@@ -25,7 +25,7 @@
       "@routes": ["routes"]
     }
   },
-  "include":["src"],
+  "include":["src", "typings"],
   "exclude": [
     "config",
     "node_modules",
