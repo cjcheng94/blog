@@ -21,8 +21,8 @@
     "experimentalDecorators": true,
     "baseUrl": "./src",
     "paths":{
-      "@components/*": ["components/*"],
-      "@routes/*": ["routes/*"]
+      "@components": ["components"],
+      "@routes": ["routes"]
     }
   },
   "include":["src"],
