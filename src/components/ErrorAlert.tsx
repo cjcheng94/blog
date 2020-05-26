@@ -1,6 +1,7 @@
 import React, { Fragment } from "react";
 import { connect } from "react-redux";
 import { Link } from "react-router-dom";
+import { iRootState, Dispatch } from "../store";
 
 import Button from "@material-ui/core/Button";
 import Dialog from "@material-ui/core/Dialog";
@@ -9,10 +10,8 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Slide from "@material-ui/core/Slide";
+import { TransitionProps } from "@material-ui/core/transitions";
 
-function Transition(props) {
-  return <Slide direction="up" {...props} />;
-}
 const customMessage = {
   login: "Password Incorrect or user doesn't exist",
   signup: "User already exists",
@@ -20,21 +19,40 @@ const customMessage = {
   postUpdate: "Unauthorized or Login expired, please log in again",
   postDetail: "Unauthorized or Login expired, please log in again"
 };
-@connect(state => ({
+
+const Transition = React.forwardRef(function Transition(
+  props: TransitionProps & { children?: React.ReactElement<any, any> },
+  ref: React.Ref<unknown>
+) {
+  return <Slide direction="up" {...props} />;
+});
+
+const mapState = (state: iRootState) => ({
   status: state.error.status,
   statusText: state.error.statusText,
   message: state.error.message
-}))
-export default class ErrorAlert extends React.Component {
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  clearError: dispatch.error.clearError
+});
+
+type connectedProps = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch>;
+
+type Props = connectedProps & {
+  type: string;
+};
+
+class ErrorAlert extends React.Component<Props> {
   render() {
-    const { type, status, statusText, message, dispatch } = this.props;
+    const { type, status, statusText, message, clearError } = this.props;
     return (
       <div>
         <Dialog
           open={!!status}
           TransitionComponent={Transition}
           keepMounted
-          onClose={this.handleClose}
           aria-labelledby="alert-dialog-slide-title"
           aria-describedby="alert-dialog-slide-description"
         >
@@ -58,7 +76,7 @@ export default class ErrorAlert extends React.Component {
             <Button component={Link} to="/" color="secondary">
               Home
             </Button>
-            <Button onClick={dispatch.error.clearError} color="primary">
+            <Button onClick={clearError} color="primary">
               Back
             </Button>
           </DialogActions>
@@ -67,3 +85,5 @@ export default class ErrorAlert extends React.Component {
     );
   }
 }
+
+export default connect(mapState, mapDispatch)(ErrorAlert);
