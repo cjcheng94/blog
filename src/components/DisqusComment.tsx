@@ -4,12 +4,17 @@ import { DiscussionEmbed } from "disqus-react";
 import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 
-export default props => {
+type Props = {
+  id: string;
+  title: string;
+};
+
+const DisqusComment: React.FC<Props> = ({ id, title }) => {
   const disqusShortname = "alexreactblog";
   const disqusConfig = {
     url: window.location.href,
-    identifier: props.id,
-    title: props.title
+    identifier: id,
+    title
   };
 
   return (
@@ -25,3 +30,5 @@ export default props => {
     </div>
   );
 };
+
+export default DisqusComment;
