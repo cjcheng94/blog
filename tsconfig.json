@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "strict": true,
-    "outDir": "build/dist",
     "module": "esnext",
     "target": "es6",
     "lib": ["es6", "dom"],
@@ -10,6 +9,7 @@
     "jsx": "react",
     "moduleResolution": "node",
     "forceConsistentCasingInFileNames": true,
+    "noEmit": true,
     "noImplicitReturns": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
