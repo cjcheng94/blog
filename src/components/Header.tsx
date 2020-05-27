@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from "react";
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import { connect } from "react-redux";
-
+import { Dispatch, iRootState } from "../store";
 import {
   Tooltip,
   AppBar,
@@ -55,38 +55,61 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-const Header = ({
-  dispatch,
+const mapState = (state: iRootState) => ({
+  isAuthenticated: state.user.isAuthenticated,
+  username: state.user.username,
+  isPending: state.isPending
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  userLogout: dispatch.user.logout,
+  toggleDarkMode: dispatch.user.toggleDarkMode
+});
+
+type ConnectedProps = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch>;
+
+type HeaderProps = RouteComponentProps & ConnectedProps;
+
+const Header: React.FC<HeaderProps> = ({
   isAuthenticated,
   username,
   isPending,
-  history
+  history,
+  userLogout,
+  toggleDarkMode
 }) => {
   const classes = useStyles();
 
-  const [openAlert, setOpenAlert] = useState(false);
-  const [openCustomDialog, setOpenCustomDialog] = useState(false);
-  const [anchorEl, setAnchorEl] = useState(null);
+  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [openCustomDialog, setOpenCustomDialog] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
 
   const showAlert = () => {
     setOpenAlert(true);
   };
+
   const hideAlert = () => {
     setOpenAlert(false);
   };
-  const showMenu = e => {
+
+  const showMenu = (e: React.MouseEvent) => {
     setAnchorEl(e.currentTarget);
   };
+
   const hideMenu = () => {
     setAnchorEl(null);
   };
+
   const showCustomDialog = () => {
     setOpenCustomDialog(true);
   };
+
   const hideCustomDialog = () => {
     setOpenCustomDialog(false);
   };
-  const handleLogoutClick = e => {
+
+  const handleLogoutClick = (e: React.MouseEvent) => {
     e.preventDefault();
 
     const logoutCallback = () => {
@@ -97,10 +120,13 @@ const Header = ({
       }, 1000);
     };
 
-    dispatch.user.logout({
+    userLogout({
       callback: logoutCallback
     });
   };
+
+  const getUserPath = () =>
+    !!username ? `/user/profile/${encodeURIComponent(username)}` : "";
 
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
 
@@ -122,7 +148,7 @@ const Header = ({
             <IconButton
               aria-haspopup="true"
               color="inherit"
-              onClick={dispatch.user.toggleDarkMode}
+              onClick={toggleDarkMode}
             >
               <Brightness4 />
             </IconButton>
@@ -145,10 +171,7 @@ const Header = ({
                   onClose={hideMenu}
                 >
                   <MenuItem button={false}>{username}</MenuItem>
-                  <MenuItem
-                    component={Link}
-                    to={`/user/profile/${encodeURIComponent(username)}`}
-                  >
+                  <MenuItem component={Link} to={getUserPath()}>
                     My Posts
                   </MenuItem>
                   <MenuItem onClick={showCustomDialog} color="inherit">
@@ -209,10 +232,4 @@ const Header = ({
   );
 };
 
-const mapStateToProps = state => ({
-  isAuthenticated: state.user.isAuthenticated,
-  username: state.user.username,
-  isPending: state.isPending
-});
-
-export default connect(mapStateToProps)(Header);
+export default connect(mapState, mapDispatch)(Header);
