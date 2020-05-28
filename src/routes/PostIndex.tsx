@@ -1,11 +1,19 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
+import { iRootState, Dispatch } from "../store";
 
-import { withStyles, Grid, Button, Tooltip, Switch } from "@material-ui/core";
+import {
+  withStyles,
+  createStyles,
+  WithStyles,
+  Grid,
+  Tooltip,
+  Switch
+} from "@material-ui/core";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 
-const styles = theme => ({
+const styles = createStyles({
   switch: {
     width: "100%",
     marginTop: "-12px",
@@ -14,30 +22,45 @@ const styles = theme => ({
   }
 });
 
-@connect(state => ({
+const mapState = (state: iRootState) => ({
   posts: state.posts,
   isPending: state.isPending,
   error: state.error,
   isAuthenticated: state.user.isAuthenticated
-}))
-@withStyles(styles, {
-  name: "PostIndex"
-})
-export default class PostIndex extends Component {
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  fetchPosts: dispatch.posts.fetchPosts,
+  setIsPending: dispatch.isPending.setIsPending
+});
+
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> &
+  WithStyles<typeof styles>;
+
+type State = {
+  orderChecked: boolean;
+};
+
+class PostIndex extends Component<Props, State> {
   state = {
     orderChecked: false
   };
+
   componentDidMount() {
     //Get posts on mount
-    this.props.dispatch.posts.fetchPosts();
+    this.props.fetchPosts();
   }
+
   componentWillUnmount() {
     //Clear the progress bar on unmount
-    this.props.dispatch.isPending.setIsPending(false);
+    this.props.setIsPending(false);
   }
-  handleChange = name => event => {
-    this.setState({ [name]: event.target.checked });
+
+  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ orderChecked: event.target.checked });
   };
+
   render() {
     const { error, isPending, posts, classes, isAuthenticated } = this.props;
     const { orderChecked } = this.state;
@@ -54,7 +77,7 @@ export default class PostIndex extends Component {
           <div className={classes.switch}>
             <Switch
               checked={orderChecked}
-              onChange={this.handleChange("orderChecked")}
+              onChange={this.handleChange}
               value="orderChecked"
             />
             Sorting by:{" "}
@@ -79,3 +102,8 @@ export default class PostIndex extends Component {
     );
   }
 }
+
+export default compose(
+  withStyles(styles, { name: "PostIndex" }),
+  connect(mapState, mapDispatch)
+)(PostIndex);
