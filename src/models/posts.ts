@@ -12,10 +12,22 @@ import {
 
 const ROOT_URL = "https://alexsblogapi.herokuapp.com";
 
-export const posts = {
+type Posts = {
+  state: PostsHub;
+  reducers: {
+    [key: string]: (state: PostsHub, payload: any) => PostsHub;
+  };
+  effects: (
+    dispatch: Dispatch
+  ) => {
+    [key: string]: (payload: any, state: PostsHub) => Promise<void>;
+  };
+};
+
+export const posts: Posts = {
   state: {},
   reducers: {
-    updatePostsInState: (state: PostsHub, payload: PostsList) =>
+    updatePostsInState: (state: PostsHub, payload: PostsList): PostsHub =>
       mapKeys(payload, "_id"),
 
     updateOnePostInState: (state: PostsHub, payload: Post) => ({
