@@ -41,12 +41,29 @@ type connectedProps = ReturnType<typeof mapState> &
   ReturnType<typeof mapDispatch>;
 
 type Props = connectedProps & {
-  type: string;
+  type?: string;
 };
 
 class ErrorAlert extends React.Component<Props> {
+  renderErrorMessage = () => {
+    const { type, status, statusText, message } = this.props;
+    const isErrorCode = status === 401 || status === 409;
+
+    if (typeof type === "string" && isErrorCode) {
+      return <DialogContentText>{customMessage[type]}</DialogContentText>;
+    }
+
+    return (
+      <Fragment>
+        <DialogContentText>{status + " " + statusText}</DialogContentText>
+        <DialogContentText>{message}</DialogContentText>
+      </Fragment>
+    );
+  };
+
   render() {
-    const { type, status, statusText, message, clearError } = this.props;
+    const { status, clearError } = this.props;
+
     return (
       <div>
         <Dialog
@@ -57,21 +74,7 @@ class ErrorAlert extends React.Component<Props> {
           aria-describedby="alert-dialog-slide-description"
         >
           <DialogTitle>Oops, Something went wrong...</DialogTitle>
-          <DialogContent>
-            {
-              //Only use custom messages when status is 401 or 409, otherwise show status & messages sent from server.
-              status === 401 || status === 409 ? (
-                <DialogContentText>{customMessage[type]}</DialogContentText>
-              ) : (
-                <Fragment>
-                  <DialogContentText>
-                    {status + " " + statusText}
-                  </DialogContentText>
-                  <DialogContentText>{message}</DialogContentText>
-                </Fragment>
-              )
-            }
-          </DialogContent>
+          <DialogContent>{this.renderErrorMessage()}</DialogContent>
           <DialogActions>
             <Button component={Link} to="/" color="secondary">
               Home
