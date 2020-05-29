@@ -155,7 +155,7 @@ function validate(values: UserCredential): FormErrors<UserCredential> {
   return errors;
 }
 
-export default compose(
+export default compose<typeof Login>(
   withStyles(styles, {
     name: "Login"
   }),
