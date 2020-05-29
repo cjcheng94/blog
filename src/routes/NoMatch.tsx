@@ -1,20 +1,23 @@
 import React from "react";
+import { RouteComponentProps } from "react-router-dom";
 
-import { withStyles } from "@material-ui/core";
+import { withStyles, createStyles, WithStyles } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 
-const styles = {
+const styles = createStyles({
   url: {
     backgroundColor: "#DCDCDC",
     fontFamily: "monospace",
     overflowWrap: "break-word"
   }
-};
+});
 
-const NoMatch = props => {
+type Props = RouteComponentProps<{}> & WithStyles<typeof styles>;
+
+const NoMatch: React.FC<Props> = props => {
   const { location, classes } = props;
   return (
-    <div className={classes.nmcontent}>
+    <div>
       <Typography variant="h5" color="error">
         Oops...
       </Typography>
@@ -25,4 +28,5 @@ const NoMatch = props => {
     </div>
   );
 };
+
 export default withStyles(styles)(NoMatch);

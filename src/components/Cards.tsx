@@ -47,7 +47,7 @@ const styles = (theme: Theme) => {
 };
 
 interface Props extends WithStyles<typeof styles> {
-  latestFirst: boolean;
+  latestFirst?: boolean;
   posts: PostsHub;
 }
 

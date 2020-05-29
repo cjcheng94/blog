@@ -1,32 +1,42 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
+import { RouteComponentProps } from "react-router-dom";
 import { compose } from "redux";
-
-import { withStyles, Grid, Typography } from "@material-ui/core";
-
+import { iRootState, Dispatch } from "../store";
+import { withStyles, WithStyles, Grid, Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 
 const styles = {};
 
-@connect((state, ownProps) => ({
+type TParams = { username: string };
+type OwnProps = {} & RouteComponentProps<TParams>;
+
+const mapState = (state: iRootState, ownProps: OwnProps) => ({
   posts: state.posts,
   isPending: state.isPending,
   error: state.error,
   isAuthenticated: state.user.isAuthenticated,
   userFilter: decodeURIComponent(ownProps.match.params.username)
-}))
-@withStyles(styles, {
-  name: "UserProfile"
-})
-export default class UserProfile extends Component {
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  fetchPosts: dispatch.posts.fetchPosts
+});
+
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> &
+  WithStyles<typeof styles> &
+  RouteComponentProps;
+
+class UserProfile extends Component<Props, {}> {
   componentDidMount() {
     //if this.props.posts is already there, don't waste network usage on fetching again
     if (Object.keys(this.props.posts).length === 0) {
-      this.props.dispatch.posts.fetchPosts();
+      this.props.fetchPosts();
     }
   }
   render() {
-    const { error, posts, userFilter, isAuthenticated, classes } = this.props;
+    const { error, posts, userFilter, isAuthenticated } = this.props;
 
     //filter all posts whose author prop matches the username in url
     const userPosts = {};
@@ -54,3 +64,10 @@ export default class UserProfile extends Component {
     );
   }
 }
+
+export default compose(
+  withStyles(styles, {
+    name: "UserProfile"
+  }),
+  connect(mapState, mapDispatch)
+)(UserProfile);
