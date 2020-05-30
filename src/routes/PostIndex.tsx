@@ -104,6 +104,6 @@ class PostIndex extends Component<Props, State> {
 }
 
 export default compose<typeof PostIndex>(
-  withStyles(styles, { name: "PostIndex" }),
-  connect(mapState, mapDispatch)
+  connect(mapState, mapDispatch),
+  withStyles(styles, { name: "PostIndex" })
 )(PostIndex);

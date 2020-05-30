@@ -156,6 +156,7 @@ function validate(values: UserCredential): FormErrors<UserCredential> {
 }
 
 export default compose<typeof Login>(
+  connect(mapState, mapDispatch),
   withStyles(styles, {
     name: "Login"
   }),
@@ -163,6 +164,5 @@ export default compose<typeof Login>(
     validate,
     //value of 'form' must be unique
     form: "LoginForm"
-  }),
-  connect(mapState, mapDispatch)
+  })
 )(Login);

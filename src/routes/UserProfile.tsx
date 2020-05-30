@@ -9,7 +9,7 @@ import { ErrorAlert, Cards, NewPostButton } from "@components";
 const styles = {};
 
 type TParams = { username: string };
-type OwnProps = {} & RouteComponentProps<TParams>;
+type OwnProps = RouteComponentProps<TParams>;
 
 const mapState = (state: iRootState, ownProps: OwnProps) => ({
   posts: state.posts,
@@ -66,8 +66,8 @@ class UserProfile extends Component<Props, {}> {
 }
 
 export default compose(
+  connect(mapState, mapDispatch),
   withStyles(styles, {
     name: "UserProfile"
-  }),
-  connect(mapState, mapDispatch)
+  })
 )(UserProfile);
