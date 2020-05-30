@@ -1,6 +1,6 @@
-import React, { Component } from "react";
+import React from "react";
 import { Route, Switch } from "react-router-dom";
-import { withStyles } from "@material-ui/core";
+import { createStyles, makeStyles } from "@material-ui/core";
 
 import {
   PostNew,
@@ -17,14 +17,16 @@ import { AsyncComponent } from "@components";
 //but I'll leave AsyncUserProfile spit as a demonstration
 const AsyncUserProfile = AsyncComponent(() => import("../routes/UserProfile"));
 
-const styles = {
-  root: {
-    fontFamily: "Roboto, sans-serif"
-  },
-  pageComponent: {
-    padding: 24
-  }
-};
+const useStyles = makeStyles(() =>
+  createStyles({
+    root: {
+      fontFamily: "Roboto, sans-serif"
+    },
+    pageComponent: {
+      padding: 24
+    }
+  })
+);
 
 const routes = [
   {
@@ -60,23 +62,23 @@ const routes = [
     main: NoMatch
   }
 ];
-@withStyles(styles)
-export default class Main extends Component {
-  render() {
-    const { classes } = this.props;
-    return (
-      <main className={classes.pageComponent}>
-        <Switch>
-          {routes.map((route, index) => (
-            <Route
-              key={index}
-              path={route.path}
-              exact={route.exact}
-              component={route.main}
-            />
-          ))}
-        </Switch>
-      </main>
-    );
-  }
-}
+
+const Main: React.FC = props => {
+  const classes = useStyles();
+  return (
+    <main className={classes.pageComponent}>
+      <Switch>
+        {routes.map((route, index) => (
+          <Route
+            key={index}
+            path={route.path}
+            exact={route.exact}
+            component={route.main}
+          />
+        ))}
+      </Switch>
+    </main>
+  );
+};
+
+export default Main;

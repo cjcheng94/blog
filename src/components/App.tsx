@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Route, withRouter } from "react-router-dom";
+import { iRootState, Dispatch } from "../store";
 
 import {
   MuiThemeProvider,
@@ -17,7 +18,16 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const App = ({ userDarkModeSetting, dispatch }) => {
+const mapState = (state: iRootState) => ({
+  userDarkModeSetting: state.user.isDarkMode
+});
+const mapDispatch = (dispatch: Dispatch) => ({
+  setDarkMode: dispatch.user.setDarkMode
+});
+
+type AppProps = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
+
+const App: React.FC<AppProps> = ({ userDarkModeSetting, setDarkMode }) => {
   const classes = useStyles();
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
@@ -31,9 +41,9 @@ const App = ({ userDarkModeSetting, dispatch }) => {
     [userDarkModeSetting]
   );
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-  const [alertDuration, setAlertDuration] = useState(0);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [alertDuration, setAlertDuration] = useState<number>(0);
 
   useEffect(() => {
     const isOnline = window.navigator.onLine;
@@ -46,11 +56,9 @@ const App = ({ userDarkModeSetting, dispatch }) => {
           if (isOnline) {
             //Alert user posts are cached
             setTimeout(() => {
-              this.setState({
-                showAlert: true,
-                alertMessage: "Posts cached for offline use",
-                alertDuration: 2000
-              });
+              setShowAlert(true);
+              setAlertMessage("Posts cached for offline use");
+              setAlertDuration(2000);
             }, 1500);
           } else {
             // Alert user that they're in offline mode
@@ -93,7 +101,7 @@ const App = ({ userDarkModeSetting, dispatch }) => {
 
   // set dark mode by detecting system preference
   useEffect(() => {
-    dispatch.user.setDarkMode({ setting: prefersDarkMode });
+    setDarkMode({ setting: prefersDarkMode });
   }, [prefersDarkMode]);
 
   return (
@@ -122,8 +130,6 @@ const App = ({ userDarkModeSetting, dispatch }) => {
   );
 };
 
-const connectedApp = connect(state => ({
-  userDarkModeSetting: state.user.isDarkMode
-}))(App);
+const connectedApp = connect(mapState, mapDispatch)(App);
 
 export default withRouter(connectedApp);

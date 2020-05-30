@@ -1,9 +1,18 @@
 import React, { Component, Fragment } from "react";
-import { Field, reduxForm } from "redux-form";
+import {
+  Field,
+  reduxForm,
+  InjectedFormProps,
+  FormErrors,
+  WrappedFieldProps
+} from "redux-form";
+import { RouteComponentProps } from "react-router-dom";
 import { connect } from "react-redux";
 import { compose } from "redux";
+import { iRootState, Dispatch } from "../store";
+import { UserCredential } from "UserTypes";
 
-import { withStyles } from "@material-ui/core";
+import { withStyles, createStyles, WithStyles } from "@material-ui/core";
 import Snackbar from "@material-ui/core/Snackbar";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
@@ -11,7 +20,7 @@ import TextField from "@material-ui/core/TextField";
 
 import { ErrorAlert } from "@components";
 
-const styles = {
+const styles = createStyles({
   wrapper: {
     maxWidth: 300,
     margin: "0px auto"
@@ -20,17 +29,21 @@ const styles = {
     display: "block",
     margin: "30px auto"
   }
-};
-@connect(state => ({ error: state.error }))
-@reduxForm({
-  validate,
-  //value of 'form' must be unique
-  form: "LoginForm"
-})
-@withStyles(styles, {
-  name: "Login"
-})
-export default class Login extends Component {
+});
+
+const mapState = (state: iRootState) => ({ error: state.error });
+
+const mapDispatch = (dispatch: Dispatch) => ({ login: dispatch.user.login });
+
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> &
+  WithStyles<typeof styles> &
+  InjectedFormProps<UserCredential> &
+  RouteComponentProps;
+
+type State = { open: boolean };
+
+class Login extends Component<Props, State> {
   state = {
     open: false
   };
@@ -41,21 +54,21 @@ export default class Login extends Component {
   hideAlert() {
     this.setState({ open: false });
   }
-  onComponentSubmit(values) {
+  onComponentSubmit(values: UserCredential) {
     const loginCallback = () => {
       //Callback to execute when the action is resolved
       this.showAlert();
       setTimeout(() => this.props.history.push("/"), 1000);
     };
 
-    this.props.dispatch.user.login({
+    this.props.login({
       loginData: values,
       callback: loginCallback
     });
   }
 
   //For Redux Form's Field Component
-  renderField(field) {
+  renderField(field: WrappedFieldProps) {
     //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
     //and has 'error', which is an object returned by the validate() function.
     const {
@@ -129,8 +142,8 @@ export default class Login extends Component {
 
 // The 'validate' function will be called automaticalli by Redux Form
 // whenever a user attempts to submit the form
-function validate(values) {
-  const errors = {};
+function validate(values: UserCredential): FormErrors<UserCredential> {
+  const errors: FormErrors<UserCredential> = {};
   // Validate the inputs from 'values'
   if (!values.username) {
     errors.username = "Please enter a username";
@@ -141,3 +154,15 @@ function validate(values) {
   //if the 'errors' object is empty, the form is valid and ok to submit
   return errors;
 }
+
+export default compose<typeof Login>(
+  connect(mapState, mapDispatch),
+  withStyles(styles, {
+    name: "Login"
+  }),
+  reduxForm({
+    validate,
+    //value of 'form' must be unique
+    form: "LoginForm"
+  })
+)(Login);

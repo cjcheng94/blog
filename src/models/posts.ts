@@ -1,52 +1,42 @@
 import axios from "axios";
 import mapKeys from "lodash/mapKeys";
 import { Dispatch } from "../store";
+import {
+  Post,
+  PostsList,
+  PostsHub,
+  CreatePostPayload,
+  DeletePostPayload,
+  UpdatePostPayload
+} from "PostTypes";
 
 const ROOT_URL = "https://alexsblogapi.herokuapp.com";
 
-export type Post = {
-  _id: string;
-  author: string;
-  content: string;
-  date: string;
-  title: string;
-  request: {
-    type: string;
-    url: string;
+type Posts = {
+  state: PostsHub;
+  reducers: {
+    [key: string]: (state: PostsHub, payload: any) => PostsHub;
+  };
+  effects: (
+    dispatch: Dispatch
+  ) => {
+    [key: string]: (payload: any, state: PostsHub) => Promise<void>;
   };
 };
-export type PostsList = [Post];
-export type PostsState = {
-  [_id: string]: Post;
-};
 
-export type CreatePostPayload = {
-  values: { title: string; content: string };
-  callback: () => {};
-};
-export type DeletePostPayload = {
-  _id: string;
-  callback: () => {};
-};
-export type UpdatePostPayload = {
-  _id: string;
-  callback: () => {};
-  requestBody: { propName: string; value: string }[];
-};
-
-export const posts = {
+export const posts: Posts = {
   state: {},
   reducers: {
-    updatePostsInState: (state: PostsState, payload: PostsList) =>
+    updatePostsInState: (state: PostsHub, payload: PostsList): PostsHub =>
       mapKeys(payload, "_id"),
 
-    updateOnePostInState: (state: PostsState, payload: Post) => ({
+    updateOnePostInState: (state: PostsHub, payload: Post) => ({
       ...state,
       [payload._id]: payload
     })
   },
   effects: (dispatch: Dispatch) => ({
-    async fetchPosts(payload: any, state: PostsState) {
+    async fetchPosts(payload: any, state: PostsHub) {
       dispatch.isPending.setIsPending(true);
 
       const { data } = await axios.get(`${ROOT_URL}/posts`);
@@ -56,7 +46,7 @@ export const posts = {
       dispatch.posts.updatePostsInState(posts);
     },
 
-    async fetchPost({ _id }: { _id: string }, state: PostsState) {
+    async fetchPost({ _id }: { _id: string }, state: PostsHub) {
       dispatch.isPending.setIsPending(true);
 
       const { data }: { data: Post } = await axios.get(
@@ -67,10 +57,7 @@ export const posts = {
       dispatch.posts.updateOnePostInState(data);
     },
 
-    async fetchUserPosts(
-      { username }: { username: string },
-      state: PostsState
-    ) {
+    async fetchUserPosts({ username }: { username: string }, state: PostsHub) {
       dispatch.isPending.setIsPending(true);
 
       const { data } = await axios.get(`${ROOT_URL}/user/${username}`);
@@ -83,7 +70,7 @@ export const posts = {
     // -----------------protected actions-----------------
 
     //Creates new post
-    async createPost(payload: CreatePostPayload, state: PostsState) {
+    async createPost(payload: CreatePostPayload, state: PostsHub) {
       const values = payload.values;
       const callback = payload.callback;
       const token = localStorage.getItem("token");
@@ -103,7 +90,7 @@ export const posts = {
     },
 
     //Deletes one post by id
-    async deletePost(payload: DeletePostPayload, state: PostsState) {
+    async deletePost(payload: DeletePostPayload, state: PostsHub) {
       const { _id, callback } = payload;
       const token = localStorage.getItem("token");
       dispatch.isPending.setIsPending(true);
@@ -120,7 +107,7 @@ export const posts = {
     },
 
     //Updates post
-    async updatePost(payload: UpdatePostPayload, state: PostsState) {
+    async updatePost(payload: UpdatePostPayload, state: PostsHub) {
       const { _id, requestBody, callback } = payload;
       const token = localStorage.getItem("token");
       dispatch.isPending.setIsPending(true);
