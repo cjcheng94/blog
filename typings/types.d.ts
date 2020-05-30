@@ -13,12 +13,17 @@ declare module "PostTypes" {
 
   export type PostsList = Post[];
 
+  export type InPostData = {
+    title: string;
+    content: string;
+  };
+
   export type PostsHub = {
     [_id: string]: Post;
   };
 
   export type CreatePostPayload = {
-    values: { title: string; content: string };
+    values: InPostData;
     callback: () => void;
   };
 
