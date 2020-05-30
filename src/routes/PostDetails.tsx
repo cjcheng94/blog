@@ -1,10 +1,11 @@
 import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
-import { Link } from "react-router-dom";
+import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
+import { iRootState, Dispatch } from "../store";
 
-import { withStyles } from "@material-ui/core";
+import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
 import {
   Snackbar,
   Typography,
@@ -20,37 +21,59 @@ import {
   NewPostButton
 } from "@components";
 
-const styles = theme => ({
-  wrapper: {
-    maxWidth: 1000,
-    margin: "0px auto"
-  },
-  content: {
-    marginTop: theme.spacing.unit * 2,
-    marginBottom: theme.spacing.unit * 2,
-    fontSize: 18,
-    whiteSpace: "pre-wrap",
-    lineHeight: 1.58,
-    letterSpacing: -"0.003em"
-  },
-  author: {
-    "&:visited": {
-      color: "blue"
+const styles = (theme: Theme) =>
+  createStyles({
+    wrapper: {
+      maxWidth: 1000,
+      margin: "0px auto"
+    },
+    content: {
+      marginTop: theme.spacing(2),
+      marginBottom: theme.spacing(2),
+      fontSize: 18,
+      whiteSpace: "pre-wrap",
+      lineHeight: 1.58,
+      letterSpacing: -"0.003em"
+    },
+    author: {
+      "&:visited": {
+        color: "blue"
+      }
+    },
+    button: {
+      marginTop: theme.spacing(2),
+      marginRight: theme.spacing(1),
+      fontWeight: "bold"
     }
-  },
-  button: {
-    marginTop: theme.spacing.unit * 2,
-    marginRight: theme.spacing.unit,
-    fontWeight: "bold"
-  }
-});
-@connect((state, ownProps) => ({
+  });
+
+type TParams = { _id: string };
+type OwnProps = RouteComponentProps<TParams>;
+
+const mapState = (state: iRootState, ownProps: OwnProps) => ({
   post: state.posts[ownProps.match.params._id],
   user: state.user,
   error: state.error
-}))
-@withStyles(styles, { name: "PostDetails" })
-export default class PostDetails extends Component {
+});
+
+const mapDispatch = (dispatch: Dispatch) => ({
+  fetchPost: dispatch.posts.fetchPost,
+  fetchPosts: dispatch.posts.fetchPosts,
+  deletePost: dispatch.posts.deletePost
+});
+
+type Props = ReturnType<typeof mapState> &
+  ReturnType<typeof mapDispatch> &
+  RouteComponentProps<TParams> &
+  WithStyles<typeof styles>;
+
+type State = {
+  showCustomDialog: boolean;
+  showAlert: boolean;
+  clickedConfirm: boolean;
+};
+
+class PostDetails extends Component<Props, State> {
   state = {
     showCustomDialog: false,
     showAlert: false,
@@ -66,11 +89,11 @@ export default class PostDetails extends Component {
         // If a user refreshs a detail page or lands here via url,
         // only fetch the post whose id corresponds to the id in the url
         const { _id } = this.props.match.params;
-        this.props.dispatch.posts.fetchPost({ _id });
+        this.props.fetchPost({ _id });
       }
     } else {
       //In offline mode, fetch posts from runtime cache
-      this.props.dispatch.posts.fetchPosts();
+      this.props.fetchPosts();
     }
   }
   componentWillUnmount() {
@@ -104,7 +127,7 @@ export default class PostDetails extends Component {
         this.props.history.push("/");
       }, 1000);
     };
-    this.props.dispatch.posts.deletePost({ _id, callback: deletCallback });
+    this.props.deletePost({ _id, callback: deletCallback });
   }
 
   render() {
@@ -211,3 +234,8 @@ export default class PostDetails extends Component {
     );
   }
 }
+
+export default compose<typeof PostDetails>(
+  connect(mapState, mapDispatch),
+  withStyles(styles, { name: "PostDetails" })
+)(PostDetails);
