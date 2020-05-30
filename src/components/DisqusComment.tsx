@@ -5,15 +5,15 @@ import Divider from "@material-ui/core/Divider";
 import Typography from "@material-ui/core/Typography";
 
 type Props = {
-  id: string;
+  identifier: string;
   title: string;
 };
 
-const DisqusComment: React.FC<Props> = ({ id, title }) => {
+const DisqusComment: React.FC<Props> = ({ identifier, title }) => {
   const disqusShortname = "alexreactblog";
   const disqusConfig = {
     url: window.location.href,
-    identifier: id,
+    identifier,
     title
   };
 

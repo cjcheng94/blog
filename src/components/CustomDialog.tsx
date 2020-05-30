@@ -21,7 +21,7 @@ type DialogProps = {
   type?: "submit" | "reset" | "button";
   formId?: string;
   handleClose: (e: React.MouseEvent) => void;
-  handleConfirm: (e: React.MouseEvent) => void;
+  handleConfirm?: (e: React.MouseEvent) => void;
 };
 
 const CustomDialog: React.FC<DialogProps> = props => {
