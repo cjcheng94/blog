@@ -3,7 +3,7 @@ import React, { useState, useCallback, Fragment } from "react";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Divider from "@material-ui/core/Divider";
-import { withStyles, createStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core";
 
 import { compose } from "redux";
 
@@ -25,7 +25,16 @@ import FormatAlignJustifyIcon from "@material-ui/icons/FormatAlignJustify";
 
 import { Editor, EditorState, RichUtils, getDefaultKeyBinding } from "draft-js";
 
-const styles = createStyles(theme => ({
+const useStyles = makeStyles(theme => ({
+  root: {
+    "& .richEditorBlockQuote": {
+      color: "#999",
+      fontFamily: "Georgia, serif",
+      fontStyle: "italic",
+      textAlign: "center",
+      fontSize: "2em"
+    }
+  },
   controls: {
     display: "inline-flex",
     border: `1px solid ${theme.palette.divider}`,
@@ -40,14 +49,14 @@ const styles = createStyles(theme => ({
   }
 }));
 
-function getBlockStyle(block) {
+const getBlockStyle = block => {
   switch (block.getType()) {
     case "blockquote":
-      return "superFancyBlockquote";
+      return "richEditorBlockQuote";
     default:
       return null;
   }
-}
+};
 
 const BlockStyleControls = props => {
   const { editorState } = props;
@@ -178,8 +187,9 @@ const InlineStyleControls = props => {
 
 const RichTextEditor = props => {
   const editor = React.useRef(null);
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const classes = useStyles();
 
+  const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const focusEditor = useCallback(() => {
     if (editor.current) {
       editor.current.focus();
@@ -214,8 +224,6 @@ const RichTextEditor = props => {
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
   };
 
-  const { classes } = props;
-
   // If the user changes block type before entering any text, we can
   // either style the placeholder or hide it. Let's just hide it now.
   let className = "RichEditor-editor";
@@ -227,7 +235,7 @@ const RichTextEditor = props => {
   }
 
   return (
-    <div className="RichEditor-root">
+    <div className={classes.root}>
       <div className={classes.controls}>
         {/* ---inline--- */}
         <InlineStyleControls
@@ -258,6 +266,4 @@ const RichTextEditor = props => {
   );
 };
 
-export default compose(withStyles(styles, { name: "RichTextEditor" }))(
-  RichTextEditor
-);
+export default RichTextEditor;
