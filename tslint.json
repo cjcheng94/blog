@@ -1,1 +1,5 @@
-{}
+{
+  "jsRules": {
+    "no-empty": true
+  }
+}

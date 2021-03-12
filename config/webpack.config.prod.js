@@ -145,24 +145,46 @@ module.exports = {
             }
           },
           {
-            test: /\.(js|jsx|mjs)$/,
+            test: /\.(js|mjs|jsx)$/,
             include: paths.appSrc,
-            loader: require.resolve("babel-loader"),
-            options: {
-              compact: true
+            use: {
+              loader: require.resolve("swc-loader"),
+              options: {
+                jsc: {
+                  parser: {
+                    syntax: "ecmascript",
+                    jsx: true
+                  },
+                  transform: {
+                    react: {
+                      pragma: "React.createElement",
+                      pragmaFrag: "React.Fragment",
+                      throwIfNamespace: true,
+                      development: false,
+                      useBuiltins: false
+                    }
+                  }
+                }
+              }
             }
           },
-          // Compile .tsx?
           {
             test: /\.(ts|tsx)$/,
             include: paths.appSrc,
             use: [
               {
-                loader: require.resolve("ts-loader"),
+                loader: require.resolve("swc-loader"),
                 options: {
                   // disable type checker - we will use it in fork plugin
-                  transpileOnly: true,
-                  configFile: paths.appTsProdConfig
+                  // transpileOnly: true
+                  jsc: {
+                    parser: {
+                      syntax: "typescript",
+                      tsx: true,
+                      decorators: true,
+                      dynamicImport: true
+                    }
+                  }
                 }
               }
             ]
