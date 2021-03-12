@@ -18,7 +18,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
-import { ErrorAlert, CustomDialog } from "@components";
+import { ErrorAlert, CustomDialog, RichTextEditor } from "@components";
 
 const styles = createStyles({
   formNew: {
@@ -128,7 +128,7 @@ class PostNew extends Component<Props, State> {
     // handleSubmit is from Redux Form, it handles validation etc.
     const { handleSubmit, error, classes } = this.props;
     const { showAlert, showCustomDialog, clickedConfirm } = this.state;
-
+    return <RichTextEditor />;
     return (
       <Fragment>
         {error && error.status ? <ErrorAlert type="postNew" /> : null}
