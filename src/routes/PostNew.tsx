@@ -84,21 +84,7 @@ class PostNew extends Component<Props, State> {
       meta: { touched, error }
     } = field;
     if (name === "content") {
-      return (
-        <TextField
-          label={name}
-          helperText={touched ? error : ""}
-          error={!!(touched && error)}
-          multiline
-          rows="4"
-          rowsMax="900"
-          margin="normal"
-          type="text"
-          variant="outlined"
-          fullWidth
-          {...field.input}
-        />
-      );
+      return <RichTextEditor onChange={field.input.onChange} />;
     }
     return (
       <TextField
@@ -115,6 +101,7 @@ class PostNew extends Component<Props, State> {
   }
 
   onComponentSubmit(values: InPostData) {
+    this.handleCustomDialogHide.call(this);
     const createCallback = () => {
       this.showAlert();
       setTimeout(() => {
@@ -128,7 +115,6 @@ class PostNew extends Component<Props, State> {
     // handleSubmit is from Redux Form, it handles validation etc.
     const { handleSubmit, error, classes } = this.props;
     const { showAlert, showCustomDialog, clickedConfirm } = this.state;
-    return <RichTextEditor />;
     return (
       <Fragment>
         {error && error.status ? <ErrorAlert type="postNew" /> : null}
