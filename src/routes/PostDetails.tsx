@@ -21,6 +21,8 @@ import {
   NewPostButton
 } from "@components";
 
+import { Editor, convertFromRaw, EditorState } from "draft-js";
+
 const styles = (theme: Theme) =>
   createStyles({
     wrapper: {
@@ -74,12 +76,21 @@ type State = {
 };
 
 class PostDetails extends Component<Props, State> {
-  state = {
-    showCustomDialog: false,
-    showAlert: false,
-    clickedConfirm: false
-  };
-
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      showCustomDialog: false,
+      showAlert: false,
+      clickedConfirm: false
+    };
+    this.showAlert = this.showAlert.bind(this);
+    this.hideAlert = this.hideAlert.bind(this);
+    this.handleCustomDialogShow = this.handleCustomDialogShow.bind(this);
+    this.handleCustomDialogHide = this.handleCustomDialogHide.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
+    this.isJson = this.isJson.bind(this);
+    this.renderContent = this.renderContent.bind(this);
+  }
   componentDidMount() {
     //Reset to top of the page
     window.scrollTo(0, 0);
@@ -130,6 +141,36 @@ class PostDetails extends Component<Props, State> {
     this.props.deletePost({ _id, callback: deletCallback });
   }
 
+  isJson(str: string) {
+    if (typeof str !== "string") {
+      return false;
+    }
+    try {
+      JSON.parse(str);
+    } catch (error) {
+      return false;
+    }
+    return true;
+  }
+
+  renderContent(content: string) {
+    // Temporary solution, add isRichText prop later
+    const isContentJson = this.isJson(content);
+
+    if (isContentJson) {
+      const contentStateFromRaw = convertFromRaw(JSON.parse(content));
+      const editorState = EditorState.createWithContent(contentStateFromRaw);
+      return (
+        <Editor readOnly={true} onChange={() => {}} editorState={editorState} />
+      );
+    }
+    return (
+      <Typography variant="body1" className={this.props.classes.content}>
+        {content}
+      </Typography>
+    );
+  }
+
   render() {
     // Show error page if any
     const { error, classes } = this.props;
@@ -173,16 +214,13 @@ class PostDetails extends Component<Props, State> {
             {postTime}
           </Typography>
           <Divider />
-          <Typography variant="body1" className={classes.content}>
-            {content}
-          </Typography>
-
+          {this.renderContent(content)}
           {/* Conditionally render 'Edit' and 'Delete' buttons*/}
           {author === this.props.user.username && isAuthenticated ? (
             <Fragment>
               <Button
                 className={classes.button}
-                onClick={this.handleCustomDialogShow.bind(this)}
+                onClick={this.handleCustomDialogShow}
                 variant="contained"
                 color="secondary"
               >
@@ -209,7 +247,7 @@ class PostDetails extends Component<Props, State> {
             dialogTitle="Delete this Article?"
             open={this.state.showCustomDialog}
             handleClose={this.handleCustomDialogHide.bind(this)}
-            handleConfirm={this.handleDelete.bind(this)}
+            handleConfirm={this.handleDelete}
             isDisabled={this.state.clickedConfirm}
           />
 
@@ -220,7 +258,7 @@ class PostDetails extends Component<Props, State> {
             }}
             open={this.state.showAlert}
             autoHideDuration={3000}
-            onClose={this.hideAlert.bind(this)}
+            onClose={this.hideAlert}
             ContentProps={{
               "aria-describedby": "message-id"
             }}
