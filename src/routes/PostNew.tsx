@@ -93,7 +93,6 @@ class PostNew extends Component<Props, State> {
         error={!!(touched && error)}
         margin="normal"
         type="text"
-        variant="outlined"
         fullWidth
         {...field.input}
       />
