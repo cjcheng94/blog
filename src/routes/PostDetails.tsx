@@ -3,7 +3,7 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import { Editor, convertFromRaw, EditorState } from "draft-js";
+import { Editor, convertFromRaw, EditorState, ContentBlock } from "draft-js";
 import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
 
 import {
@@ -75,6 +75,12 @@ type State = {
   clickedConfirm: boolean;
 };
 
+const getBlockStyle = (block: ContentBlock): string => {
+  if (block.getType() === "blockquote") {
+    return "richEditorBlockQuote";
+  }
+  return "";
+};
 class PostDetails extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -161,7 +167,12 @@ class PostDetails extends Component<Props, State> {
       const contentStateFromRaw = convertFromRaw(JSON.parse(content));
       const editorState = EditorState.createWithContent(contentStateFromRaw);
       return (
-        <Editor readOnly={true} onChange={() => {}} editorState={editorState} />
+        <Editor
+          readOnly={true}
+          onChange={() => {}}
+          editorState={editorState}
+          blockStyleFn={getBlockStyle}
+        />
       );
     }
     return (

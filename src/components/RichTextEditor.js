@@ -38,15 +38,6 @@ import {
 } from "draft-js";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    "& .richEditorBlockQuote": {
-      color: "#999",
-      fontFamily: "Georgia, serif",
-      fontStyle: "italic",
-      textAlign: "center",
-      fontSize: "2em"
-    }
-  },
   controls: {
     display: "inline-flex",
     border: `1px solid ${theme.palette.divider}`,

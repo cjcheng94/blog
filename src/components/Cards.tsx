@@ -2,7 +2,7 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
-import { Editor, convertFromRaw, EditorState } from "draft-js";
+import { Editor, convertFromRaw, EditorState, ContentBlock } from "draft-js";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
@@ -72,6 +72,13 @@ const isJson = (str: string) => {
   return true;
 };
 
+const getBlockStyle = (block: ContentBlock): string => {
+  if (block.getType() === "blockquote") {
+    return "richEditorBlockQuote";
+  }
+  return "";
+};
+
 const renderContent = (content: string, textClass: string) => {
   // Temporary solution, add isRichText prop later
   const isContentJson = isJson(content);
@@ -80,7 +87,12 @@ const renderContent = (content: string, textClass: string) => {
     const contentStateFromRaw = convertFromRaw(JSON.parse(content));
     const editorState = EditorState.createWithContent(contentStateFromRaw);
     return (
-      <Editor readOnly={true} onChange={() => {}} editorState={editorState} />
+      <Editor
+        readOnly={true}
+        onChange={() => {}}
+        editorState={editorState}
+        blockStyleFn={getBlockStyle}
+      />
     );
   }
   return <Typography className={textClass}>{content}</Typography>;
