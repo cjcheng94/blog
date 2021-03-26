@@ -2,6 +2,12 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
+import { Editor, convertFromRaw, EditorState, ContentBlock } from "draft-js";
+import Card from "@material-ui/core/Card";
+import CardActionArea from "@material-ui/core/CardActionArea";
+import CardContent from "@material-ui/core/CardContent";
+import Typography from "@material-ui/core/Typography";
+import Grid from "@material-ui/core/Grid";
 
 import {
   withStyles,
@@ -9,11 +15,6 @@ import {
   Theme,
   WithStyles
 } from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
 
 import { PostsHub } from "PostTypes";
 
@@ -24,10 +25,18 @@ const styles = (theme: Theme) => {
       width: "100%",
       [theme.breakpoints.up("sm")]: {
         height: 200
-      }
+      },
+      padding: theme.spacing(2),
+      paddingBottom: theme.spacing(3)
     },
     cardButton: {
       width: "100%"
+    },
+    cardContent: {
+      height: "100%",
+      padding: 0,
+      overflow: "hidden",
+      textOverflow: "ellipsis"
     },
     title: {
       display: "inline",
@@ -51,6 +60,44 @@ interface Props extends WithStyles<typeof styles> {
   posts: PostsHub;
 }
 
+const isJson = (str: string) => {
+  if (typeof str !== "string") {
+    return false;
+  }
+  try {
+    JSON.parse(str);
+  } catch (error) {
+    return false;
+  }
+  return true;
+};
+
+const getBlockStyle = (block: ContentBlock): string => {
+  if (block.getType() === "blockquote") {
+    return "richEditorBlockQuote";
+  }
+  return "";
+};
+
+const renderContent = (content: string, textClass: string) => {
+  // Temporary solution, add isRichText prop later
+  const isContentJson = isJson(content);
+
+  if (isContentJson) {
+    const contentStateFromRaw = convertFromRaw(JSON.parse(content));
+    const editorState = EditorState.createWithContent(contentStateFromRaw);
+    return (
+      <Editor
+        readOnly={true}
+        onChange={() => {}}
+        editorState={editorState}
+        blockStyleFn={getBlockStyle}
+      />
+    );
+  }
+  return <Typography className={textClass}>{content}</Typography>;
+};
+
 const Cards: React.FC<Props> = props => {
   const { classes, latestFirst, posts } = props;
 
@@ -68,17 +115,14 @@ const Cards: React.FC<Props> = props => {
           to={url}
         >
           <Card className={classes.card}>
-            <CardContent>
+            <CardContent className={classes.cardContent}>
               <Typography variant="h5" className={classes.title}>
                 {post.title}
               </Typography>
               <Typography className={classes.author}>
                 By {post.author}
               </Typography>
-              <Typography className={classes.article}>
-                {post.content.slice(0, 60)}
-                ...
-              </Typography>
+              {renderContent(post.content, classes.article)}
             </CardContent>
           </Card>
         </CardActionArea>

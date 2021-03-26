@@ -1,5 +1,11 @@
 "use strict";
-import React, { useState, useCallback, Fragment } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  Fragment
+} from "react";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Divider from "@material-ui/core/Divider";
@@ -23,18 +29,15 @@ import FormatAlignCenterIcon from "@material-ui/icons/FormatAlignCenter";
 import FormatAlignRightIcon from "@material-ui/icons/FormatAlignRight";
 import FormatAlignJustifyIcon from "@material-ui/icons/FormatAlignJustify";
 
-import { Editor, EditorState, RichUtils, getDefaultKeyBinding } from "draft-js";
+import {
+  Editor,
+  EditorState,
+  RichUtils,
+  getDefaultKeyBinding,
+  convertToRaw
+} from "draft-js";
 
 const useStyles = makeStyles(theme => ({
-  root: {
-    "& .richEditorBlockQuote": {
-      color: "#999",
-      fontFamily: "Georgia, serif",
-      fontStyle: "italic",
-      textAlign: "center",
-      fontSize: "2em"
-    }
-  },
   controls: {
     display: "inline-flex",
     border: `1px solid ${theme.palette.divider}`,
@@ -188,8 +191,18 @@ const InlineStyleControls = props => {
 const RichTextEditor = props => {
   const editor = React.useRef(null);
   const classes = useStyles();
-
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const { onChange } = props;
+
+  const memoizedEditorData = useMemo(
+    () => JSON.stringify(convertToRaw(editorState.getCurrentContent())),
+    [editorState]
+  );
+
+  useEffect(() => {
+    onChange(memoizedEditorData);
+  }, [memoizedEditorData]);
+
   const focusEditor = useCallback(() => {
     if (editor.current) {
       editor.current.focus();
