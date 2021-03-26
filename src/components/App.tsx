@@ -13,6 +13,15 @@ import { CssBaseline, Snackbar, useMediaQuery } from "@material-ui/core";
 import { Header, Main } from "@components";
 
 const useStyles = makeStyles(theme => ({
+  "@global": {
+    ".richEditorBlockQuote": {
+      color: "#999",
+      fontFamily: "Georgia, serif",
+      fontStyle: "italic",
+      textAlign: "center",
+      fontSize: "2em"
+    }
+  },
   root: {
     fontFamily: "Roboto, sans-serif"
   }
