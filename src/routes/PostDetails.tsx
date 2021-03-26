@@ -3,9 +3,9 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import { iRootState, Dispatch } from "../store";
-
+import { Editor, convertFromRaw, EditorState } from "draft-js";
 import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
+
 import {
   Snackbar,
   Typography,
@@ -21,7 +21,7 @@ import {
   NewPostButton
 } from "@components";
 
-import { Editor, convertFromRaw, EditorState } from "draft-js";
+import { iRootState, Dispatch } from "../store";
 
 const styles = (theme: Theme) =>
   createStyles({
