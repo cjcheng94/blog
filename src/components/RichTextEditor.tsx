@@ -7,11 +7,8 @@ import React, {
   Fragment
 } from "react";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Divider from "@material-ui/core/Divider";
 import { makeStyles } from "@material-ui/core";
-
-import { compose } from "redux";
 
 import FormatBoldIcon from "@material-ui/icons/FormatBold";
 import FormatItalicIcon from "@material-ui/icons/FormatItalic";
@@ -21,18 +18,13 @@ import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
 import ImageIcon from "@material-ui/icons/Image";
 import InsertLinkIcon from "@material-ui/icons/InsertLink";
-import CodeIcon from "@material-ui/icons/Code";
-import TitleIcon from "@material-ui/icons/Title";
 import FormatSizeIcon from "@material-ui/icons/FormatSize";
-import FormatAlignLeftIcon from "@material-ui/icons/FormatAlignLeft";
-import FormatAlignCenterIcon from "@material-ui/icons/FormatAlignCenter";
-import FormatAlignRightIcon from "@material-ui/icons/FormatAlignRight";
-import FormatAlignJustifyIcon from "@material-ui/icons/FormatAlignJustify";
 
 import {
   Editor,
   EditorState,
   RichUtils,
+  ContentBlock,
   getDefaultKeyBinding,
   convertToRaw
 } from "draft-js";
@@ -52,28 +44,36 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const getBlockStyle = block => {
+const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {
     case "blockquote":
       return "richEditorBlockQuote";
     default:
-      return null;
+      return "";
   }
 };
 
-const BlockStyleControls = props => {
-  const { editorState } = props;
+type StyleControlsProps = {
+  editorState: EditorState;
+  onToggle: (v: string) => void;
+};
+
+const BlockStyleControls: React.FC<StyleControlsProps> = ({
+  editorState,
+  onToggle
+}) => {
   const selection = editorState.getSelection();
   const blockType = editorState
     .getCurrentContent()
     .getBlockForKey(selection.getStartKey())
     .getType();
 
-  const preventDefault = e => {
+  const preventDefault = (e: React.MouseEvent) => {
     e.preventDefault();
   };
-  const handleToggle = (e, v) => {
-    props.onToggle(v);
+
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onToggle(e.currentTarget.value);
   };
 
   return (
@@ -144,14 +144,20 @@ const BlockStyleControls = props => {
   );
 };
 
-const InlineStyleControls = props => {
-  const currentStyle = props.editorState.getCurrentInlineStyle();
-  const preventDefault = e => {
+const InlineStyleControls: React.FC<StyleControlsProps> = ({
+  editorState,
+  onToggle
+}) => {
+  const currentStyle = editorState.getCurrentInlineStyle();
+
+  const preventDefault = (e: React.MouseEvent) => {
     e.preventDefault();
   };
-  const handleToggle = (e, v) => {
-    props.onToggle(v);
+
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onToggle(e.currentTarget.value);
   };
+
   return (
     <Fragment>
       <ToggleButton
@@ -188,8 +194,12 @@ const InlineStyleControls = props => {
   );
 };
 
-const RichTextEditor = props => {
-  const editor = React.useRef(null);
+type RichTextEditorProps = {
+  onChange: (value: string) => void;
+};
+
+const RichTextEditor: React.FC<RichTextEditorProps> = props => {
+  const editor = React.useRef<Editor>(null);
   const classes = useStyles();
   const [editorState, setEditorState] = useState(EditorState.createEmpty());
   const { onChange } = props;
@@ -209,31 +219,31 @@ const RichTextEditor = props => {
     }
   }, [editor]);
 
-  const handleKeyCommand = (command, editorState) => {
+  const handleKeyCommand = (command: string, editorState: EditorState) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       setEditorState(newState);
-      return true;
+      return "handled";
     }
-    return false;
+    return "not-handled";
   };
 
-  const mapKeyToEditorCommand = e => {
+  const mapKeyToEditorCommand = (e: React.KeyboardEvent) => {
     if (e.keyCode === 9 /* TAB */) {
       const newEditorState = RichUtils.onTab(e, editorState, 4 /* maxDepth */);
       if (newEditorState !== editorState) {
         setEditorState(newEditorState);
       }
-      return;
+      return null;
     }
     return getDefaultKeyBinding(e);
   };
 
-  const toggleBlockType = blockType => {
+  const toggleBlockType = (blockType: string) => {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
-  const toggleInlineStyle = inlineStyle => {
+  const toggleInlineStyle = (inlineStyle: string) => {
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
   };
 
@@ -248,7 +258,7 @@ const RichTextEditor = props => {
   }
 
   return (
-    <div className={classes.root}>
+    <div>
       <div className={classes.controls}>
         {/* ---inline--- */}
         <InlineStyleControls
