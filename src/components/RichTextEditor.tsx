@@ -26,8 +26,11 @@ import {
   RichUtils,
   ContentBlock,
   getDefaultKeyBinding,
-  convertToRaw
+  convertToRaw,
+  AtomicBlockUtils
 } from "draft-js";
+
+import { MediaComponent } from "@components";
 
 const useStyles = makeStyles(theme => ({
   controls: {
@@ -41,6 +44,9 @@ const useStyles = makeStyles(theme => ({
   },
   divider: {
     margin: theme.spacing(1, 0.5)
+  },
+  fileInput: {
+    display: "none"
   }
 }));
 
@@ -51,6 +57,10 @@ const getBlockStyle = (block: ContentBlock) => {
     default:
       return "";
   }
+};
+
+const preventDefault = (e: React.MouseEvent) => {
+  e.preventDefault();
 };
 
 type StyleControlsProps = {
@@ -68,12 +78,22 @@ const BlockStyleControls: React.FC<StyleControlsProps> = ({
     .getBlockForKey(selection.getStartKey())
     .getType();
 
-  const preventDefault = (e: React.MouseEvent) => {
-    e.preventDefault();
-  };
-
   const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-    onToggle(e.currentTarget.value);
+    const formatType = e.currentTarget.value;
+
+    // trigger input element when user clicks image button
+    if (formatType === "image") {
+      // !. Non-null assertion operator
+      document.getElementById("imageInput")!.click();
+      return;
+    }
+
+    if (formatType === "link") {
+      return;
+    }
+
+    // trigger generic block types
+    onToggle(formatType);
   };
 
   return (
@@ -120,7 +140,6 @@ const BlockStyleControls: React.FC<StyleControlsProps> = ({
       </ToggleButton>
       <ToggleButton
         size="small"
-        disabled
         value="image"
         aria-label="image"
         onMouseDown={preventDefault}
@@ -149,10 +168,6 @@ const InlineStyleControls: React.FC<StyleControlsProps> = ({
   onToggle
 }) => {
   const currentStyle = editorState.getCurrentInlineStyle();
-
-  const preventDefault = (e: React.MouseEvent) => {
-    e.preventDefault();
-  };
 
   const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     onToggle(e.currentTarget.value);
@@ -201,7 +216,9 @@ type RichTextEditorProps = {
 const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   const editor = React.useRef<Editor>(null);
   const classes = useStyles();
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [editorState, setEditorState] = useState<EditorState>(
+    EditorState.createEmpty()
+  );
   const { onChange } = props;
 
   const memoizedEditorData = useMemo(
@@ -247,6 +264,48 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
   };
 
+  // handle images
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const reader = new FileReader();
+    const handleImag = () => {
+      const contentState = editorState.getCurrentContent();
+      const contentStateWithEntity = contentState.createEntity(
+        "IMAGE",
+        "IMMUTABLE",
+        { src: reader.result }
+      );
+      const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+      const newEditorState = EditorState.set(editorState, {
+        currentContent: contentStateWithEntity
+      });
+      setEditorState(
+        AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " ")
+      );
+    };
+    reader.addEventListener("load", handleImag);
+    if (event.target.files) {
+      reader.readAsDataURL(Array.from(event.target.files)[0]);
+    }
+  };
+
+  const renderBlock = (contentBlock: ContentBlock) => {
+    const blockType = contentBlock.getType();
+    // render custom image component
+    if (blockType === "atomic") {
+      const entityKey = contentBlock.getEntityAt(0);
+      const entityData = editorState
+        .getCurrentContent()
+        .getEntity(entityKey)
+        .getData();
+      return {
+        component: MediaComponent,
+        editable: false,
+        props: { src: { file: entityData.src } }
+      };
+    }
+    return;
+  };
+
   // If the user changes block type before entering any text, we can
   // either style the placeholder or hide it. Let's just hide it now.
   let className = "RichEditor-editor";
@@ -275,7 +334,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
       <div className={className} onClick={focusEditor}>
         <Editor
           blockStyleFn={getBlockStyle}
-          //customStyleMap={styleMap}
+          blockRendererFn={renderBlock}
           editorState={editorState}
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={mapKeyToEditorCommand}
@@ -285,6 +344,13 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
           spellCheck={true}
         />
       </div>
+      <input
+        id="imageInput"
+        className={classes.fileInput}
+        type="file"
+        accept="image/png,image/jpeg,image/jpg,image/gif"
+        onChange={handleImageUpload}
+      />
     </div>
   );
 };
