@@ -7,11 +7,8 @@ import React, {
   Fragment
 } from "react";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import ToggleButtonGroup from "@material-ui/lab/ToggleButtonGroup";
 import Divider from "@material-ui/core/Divider";
 import { makeStyles } from "@material-ui/core";
-
-import { compose } from "redux";
 
 import FormatBoldIcon from "@material-ui/icons/FormatBold";
 import FormatItalicIcon from "@material-ui/icons/FormatItalic";
@@ -21,21 +18,19 @@ import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
 import ImageIcon from "@material-ui/icons/Image";
 import InsertLinkIcon from "@material-ui/icons/InsertLink";
-import CodeIcon from "@material-ui/icons/Code";
-import TitleIcon from "@material-ui/icons/Title";
 import FormatSizeIcon from "@material-ui/icons/FormatSize";
-import FormatAlignLeftIcon from "@material-ui/icons/FormatAlignLeft";
-import FormatAlignCenterIcon from "@material-ui/icons/FormatAlignCenter";
-import FormatAlignRightIcon from "@material-ui/icons/FormatAlignRight";
-import FormatAlignJustifyIcon from "@material-ui/icons/FormatAlignJustify";
 
 import {
   Editor,
   EditorState,
   RichUtils,
+  ContentBlock,
   getDefaultKeyBinding,
-  convertToRaw
+  convertToRaw,
+  AtomicBlockUtils
 } from "draft-js";
+
+import { MediaComponent } from "@components";
 
 const useStyles = makeStyles(theme => ({
   controls: {
@@ -49,31 +44,56 @@ const useStyles = makeStyles(theme => ({
   },
   divider: {
     margin: theme.spacing(1, 0.5)
+  },
+  fileInput: {
+    display: "none"
   }
 }));
 
-const getBlockStyle = block => {
+const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {
     case "blockquote":
       return "richEditorBlockQuote";
     default:
-      return null;
+      return "";
   }
 };
 
-const BlockStyleControls = props => {
-  const { editorState } = props;
+const preventDefault = (e: React.MouseEvent) => {
+  e.preventDefault();
+};
+
+type StyleControlsProps = {
+  editorState: EditorState;
+  onToggle: (v: string) => void;
+};
+
+const BlockStyleControls: React.FC<StyleControlsProps> = ({
+  editorState,
+  onToggle
+}) => {
   const selection = editorState.getSelection();
   const blockType = editorState
     .getCurrentContent()
     .getBlockForKey(selection.getStartKey())
     .getType();
 
-  const preventDefault = e => {
-    e.preventDefault();
-  };
-  const handleToggle = (e, v) => {
-    props.onToggle(v);
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    const formatType = e.currentTarget.value;
+
+    // trigger input element when user clicks image button
+    if (formatType === "image") {
+      // !. Non-null assertion operator
+      document.getElementById("imageInput")!.click();
+      return;
+    }
+
+    if (formatType === "link") {
+      return;
+    }
+
+    // trigger generic block types
+    onToggle(formatType);
   };
 
   return (
@@ -120,7 +140,6 @@ const BlockStyleControls = props => {
       </ToggleButton>
       <ToggleButton
         size="small"
-        disabled
         value="image"
         aria-label="image"
         onMouseDown={preventDefault}
@@ -144,14 +163,16 @@ const BlockStyleControls = props => {
   );
 };
 
-const InlineStyleControls = props => {
-  const currentStyle = props.editorState.getCurrentInlineStyle();
-  const preventDefault = e => {
-    e.preventDefault();
+const InlineStyleControls: React.FC<StyleControlsProps> = ({
+  editorState,
+  onToggle
+}) => {
+  const currentStyle = editorState.getCurrentInlineStyle();
+
+  const handleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onToggle(e.currentTarget.value);
   };
-  const handleToggle = (e, v) => {
-    props.onToggle(v);
-  };
+
   return (
     <Fragment>
       <ToggleButton
@@ -188,10 +209,16 @@ const InlineStyleControls = props => {
   );
 };
 
-const RichTextEditor = props => {
-  const editor = React.useRef(null);
+type RichTextEditorProps = {
+  onChange: (value: string) => void;
+};
+
+const RichTextEditor: React.FC<RichTextEditorProps> = props => {
+  const editor = React.useRef<Editor>(null);
   const classes = useStyles();
-  const [editorState, setEditorState] = useState(EditorState.createEmpty());
+  const [editorState, setEditorState] = useState<EditorState>(
+    EditorState.createEmpty()
+  );
   const { onChange } = props;
 
   const memoizedEditorData = useMemo(
@@ -209,32 +236,74 @@ const RichTextEditor = props => {
     }
   }, [editor]);
 
-  const handleKeyCommand = (command, editorState) => {
+  const handleKeyCommand = (command: string, editorState: EditorState) => {
     const newState = RichUtils.handleKeyCommand(editorState, command);
     if (newState) {
       setEditorState(newState);
-      return true;
+      return "handled";
     }
-    return false;
+    return "not-handled";
   };
 
-  const mapKeyToEditorCommand = e => {
+  const mapKeyToEditorCommand = (e: React.KeyboardEvent) => {
     if (e.keyCode === 9 /* TAB */) {
       const newEditorState = RichUtils.onTab(e, editorState, 4 /* maxDepth */);
       if (newEditorState !== editorState) {
         setEditorState(newEditorState);
       }
-      return;
+      return null;
     }
     return getDefaultKeyBinding(e);
   };
 
-  const toggleBlockType = blockType => {
+  const toggleBlockType = (blockType: string) => {
     setEditorState(RichUtils.toggleBlockType(editorState, blockType));
   };
 
-  const toggleInlineStyle = inlineStyle => {
+  const toggleInlineStyle = (inlineStyle: string) => {
     setEditorState(RichUtils.toggleInlineStyle(editorState, inlineStyle));
+  };
+
+  // handle images
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const reader = new FileReader();
+    const handleImag = () => {
+      const contentState = editorState.getCurrentContent();
+      const contentStateWithEntity = contentState.createEntity(
+        "IMAGE",
+        "IMMUTABLE",
+        { src: reader.result }
+      );
+      const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+      const newEditorState = EditorState.set(editorState, {
+        currentContent: contentStateWithEntity
+      });
+      setEditorState(
+        AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " ")
+      );
+    };
+    reader.addEventListener("load", handleImag);
+    if (event.target.files) {
+      reader.readAsDataURL(Array.from(event.target.files)[0]);
+    }
+  };
+
+  const renderBlock = (contentBlock: ContentBlock) => {
+    const blockType = contentBlock.getType();
+    // render custom image component
+    if (blockType === "atomic") {
+      const entityKey = contentBlock.getEntityAt(0);
+      const entityData = editorState
+        .getCurrentContent()
+        .getEntity(entityKey)
+        .getData();
+      return {
+        component: MediaComponent,
+        editable: false,
+        props: { src: { file: entityData.src } }
+      };
+    }
+    return;
   };
 
   // If the user changes block type before entering any text, we can
@@ -248,7 +317,7 @@ const RichTextEditor = props => {
   }
 
   return (
-    <div className={classes.root}>
+    <div>
       <div className={classes.controls}>
         {/* ---inline--- */}
         <InlineStyleControls
@@ -265,7 +334,7 @@ const RichTextEditor = props => {
       <div className={className} onClick={focusEditor}>
         <Editor
           blockStyleFn={getBlockStyle}
-          //customStyleMap={styleMap}
+          blockRendererFn={renderBlock}
           editorState={editorState}
           handleKeyCommand={handleKeyCommand}
           keyBindingFn={mapKeyToEditorCommand}
@@ -275,6 +344,13 @@ const RichTextEditor = props => {
           spellCheck={true}
         />
       </div>
+      <input
+        id="imageInput"
+        className={classes.fileInput}
+        type="file"
+        accept="image/png,image/jpeg,image/jpg,image/gif"
+        onChange={handleImageUpload}
+      />
     </div>
   );
 };

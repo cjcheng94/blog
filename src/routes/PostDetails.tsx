@@ -18,7 +18,8 @@ import {
   DisqusComment,
   CustomDialog,
   ErrorAlert,
-  NewPostButton
+  NewPostButton,
+  MediaComponent
 } from "@components";
 
 import { iRootState, Dispatch } from "../store";
@@ -96,6 +97,7 @@ class PostDetails extends Component<Props, State> {
     this.handleDelete = this.handleDelete.bind(this);
     this.isJson = this.isJson.bind(this);
     this.renderContent = this.renderContent.bind(this);
+    this.renderBlock = this.renderBlock.bind(this);
   }
   componentDidMount() {
     //Reset to top of the page
@@ -159,6 +161,26 @@ class PostDetails extends Component<Props, State> {
     return true;
   }
 
+  // render custom image component
+  renderBlock(editorState: EditorState) {
+    return function (contentBlock: ContentBlock) {
+      const blockType = contentBlock.getType();
+      if (blockType === "atomic") {
+        const entityKey = contentBlock.getEntityAt(0);
+        const entityData = editorState
+          .getCurrentContent()
+          .getEntity(entityKey)
+          .getData();
+        return {
+          component: MediaComponent,
+          editable: false,
+          props: { src: { file: entityData.src } }
+        };
+      }
+      return {};
+    };
+  }
+
   renderContent(content: string) {
     // Temporary solution, add isRichText prop later
     const isContentJson = this.isJson(content);
@@ -172,6 +194,7 @@ class PostDetails extends Component<Props, State> {
           onChange={() => {}}
           editorState={editorState}
           blockStyleFn={getBlockStyle}
+          blockRendererFn={this.renderBlock(editorState)}
         />
       );
     }
