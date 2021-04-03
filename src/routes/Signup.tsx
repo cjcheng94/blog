@@ -39,7 +39,7 @@ type SignupData = {
   ["confirm password"]: string;
 };
 
-const mapState = (state: iRootState) => ({ error: state.error });
+const mapState = (state: iRootState) => ({ stateError: state.error });
 
 const mapDispatch = (dispatch: Dispatch) => ({
   userSignup: dispatch.user.userSignup
@@ -101,13 +101,10 @@ class Signup extends Component<Props, State> {
     );
   }
   render() {
-    const { handleSubmit, error, classes } = this.props;
+    const { handleSubmit, stateError, classes } = this.props;
     return (
       <Fragment>
-        {
-          //the "error" here refers to the error in the application state(store)
-          error && error.status ? <ErrorAlert type="signup" /> : null
-        }
+        {stateError.showError && <ErrorAlert type="signup" />}
         <div className={classes.wrapper}>
           <Typography variant="h3" align="center">
             Sign up

@@ -33,7 +33,7 @@ const styles = createStyles({
 
 const mapState = (state: iRootState) => ({
   isPending: state.isPending,
-  error: state.error
+  stateError: state.error
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({
@@ -114,11 +114,11 @@ class PostNew extends Component<Props, State> {
 
   render() {
     // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit, error, classes } = this.props;
+    const { handleSubmit, stateError, classes } = this.props;
     const { showAlert, showCustomDialog, clickedConfirm } = this.state;
     return (
       <Fragment>
-        {error && error.status ? <ErrorAlert type="postNew" /> : null}
+        {stateError.showError && <ErrorAlert type="postNew" />}
 
         <Typography variant="h4" gutterBottom align="center">
           Write Your Story

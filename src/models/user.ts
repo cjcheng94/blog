@@ -43,38 +43,50 @@ export const user = {
     async userSignup(payload: SignupPayload, state: UserState) {
       const { signupData, callback } = payload;
       dispatch.isPending.setIsPending(true);
-
-      await axios({
-        baseURL: ROOT_URL,
-        url: "/user/signup",
-        method: "POST",
-        data: signupData
-      });
-
+      try {
+        await axios({
+          baseURL: ROOT_URL,
+          url: "/user/signup",
+          method: "POST",
+          data: signupData
+        });
+        callback();
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      callback();
     },
 
     async login(payload: LoginPayload, state: UserState) {
       const { loginData, callback } = payload;
       dispatch.isPending.setIsPending(true);
-
-      const res = await axios({
-        baseURL: ROOT_URL,
-        url: "/user/login",
-        method: "POST",
-        data: loginData
-      });
-
-      const data: UserResponse = res.data;
+      try {
+        const res = await axios({
+          baseURL: ROOT_URL,
+          url: "/user/login",
+          method: "POST",
+          data: loginData
+        });
+        const data: UserResponse = res && res.data;
+        dispatch.user.userLogin({
+          username: data.username,
+          isAuthenticated: true
+        });
+        localStorage.setItem("username", data.username);
+        localStorage.setItem("token", data.token);
+        callback();
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      dispatch.user.userLogin({
-        username: data.username,
-        isAuthenticated: true
-      });
-      localStorage.setItem("username", data.username);
-      localStorage.setItem("token", data.token);
-      callback();
     },
 
     //Simply remove token and username from localStorage

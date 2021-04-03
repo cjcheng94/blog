@@ -31,7 +31,7 @@ const styles = createStyles({
   }
 });
 
-const mapState = (state: iRootState) => ({ error: state.error });
+const mapState = (state: iRootState) => ({ stateError: state.error });
 
 const mapDispatch = (dispatch: Dispatch) => ({ login: dispatch.user.login });
 
@@ -92,13 +92,11 @@ class Login extends Component<Props, State> {
   }
 
   render() {
-    const { handleSubmit, error, classes } = this.props;
+    const { handleSubmit, stateError, classes } = this.props;
+
     return (
       <Fragment>
-        {
-          //the 'error' here refers to the error in the application state(store)
-          error && error.status ? <ErrorAlert type="login" /> : null
-        }
+        {stateError.showError && <ErrorAlert type="login" />}
 
         <div className={classes.wrapper}>
           <Typography variant="h3" align="center">

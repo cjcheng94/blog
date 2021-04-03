@@ -25,7 +25,7 @@ const styles = createStyles({
 const mapState = (state: iRootState) => ({
   posts: state.posts,
   isPending: state.isPending,
-  error: state.error,
+  stateError: state.error,
   isAuthenticated: state.user.isAuthenticated
 });
 
@@ -62,17 +62,19 @@ class PostIndex extends Component<Props, State> {
   };
 
   render() {
-    const { error, isPending, posts, classes, isAuthenticated } = this.props;
+    const {
+      stateError,
+      isPending,
+      posts,
+      classes,
+      isAuthenticated
+    } = this.props;
     const { orderChecked } = this.state;
     const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
     return (
       <Fragment>
         <Grid container spacing={3}>
-          {
-            //Show Error when there is any
-            error && error.status ? <ErrorAlert /> : null
-          }
-
+          {stateError.showError && <ErrorAlert />}
           {/* Sorting switch */}
           <div className={classes.switch}>
             <Switch
