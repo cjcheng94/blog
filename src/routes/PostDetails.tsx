@@ -3,7 +3,6 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import { Editor, convertFromRaw, EditorState, ContentBlock } from "draft-js";
 import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
 
 import {
@@ -19,7 +18,7 @@ import {
   CustomDialog,
   ErrorAlert,
   NewPostButton,
-  MediaComponent
+  RichTextEditor
 } from "@components";
 
 import { iRootState, Dispatch } from "../store";
@@ -76,12 +75,6 @@ type State = {
   clickedConfirm: boolean;
 };
 
-const getBlockStyle = (block: ContentBlock): string => {
-  if (block.getType() === "blockquote") {
-    return "richEditorBlockQuote";
-  }
-  return "";
-};
 class PostDetails extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
@@ -97,7 +90,6 @@ class PostDetails extends Component<Props, State> {
     this.handleDelete = this.handleDelete.bind(this);
     this.isJson = this.isJson.bind(this);
     this.renderContent = this.renderContent.bind(this);
-    this.renderBlock = this.renderBlock.bind(this);
   }
   componentDidMount() {
     //Reset to top of the page
@@ -161,42 +153,12 @@ class PostDetails extends Component<Props, State> {
     return true;
   }
 
-  // render custom image component
-  renderBlock(editorState: EditorState) {
-    return function (contentBlock: ContentBlock) {
-      const blockType = contentBlock.getType();
-      if (blockType === "atomic") {
-        const entityKey = contentBlock.getEntityAt(0);
-        const entityData = editorState
-          .getCurrentContent()
-          .getEntity(entityKey)
-          .getData();
-        return {
-          component: MediaComponent,
-          editable: false,
-          props: { src: { file: entityData.src } }
-        };
-      }
-      return {};
-    };
-  }
-
   renderContent(content: string) {
     // Temporary solution, add isRichText prop later
     const isContentJson = this.isJson(content);
 
     if (isContentJson) {
-      const contentStateFromRaw = convertFromRaw(JSON.parse(content));
-      const editorState = EditorState.createWithContent(contentStateFromRaw);
-      return (
-        <Editor
-          readOnly={true}
-          onChange={() => {}}
-          editorState={editorState}
-          blockStyleFn={getBlockStyle}
-          blockRendererFn={this.renderBlock(editorState)}
-        />
-      );
+      return <RichTextEditor readOnly={true} rawContent={content} />;
     }
     return (
       <Typography variant="body1" className={this.props.classes.content}>
