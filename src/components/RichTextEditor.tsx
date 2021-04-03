@@ -27,7 +27,8 @@ import {
   ContentBlock,
   getDefaultKeyBinding,
   convertToRaw,
-  AtomicBlockUtils
+  AtomicBlockUtils,
+  convertFromRaw
 } from "draft-js";
 
 import { MediaComponent } from "@components";
@@ -210,16 +211,32 @@ const InlineStyleControls: React.FC<StyleControlsProps> = ({
 };
 
 type RichTextEditorProps = {
-  onChange: (value: string) => void;
+  onChange?: (value: string) => void;
+  readOnly?: boolean;
+  rawContent?: string;
 };
 
 const RichTextEditor: React.FC<RichTextEditorProps> = props => {
+  const { onChange, readOnly, rawContent } = props;
   const editor = React.useRef<Editor>(null);
   const classes = useStyles();
+
+  const initailEditorState = () => {
+    if (rawContent) {
+      // edit and preview existing content
+      const contentStateFromRaw = convertFromRaw(JSON.parse(rawContent));
+      const editorStateFromRaw = EditorState.createWithContent(
+        contentStateFromRaw
+      );
+      return editorStateFromRaw;
+    }
+    // create new content
+    return EditorState.createEmpty();
+  };
+
   const [editorState, setEditorState] = useState<EditorState>(
-    EditorState.createEmpty()
+    initailEditorState()
   );
-  const { onChange } = props;
 
   const memoizedEditorData = useMemo(
     () => JSON.stringify(convertToRaw(editorState.getCurrentContent())),
@@ -227,7 +244,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   );
 
   useEffect(() => {
-    onChange(memoizedEditorData);
+    onChange && onChange(memoizedEditorData);
   }, [memoizedEditorData]);
 
   const focusEditor = useCallback(() => {
@@ -318,18 +335,23 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
 
   return (
     <div>
-      <div className={classes.controls}>
-        {/* ---inline--- */}
-        <InlineStyleControls
-          editorState={editorState}
-          onToggle={toggleInlineStyle}
-        />
-        <Divider flexItem orientation="vertical" className={classes.divider} />
-        <BlockStyleControls
-          editorState={editorState}
-          onToggle={toggleBlockType}
-        />
-      </div>
+      {!readOnly && (
+        <div className={classes.controls}>
+          <InlineStyleControls
+            editorState={editorState}
+            onToggle={toggleInlineStyle}
+          />
+          <Divider
+            flexItem
+            orientation="vertical"
+            className={classes.divider}
+          />
+          <BlockStyleControls
+            editorState={editorState}
+            onToggle={toggleBlockType}
+          />
+        </div>
+      )}
 
       <div className={className} onClick={focusEditor}>
         <Editor
@@ -341,6 +363,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
           onChange={setEditorState}
           placeholder="Tell a story..."
           ref={editor}
+          readOnly={readOnly}
           spellCheck={true}
         />
       </div>

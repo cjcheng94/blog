@@ -2,21 +2,19 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
-import { Editor, convertFromRaw, EditorState, ContentBlock } from "draft-js";
 import Card from "@material-ui/core/Card";
 import CardActionArea from "@material-ui/core/CardActionArea";
 import CardContent from "@material-ui/core/CardContent";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
-
 import {
   withStyles,
   createStyles,
   Theme,
   WithStyles
 } from "@material-ui/core/styles";
-
 import { PostsHub } from "PostTypes";
+import { RichTextEditor } from "@components";
 
 const styles = (theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -72,28 +70,12 @@ const isJson = (str: string) => {
   return true;
 };
 
-const getBlockStyle = (block: ContentBlock): string => {
-  if (block.getType() === "blockquote") {
-    return "richEditorBlockQuote";
-  }
-  return "";
-};
-
 const renderContent = (content: string, textClass: string) => {
   // Temporary solution, add isRichText prop later
   const isContentJson = isJson(content);
 
   if (isContentJson) {
-    const contentStateFromRaw = convertFromRaw(JSON.parse(content));
-    const editorState = EditorState.createWithContent(contentStateFromRaw);
-    return (
-      <Editor
-        readOnly={true}
-        onChange={() => {}}
-        editorState={editorState}
-        blockStyleFn={getBlockStyle}
-      />
-    );
+    return <RichTextEditor readOnly={true} rawContent={content} />;
   }
   return <Typography className={textClass}>{content}</Typography>;
 };
