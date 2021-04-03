@@ -38,33 +38,51 @@ export const posts: Posts = {
   effects: (dispatch: Dispatch) => ({
     async fetchPosts(payload: any, state: PostsHub) {
       dispatch.isPending.setIsPending(true);
-
-      const { data } = await axios.get(`${ROOT_URL}/posts`);
-      const posts: PostsList = data.post;
-
+      try {
+        const { data } = await axios.get(`${ROOT_URL}/posts`);
+        const posts: PostsList = data.post;
+        dispatch.posts.updatePostsInState(posts);
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      dispatch.posts.updatePostsInState(posts);
     },
 
     async fetchPost({ _id }: { _id: string }, state: PostsHub) {
       dispatch.isPending.setIsPending(true);
-
-      const { data }: { data: Post } = await axios.get(
-        `${ROOT_URL}/posts/${_id}`
-      );
-
+      try {
+        const { data }: { data: Post } = await axios.get(
+          `${ROOT_URL}/posts/${_id}`
+        );
+        dispatch.posts.updateOnePostInState(data);
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      dispatch.posts.updateOnePostInState(data);
     },
 
     async fetchUserPosts({ username }: { username: string }, state: PostsHub) {
       dispatch.isPending.setIsPending(true);
-
-      const { data } = await axios.get(`${ROOT_URL}/user/${username}`);
-      const posts: PostsList = data.posts;
-
+      try {
+        const { data } = await axios.get(`${ROOT_URL}/user/${username}`);
+        const posts: PostsList = data.posts;
+        dispatch.posts.updatePostsInState(posts);
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      dispatch.posts.updatePostsInState(posts);
     },
 
     // -----------------protected actions-----------------
@@ -76,17 +94,23 @@ export const posts: Posts = {
       const token = localStorage.getItem("token");
 
       dispatch.isPending.setIsPending(true);
-
-      await axios({
-        baseURL: ROOT_URL,
-        url: "/posts",
-        method: "POST",
-        headers: { Authorization: `Bearer ${token}` },
-        data: values
-      });
-
+      try {
+        await axios({
+          baseURL: ROOT_URL,
+          url: "/posts",
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+          data: values
+        });
+        callback();
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      callback();
     },
 
     //Deletes one post by id
@@ -94,16 +118,22 @@ export const posts: Posts = {
       const { _id, callback } = payload;
       const token = localStorage.getItem("token");
       dispatch.isPending.setIsPending(true);
-
-      await axios({
-        baseURL: ROOT_URL,
-        url: `/posts/${_id}`,
-        method: "DELETE",
-        headers: { Authorization: `Bearer ${token}` }
-      });
-
+      try {
+        await axios({
+          baseURL: ROOT_URL,
+          url: `/posts/${_id}`,
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        callback();
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      callback();
     },
 
     //Updates post
@@ -111,17 +141,23 @@ export const posts: Posts = {
       const { _id, requestBody, callback } = payload;
       const token = localStorage.getItem("token");
       dispatch.isPending.setIsPending(true);
-
-      await axios({
-        baseURL: ROOT_URL,
-        url: `/posts/${_id}`,
-        method: "PATCH",
-        headers: { Authorization: `Bearer ${token}` },
-        data: requestBody
-      });
-
+      try {
+        await axios({
+          baseURL: ROOT_URL,
+          url: `/posts/${_id}`,
+          method: "PATCH",
+          headers: { Authorization: `Bearer ${token}` },
+          data: requestBody
+        });
+        callback();
+      } catch (error) {
+        dispatch.error.setError({
+          status: error.response.status,
+          statusText: error.response.statusText,
+          message: error.message
+        });
+      }
       dispatch.isPending.setIsPending(false);
-      callback();
     }
   })
 };

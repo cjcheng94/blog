@@ -14,7 +14,7 @@ type OwnProps = RouteComponentProps<TParams>;
 const mapState = (state: iRootState, ownProps: OwnProps) => ({
   posts: state.posts,
   isPending: state.isPending,
-  error: state.error,
+  stateError: state.error,
   isAuthenticated: state.user.isAuthenticated,
   userFilter: decodeURIComponent(ownProps.match.params.username)
 });
@@ -36,7 +36,7 @@ class UserProfile extends Component<Props, {}> {
     }
   }
   render() {
-    const { error, posts, userFilter, isAuthenticated } = this.props;
+    const { stateError, posts, userFilter, isAuthenticated } = this.props;
 
     //filter all posts whose author prop matches the username in url
     const userPosts = {};
@@ -53,7 +53,7 @@ class UserProfile extends Component<Props, {}> {
           There are {postCount} post
           {postCount > 1 && "s"} by {userFilter}
         </Typography>
-        {error && error.status ? <ErrorAlert /> : null}
+        {stateError.showError && <ErrorAlert />}
         <Grid container spacing={3}>
           <Fragment>
             <Cards posts={userPosts} />

@@ -55,7 +55,7 @@ type OwnProps = RouteComponentProps<TParams>;
 const mapState = (state: iRootState, ownProps: OwnProps) => ({
   post: state.posts[ownProps.match.params._id],
   user: state.user,
-  error: state.error
+  stateError: state.error
 });
 
 const mapDispatch = (dispatch: Dispatch) => ({
@@ -169,9 +169,9 @@ class PostDetails extends Component<Props, State> {
 
   render() {
     // Show error page if any
-    const { error, classes } = this.props;
+    const { stateError, classes } = this.props;
     if (!this.props.post) {
-      if (error.status) {
+      if (stateError.showError) {
         return <ErrorAlert type="postDetail" />;
       }
       return null;
@@ -192,7 +192,7 @@ class PostDetails extends Component<Props, State> {
     return (
       <Fragment>
         <div className={classes.wrapper}>
-          {error && error.status ? <ErrorAlert type="postDetail" /> : null}
+          {stateError.showError && <ErrorAlert type="postDetail" />}
 
           <Typography variant="h3" gutterBottom>
             {title}
