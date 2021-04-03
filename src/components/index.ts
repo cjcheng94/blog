@@ -9,3 +9,4 @@ export { default as Header } from "./Header";
 export { default as Main } from "./Main";
 export { default as NewPostButton } from "./NewPostButton";
 export { default as RichTextEditor } from "./RichTextEditor";
+export { default as MediaComponent } from "./MediaComponent";
