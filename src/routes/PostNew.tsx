@@ -84,7 +84,9 @@ class PostNew extends Component<Props, State> {
       meta: { touched, error }
     } = field;
     if (name === "content") {
-      return <RichTextEditor onChange={field.input.onChange} />;
+      return (
+        <RichTextEditor readOnly={false} onChange={field.input.onChange} />
+      );
     }
     return (
       <TextField

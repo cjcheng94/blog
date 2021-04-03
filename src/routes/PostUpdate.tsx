@@ -18,7 +18,7 @@ import TextField from "@material-ui/core/TextField";
 import Button from "@material-ui/core/Button";
 import Typography from "@material-ui/core/Typography";
 
-import { CustomDialog, ErrorAlert } from "@components";
+import { CustomDialog, ErrorAlert, RichTextEditor } from "@components";
 
 const styles = createStyles({
   formEdit: {
@@ -67,17 +67,95 @@ type State = {
 };
 
 class PostUpdate extends Component<Props, State> {
-  state = {
-    showCustomDialog: false,
-    showAlert: false,
-    clickedConfirm: false
-  };
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      showCustomDialog: false,
+      showAlert: false,
+      clickedConfirm: false
+    };
+    this.showAlert = this.showAlert.bind(this);
+    this.hideAlert = this.hideAlert.bind(this);
+    this.renderField = this.renderField.bind(this);
+    this.onComponentSubmit = this.onComponentSubmit.bind(this);
+    this.handleCustomDialogShow = this.handleCustomDialogShow.bind(this);
+    this.handleCustomDialogHide = this.handleCustomDialogHide.bind(this);
+  }
 
   componentDidMount() {
     //If all posts are already fetched, then don't waste network usage to fetch it again,
     //simply find the post by id in state
     const { _id } = this.props.match.params;
     this.props.fetchPost({ _id });
+  }
+
+  render() {
+    // handleSubmit is from Redux Form, it handles validation etc.
+    const { handleSubmit, stateError, classes } = this.props;
+    return (
+      <Fragment>
+        <form
+          id="update-form"
+          className={classes.formEdit}
+          onSubmit={handleSubmit(this.onComponentSubmit)}
+          //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
+          // this.onComponentSubmit() referes to the method of this component
+        >
+          <Typography variant="h4" gutterBottom align="center">
+            Edit Your Story
+          </Typography>
+
+          {
+            //stateError can not be named "error" here, it will conflict with Redux Form's "error"
+            stateError && stateError.status ? (
+              <ErrorAlert type="postUpdate" />
+            ) : null
+          }
+
+          <Field name="title" component={this.renderField} />
+          <Field name="content" component={this.renderField} />
+          <Button
+            className={classes.button}
+            onClick={this.handleCustomDialogShow}
+            variant="contained"
+            color="primary"
+          >
+            Submit
+          </Button>
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="secondary"
+            component={Link}
+            to="/"
+          >
+            Back
+          </Button>
+        </form>
+
+        <CustomDialog
+          dialogTitle="Submit changes?"
+          open={this.state.showCustomDialog}
+          handleClose={this.handleCustomDialogHide}
+          isDisabled={this.state.clickedConfirm}
+          formId="update-form"
+          type="submit"
+        />
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={this.state.showAlert}
+          autoHideDuration={3000}
+          onClose={this.hideAlert}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">Update successful!</span>}
+        />
+      </Fragment>
+    );
   }
   showAlert() {
     this.setState({ showAlert: true });
@@ -102,9 +180,24 @@ class PostUpdate extends Component<Props, State> {
     //and has 'error', which is an object returned by the validate() function.
     const {
       meta: { touched, error },
-      input: { name }
+      input: { name, value }
     } = field;
+
     if (name === "content") {
+      // Temporary solution, add isRichText prop later
+      // content is rich text format
+      const isContentJson = isJson(value);
+
+      if (isContentJson) {
+        return (
+          <RichTextEditor
+            readOnly={false}
+            rawContent={value}
+            onChange={field.input.onChange}
+          />
+        );
+      }
+      // content is a plain string
       return (
         <TextField
           label={name}
@@ -121,6 +214,7 @@ class PostUpdate extends Component<Props, State> {
         />
       );
     }
+    // title field
     return (
       <TextField
         label={name}
@@ -168,74 +262,6 @@ class PostUpdate extends Component<Props, State> {
       callback: updateCallback
     });
   }
-  render() {
-    // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit, stateError, classes } = this.props;
-    return (
-      <Fragment>
-        <form
-          id="update-form"
-          className={classes.formEdit}
-          onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
-          //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
-          // this.onComponentSubmit() referes to the method of this component
-        >
-          <Typography variant="h4" gutterBottom align="center">
-            Edit Your Story
-          </Typography>
-
-          {
-            //stateError can not be named "error" here, it will conflict with Redux Form's "error"
-            stateError && stateError.status ? (
-              <ErrorAlert type="postUpdate" />
-            ) : null
-          }
-
-          <Field name="title" component={this.renderField} />
-          <Field name="content" component={this.renderField} />
-          <Button
-            className={classes.button}
-            onClick={this.handleCustomDialogShow.bind(this)}
-            variant="contained"
-            color="primary"
-          >
-            Submit
-          </Button>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="secondary"
-            component={Link}
-            to="/"
-          >
-            Back
-          </Button>
-        </form>
-
-        <CustomDialog
-          dialogTitle="Submit changes?"
-          open={this.state.showCustomDialog}
-          handleClose={this.handleCustomDialogHide.bind(this)}
-          isDisabled={this.state.clickedConfirm}
-          formId="update-form"
-          type="submit"
-        />
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={this.state.showAlert}
-          autoHideDuration={3000}
-          onClose={this.hideAlert.bind(this)}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">Update successful!</span>}
-        />
-      </Fragment>
-    );
-  }
 }
 
 // The 'validate' function will be called AUTOMATICALLY by Redux Form
@@ -251,6 +277,18 @@ function validate(values: InPostData): FormErrors<InPostData> {
   }
   //if the "errors" object is empty, the form is valid and ok to submit
   return errors;
+}
+
+function isJson(str: string) {
+  if (typeof str !== "string") {
+    return false;
+  }
+  try {
+    JSON.parse(str);
+  } catch (error) {
+    return false;
+  }
+  return true;
 }
 
 export default compose<typeof PostUpdate>(
