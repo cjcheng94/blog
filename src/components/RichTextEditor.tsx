@@ -7,7 +7,10 @@ import React, {
   Fragment
 } from "react";
 import ToggleButton from "@material-ui/lab/ToggleButton";
+import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
+import InputAdornment from "@material-ui/core/InputAdornment";
+import IconButton from "@material-ui/core/IconButton";
 import { makeStyles } from "@material-ui/core";
 
 import FormatBoldIcon from "@material-ui/icons/FormatBold";
@@ -19,19 +22,22 @@ import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
 import ImageIcon from "@material-ui/icons/Image";
 import InsertLinkIcon from "@material-ui/icons/InsertLink";
 import FormatSizeIcon from "@material-ui/icons/FormatSize";
+import Check from "@material-ui/icons/Check";
 
 import {
   Editor,
   EditorState,
+  ContentState,
   RichUtils,
   ContentBlock,
   getDefaultKeyBinding,
   convertToRaw,
   AtomicBlockUtils,
-  convertFromRaw
+  convertFromRaw,
+  CompositeDecorator
 } from "draft-js";
 
-import { MediaComponent } from "@components";
+import { MediaComponent, LinkComponent } from "@components";
 
 const useStyles = makeStyles(theme => ({
   controls: {
@@ -64,15 +70,31 @@ const preventDefault = (e: React.MouseEvent) => {
   e.preventDefault();
 };
 
+const findLinkEntities = (
+  contentBlock: ContentBlock,
+  callback: (start: number, end: number) => void,
+  contentState: ContentState
+) => {
+  contentBlock.findEntityRanges(character => {
+    const entityKey = character.getEntity();
+    return (
+      entityKey !== null &&
+      contentState.getEntity(entityKey).getType() === "LINK"
+    );
+  }, callback);
+};
+
 type StyleControlsProps = {
   editorState: EditorState;
   onToggle: (v: string) => void;
 };
 
-const BlockStyleControls: React.FC<StyleControlsProps> = ({
-  editorState,
-  onToggle
-}) => {
+const BlockStyleControls: React.FC<
+  StyleControlsProps & { insertLink: (url: string) => void }
+> = ({ editorState, onToggle, insertLink }) => {
+  const [showLinkEditor, setShowLinkEditor] = useState<boolean>(false);
+  const [anchorURL, setAnchorURL] = useState<string>("");
+
   const selection = editorState.getSelection();
   const blockType = editorState
     .getCurrentContent()
@@ -90,6 +112,23 @@ const BlockStyleControls: React.FC<StyleControlsProps> = ({
     }
 
     if (formatType === "link") {
+      // prompt link editor and provide initial value for it if there is any
+      const selection = editorState.getSelection();
+      if (!selection.isCollapsed()) {
+        const contentState = editorState.getCurrentContent();
+        const startKey = editorState.getSelection().getStartKey();
+        const startOffset = editorState.getSelection().getStartOffset();
+        const blockWithLinkAtBeginning = contentState.getBlockForKey(startKey);
+        const linkKey = blockWithLinkAtBeginning.getEntityAt(startOffset);
+        let url = "";
+        if (linkKey) {
+          const linkInstance = contentState.getEntity(linkKey);
+          url = linkInstance.getData().url;
+        }
+        setShowLinkEditor(true);
+        setAnchorURL(url);
+      }
+
       return;
     }
 
@@ -151,7 +190,7 @@ const BlockStyleControls: React.FC<StyleControlsProps> = ({
       </ToggleButton>
       <ToggleButton
         size="small"
-        disabled
+        disabled={editorState.getSelection().isCollapsed()}
         value="link"
         aria-label="link"
         onMouseDown={preventDefault}
@@ -160,6 +199,31 @@ const BlockStyleControls: React.FC<StyleControlsProps> = ({
       >
         <InsertLinkIcon />
       </ToggleButton>
+      <div
+        style={{
+          display: showLinkEditor ? "block" : "none"
+        }}
+      >
+        <TextField
+          value={anchorURL}
+          onChange={e => setAnchorURL(e.target.value)}
+          placeholder="https://"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="start">
+                <IconButton
+                  onClick={() => {
+                    insertLink(anchorURL);
+                    setShowLinkEditor(false);
+                  }}
+                >
+                  <Check />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        ></TextField>
+      </div>
     </Fragment>
   );
 };
@@ -222,16 +286,23 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   const classes = useStyles();
 
   const initailEditorState = () => {
+    const compositeDecorator = new CompositeDecorator([
+      {
+        strategy: findLinkEntities,
+        component: LinkComponent
+      }
+    ]);
     if (rawContent) {
       // edit and preview existing content
       const contentStateFromRaw = convertFromRaw(JSON.parse(rawContent));
       const editorStateFromRaw = EditorState.createWithContent(
-        contentStateFromRaw
+        contentStateFromRaw,
+        compositeDecorator
       );
       return editorStateFromRaw;
     }
     // create new content
-    return EditorState.createEmpty();
+    return EditorState.createEmpty(compositeDecorator);
   };
 
   const [editorState, setEditorState] = useState<EditorState>(
@@ -305,6 +376,27 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     }
   };
 
+  // create links
+  const insertLink = (url: string) => {
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity(
+      "LINK",
+      "MUTABLE",
+      { url }
+    );
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = EditorState.set(editorState, {
+      currentContent: contentStateWithEntity
+    });
+    setEditorState(
+      RichUtils.toggleLink(
+        newEditorState,
+        newEditorState.getSelection(),
+        entityKey
+      )
+    );
+  };
+
   const renderBlock = (contentBlock: ContentBlock) => {
     const blockType = contentBlock.getType();
     // render custom image component
@@ -349,6 +441,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
           <BlockStyleControls
             editorState={editorState}
             onToggle={toggleBlockType}
+            insertLink={insertLink}
           />
         </div>
       )}
