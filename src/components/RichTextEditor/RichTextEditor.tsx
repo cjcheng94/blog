@@ -172,6 +172,14 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     );
   };
 
+  const removeLink = () => {
+    const selection = editorState.getSelection();
+    if (!selection.isCollapsed()) {
+      setEditorState(RichUtils.toggleLink(editorState, selection, null));
+    }
+  };
+
+  // Render image with custom MediaComponent
   const renderBlock = (contentBlock: ContentBlock) => {
     const blockType = contentBlock.getType();
     // render custom image component
@@ -207,6 +215,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
           editorState={editorState}
           onToggle={toggleStyle}
           insertLink={insertLink}
+          removeLink={removeLink}
         />
       )}
       <div className={className} onClick={focusEditor}>

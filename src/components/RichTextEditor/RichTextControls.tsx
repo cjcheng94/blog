@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { EditorState } from "draft-js";
+import { EditorState, getVisibleSelectionRect } from "draft-js";
 
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
+import Box from "@material-ui/core/Box";
 import { makeStyles } from "@material-ui/core";
 
 import FormatBoldIcon from "@material-ui/icons/FormatBold";
@@ -16,6 +17,7 @@ import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
 import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
 import ImageIcon from "@material-ui/icons/Image";
 import InsertLinkIcon from "@material-ui/icons/InsertLink";
+import LinkOffIcon from "@material-ui/icons/LinkOff";
 import FormatSizeIcon from "@material-ui/icons/FormatSize";
 import Check from "@material-ui/icons/Check";
 
@@ -23,6 +25,7 @@ interface RichTextControlsProps {
   editorState: EditorState;
   onToggle: (type: "inline" | "block") => (v: string) => void;
   insertLink: (url: string) => void;
+  removeLink: () => void;
 }
 
 const preventDefault = (e: React.MouseEvent) => {
@@ -47,11 +50,27 @@ const useStyles = makeStyles(theme => ({
 const RichTextControls: React.FC<RichTextControlsProps> = ({
   editorState,
   onToggle,
-  insertLink
+  insertLink,
+  removeLink
 }) => {
   const [showLinkEditor, setShowLinkEditor] = useState<boolean>(false);
   const [anchorURL, setAnchorURL] = useState<string>("");
   const classes = useStyles();
+
+  const [selectionRect, setSelectionRect] = React.useState<{
+    left: number;
+    width: number;
+    right: number;
+    top: number;
+    bottom: number;
+    height: number;
+  }>({ left: 0, width: 0, right: 0, top: 0, bottom: 0, height: 0 });
+
+  React.useEffect(() => {
+    if (getVisibleSelectionRect(window) !== null) {
+      setSelectionRect(getVisibleSelectionRect(window));
+    }
+  }, [editorState]);
 
   // Handle block controls
   const selection = editorState.getSelection();
@@ -60,9 +79,17 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
     .getBlockForKey(selection.getStartKey())
     .getType();
 
+  const getLinkKey = () => {
+    const contentState = editorState.getCurrentContent();
+    const startKey = editorState.getSelection().getStartKey();
+    const startOffset = editorState.getSelection().getStartOffset();
+    const blockWithLinkAtBeginning = contentState.getBlockForKey(startKey);
+    const linkKey = blockWithLinkAtBeginning.getEntityAt(startOffset);
+    return linkKey;
+  };
+
   const handleBlockStyleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     const formatType = e.currentTarget.value;
-
     // trigger input element when user clicks image button
     if (formatType === "image") {
       // !. Non-null assertion operator
@@ -73,12 +100,9 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
     if (formatType === "link") {
       // prompt link editor and provide initial value for it if there is any
       const selection = editorState.getSelection();
+      const contentState = editorState.getCurrentContent();
       if (!selection.isCollapsed()) {
-        const contentState = editorState.getCurrentContent();
-        const startKey = editorState.getSelection().getStartKey();
-        const startOffset = editorState.getSelection().getStartOffset();
-        const blockWithLinkAtBeginning = contentState.getBlockForKey(startKey);
-        const linkKey = blockWithLinkAtBeginning.getEntityAt(startOffset);
+        const linkKey = getLinkKey();
         let url = "";
         if (linkKey) {
           const linkInstance = contentState.getEntity(linkKey);
@@ -87,7 +111,11 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
         setShowLinkEditor(true);
         setAnchorURL(url);
       }
+      return;
+    }
 
+    if (formatType === "removeLink") {
+      removeLink();
       return;
     }
 
@@ -100,6 +128,22 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
 
   const handleInlineStyleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
     onToggle("inline")(e.currentTarget.value);
+  };
+
+  // Handle link
+  const insertLinkAndHideInput = () => {
+    insertLink(anchorURL);
+    setShowLinkEditor(false);
+  };
+
+  const handleLinkKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      insertLinkAndHideInput;
+    }
+    if (e.key === "Escape") {
+      setAnchorURL("");
+      setShowLinkEditor(false);
+    }
   };
 
   return (
@@ -189,40 +233,54 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
       </ToggleButton>
       <ToggleButton
         size="small"
-        disabled={editorState.getSelection().isCollapsed()}
         value="link"
         aria-label="link"
         onMouseDown={preventDefault}
         onClick={handleBlockStyleToggle}
         selected={blockType === "link"}
+        disabled={editorState.getSelection().isCollapsed()}
       >
         <InsertLinkIcon />
       </ToggleButton>
-      <div
-        style={{
-          display: showLinkEditor ? "block" : "none"
-        }}
+      <ToggleButton
+        size="small"
+        value="removeLink"
+        aria-label="remove link"
+        onMouseDown={preventDefault}
+        onClick={handleBlockStyleToggle}
+        disabled={!getLinkKey()}
       >
-        <TextField
-          value={anchorURL}
-          onChange={e => setAnchorURL(e.target.value)}
-          placeholder="https://"
-          InputProps={{
-            endAdornment: (
-              <InputAdornment position="start">
-                <IconButton
-                  onClick={() => {
-                    insertLink(anchorURL);
-                    setShowLinkEditor(false);
-                  }}
-                >
-                  <Check />
-                </IconButton>
-              </InputAdornment>
-            )
+        <LinkOffIcon />
+      </ToggleButton>
+      {showLinkEditor && (
+        <Box
+          style={{
+            position: "absolute",
+            top: selectionRect.top,
+            left: selectionRect.right + 12,
+            zIndex: 999
           }}
-        ></TextField>
-      </div>
+        >
+          <TextField
+            autoFocus
+            size="small"
+            variant="outlined"
+            value={anchorURL}
+            onChange={e => setAnchorURL(e.target.value)}
+            onKeyDown={handleLinkKeyDown}
+            placeholder="https://"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="start">
+                  <IconButton onClick={insertLinkAndHideInput}>
+                    <Check />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
+        </Box>
+      )}
     </div>
   );
 };
