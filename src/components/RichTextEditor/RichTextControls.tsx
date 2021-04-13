@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { EditorState, getVisibleSelectionRect } from "draft-js";
+import { EditorState } from "draft-js";
 
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import TextField from "@material-ui/core/TextField";
@@ -7,6 +7,7 @@ import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
 import Box from "@material-ui/core/Box";
+import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core";
 
 import FormatBoldIcon from "@material-ui/icons/FormatBold";
@@ -34,12 +35,23 @@ const preventDefault = (e: React.MouseEvent) => {
 
 const useStyles = makeStyles(theme => ({
   controls: {
+    position: "sticky",
+    top: "72px",
     display: "inline-flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    maxWidth: "100%",
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: "4px",
     "& button": {
       border: "none",
       margin: "4px"
+    },
+    [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
+      top: "56px"
+    },
+    [theme.breakpoints.up("sm")]: {
+      top: "72px"
     }
   },
   divider: {
@@ -56,21 +68,6 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
   const [showLinkEditor, setShowLinkEditor] = useState<boolean>(false);
   const [anchorURL, setAnchorURL] = useState<string>("");
   const classes = useStyles();
-
-  const [selectionRect, setSelectionRect] = React.useState<{
-    left: number;
-    width: number;
-    right: number;
-    top: number;
-    bottom: number;
-    height: number;
-  }>({ left: 0, width: 0, right: 0, top: 0, bottom: 0, height: 0 });
-
-  React.useEffect(() => {
-    if (getVisibleSelectionRect(window) !== null) {
-      setSelectionRect(getVisibleSelectionRect(window));
-    }
-  }, [editorState]);
 
   // Handle block controls
   const selection = editorState.getSelection();
@@ -147,7 +144,7 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
   };
 
   return (
-    <div className={classes.controls}>
+    <Paper className={classes.controls}>
       {/* Inline style controls */}
       <ToggleButton
         size="small"
@@ -253,14 +250,7 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
         <LinkOffIcon />
       </ToggleButton>
       {showLinkEditor && (
-        <Box
-          style={{
-            position: "absolute",
-            top: selectionRect.top,
-            left: selectionRect.right + 12,
-            zIndex: 999
-          }}
-        >
+        <Box>
           <TextField
             autoFocus
             size="small"
@@ -281,7 +271,7 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
           />
         </Box>
       )}
-    </div>
+    </Paper>
   );
 };
 
