@@ -20,6 +20,12 @@ import { MediaComponent, LinkComponent, RichTextControls } from "@components";
 const useStyles = makeStyles(theme => ({
   fileInput: {
     display: "none"
+  },
+  controls: {
+    margin: theme.spacing(2, 0)
+  },
+  editor: {
+    height: 500
   }
 }));
 
@@ -198,27 +204,19 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     return;
   };
 
-  // If the user changes block type before entering any text, we can
-  // either style the placeholder or hide it. Let's just hide it now.
-  let className = "RichEditor-editor";
-  var contentState = editorState.getCurrentContent();
-  if (!contentState.hasText()) {
-    if (contentState.getBlockMap().first().getType() !== "unstyled") {
-      className += " RichEditor-hidePlaceholder";
-    }
-  }
-
   return (
     <div>
       {!readOnly && (
-        <RichTextControls
-          editorState={editorState}
-          onToggle={toggleStyle}
-          insertLink={insertLink}
-          removeLink={removeLink}
-        />
+        <div className={classes.controls}>
+          <RichTextControls
+            editorState={editorState}
+            onToggle={toggleStyle}
+            insertLink={insertLink}
+            removeLink={removeLink}
+          />
+        </div>
       )}
-      <div className={className} onClick={focusEditor}>
+      <div className={classes.editor} onClick={focusEditor}>
         <Editor
           blockStyleFn={getBlockStyle}
           blockRendererFn={renderBlock}
