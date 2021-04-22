@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { EditorState } from "draft-js";
 
 import ToggleButton from "@material-ui/lab/ToggleButton";
@@ -6,7 +6,6 @@ import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
-import Box from "@material-ui/core/Box";
 import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core";
 
@@ -56,8 +55,30 @@ const useStyles = makeStyles(theme => ({
   },
   divider: {
     margin: theme.spacing(1, 0.5)
+  },
+  linkEditor: {
+    "& .MuiInputBase-adornedEnd": {
+      paddingRight: 0
+    }
   }
 }));
+
+const UseoutsideClickHandler = (
+  ref: React.RefObject<HTMLDivElement>,
+  handler: () => void
+) => {
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        handler();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+};
 
 const RichTextControls: React.FC<RichTextControlsProps> = ({
   editorState,
@@ -68,6 +89,12 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
   const [showLinkEditor, setShowLinkEditor] = useState<boolean>(false);
   const [anchorURL, setAnchorURL] = useState<string>("");
   const classes = useStyles();
+  const linkEditorRef = useRef<HTMLDivElement>(null);
+
+  UseoutsideClickHandler(linkEditorRef, () => {
+    setShowLinkEditor(false);
+    setAnchorURL("");
+  });
 
   // Handle block controls
   const selection = editorState.getSelection();
@@ -135,9 +162,11 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
 
   const handleLinkKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      insertLinkAndHideInput;
+      e.preventDefault();
+      insertLinkAndHideInput();
     }
     if (e.key === "Escape") {
+      e.preventDefault();
       setAnchorURL("");
       setShowLinkEditor(false);
     }
@@ -250,12 +279,13 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
         <LinkOffIcon />
       </ToggleButton>
       {showLinkEditor && (
-        <Box>
+        <div ref={linkEditorRef}>
           <TextField
             autoFocus
             size="small"
             variant="outlined"
             value={anchorURL}
+            className={classes.linkEditor}
             onChange={e => setAnchorURL(e.target.value)}
             onKeyDown={handleLinkKeyDown}
             placeholder="https://"
@@ -269,7 +299,7 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
               )
             }}
           />
-        </Box>
+        </div>
       )}
     </Paper>
   );
