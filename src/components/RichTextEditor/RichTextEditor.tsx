@@ -21,11 +21,8 @@ const useStyles = makeStyles(theme => ({
   fileInput: {
     display: "none"
   },
-  controls: {
-    margin: theme.spacing(2, 0)
-  },
   editor: {
-    height: 500
+    minHeight: 500
   }
 }));
 
@@ -207,14 +204,12 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   return (
     <div>
       {!readOnly && (
-        <div className={classes.controls}>
-          <RichTextControls
-            editorState={editorState}
-            onToggle={toggleStyle}
-            insertLink={insertLink}
-            removeLink={removeLink}
-          />
-        </div>
+        <RichTextControls
+          editorState={editorState}
+          onToggle={toggleStyle}
+          insertLink={insertLink}
+          removeLink={removeLink}
+        />
       )}
       <div className={classes.editor} onClick={focusEditor}>
         <Editor
