@@ -21,9 +21,7 @@ const styles = (theme: Theme) => {
   return createStyles({
     card: {
       width: "100%",
-      [theme.breakpoints.up("sm")]: {
-        height: 200
-      },
+      height: 200,
       padding: theme.spacing(2),
       paddingBottom: theme.spacing(3)
     },
@@ -90,7 +88,7 @@ const Cards: React.FC<Props> = props => {
   const cards = map(ordered, post => {
     const url = `/posts/detail/${post._id}`;
     return (
-      <Grid item xs={12} sm={6} md={4} lg={3} key={post._id}>
+      <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={post._id}>
         <CardActionArea
           className={classes.cardButton}
           component={Link}

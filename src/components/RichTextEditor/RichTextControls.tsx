@@ -1,12 +1,12 @@
-import React, { useState } from "react";
-import { EditorState, getVisibleSelectionRect } from "draft-js";
+import React, { useState, useEffect, useRef } from "react";
+import { EditorState } from "draft-js";
 
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import TextField from "@material-ui/core/TextField";
 import Divider from "@material-ui/core/Divider";
 import InputAdornment from "@material-ui/core/InputAdornment";
 import IconButton from "@material-ui/core/IconButton";
-import Box from "@material-ui/core/Box";
+import Paper from "@material-ui/core/Paper";
 import { makeStyles } from "@material-ui/core";
 
 import FormatBoldIcon from "@material-ui/icons/FormatBold";
@@ -34,18 +34,51 @@ const preventDefault = (e: React.MouseEvent) => {
 
 const useStyles = makeStyles(theme => ({
   controls: {
+    position: "sticky",
+    top: "72px",
     display: "inline-flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    maxWidth: "100%",
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: "4px",
     "& button": {
       border: "none",
       margin: "4px"
+    },
+    [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
+      top: "56px"
+    },
+    [theme.breakpoints.up("sm")]: {
+      top: "72px"
     }
   },
   divider: {
     margin: theme.spacing(1, 0.5)
+  },
+  linkEditor: {
+    "& .MuiInputBase-adornedEnd": {
+      paddingRight: 0
+    }
   }
 }));
+
+const UseoutsideClickHandler = (
+  ref: React.RefObject<HTMLDivElement>,
+  handler: () => void
+) => {
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (ref.current && !ref.current.contains(e.target as Node)) {
+        handler();
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+};
 
 const RichTextControls: React.FC<RichTextControlsProps> = ({
   editorState,
@@ -56,21 +89,12 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
   const [showLinkEditor, setShowLinkEditor] = useState<boolean>(false);
   const [anchorURL, setAnchorURL] = useState<string>("");
   const classes = useStyles();
+  const linkEditorRef = useRef<HTMLDivElement>(null);
 
-  const [selectionRect, setSelectionRect] = React.useState<{
-    left: number;
-    width: number;
-    right: number;
-    top: number;
-    bottom: number;
-    height: number;
-  }>({ left: 0, width: 0, right: 0, top: 0, bottom: 0, height: 0 });
-
-  React.useEffect(() => {
-    if (getVisibleSelectionRect(window) !== null) {
-      setSelectionRect(getVisibleSelectionRect(window));
-    }
-  }, [editorState]);
+  UseoutsideClickHandler(linkEditorRef, () => {
+    setShowLinkEditor(false);
+    setAnchorURL("");
+  });
 
   // Handle block controls
   const selection = editorState.getSelection();
@@ -138,16 +162,18 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
 
   const handleLinkKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
-      insertLinkAndHideInput;
+      e.preventDefault();
+      insertLinkAndHideInput();
     }
     if (e.key === "Escape") {
+      e.preventDefault();
       setAnchorURL("");
       setShowLinkEditor(false);
     }
   };
 
   return (
-    <div className={classes.controls}>
+    <Paper className={classes.controls}>
       {/* Inline style controls */}
       <ToggleButton
         size="small"
@@ -253,19 +279,13 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
         <LinkOffIcon />
       </ToggleButton>
       {showLinkEditor && (
-        <Box
-          style={{
-            position: "absolute",
-            top: selectionRect.top,
-            left: selectionRect.right + 12,
-            zIndex: 999
-          }}
-        >
+        <div ref={linkEditorRef}>
           <TextField
             autoFocus
             size="small"
             variant="outlined"
             value={anchorURL}
+            className={classes.linkEditor}
             onChange={e => setAnchorURL(e.target.value)}
             onKeyDown={handleLinkKeyDown}
             placeholder="https://"
@@ -279,9 +299,9 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
               )
             }}
           />
-        </Box>
+        </div>
       )}
-    </div>
+    </Paper>
   );
 };
 
