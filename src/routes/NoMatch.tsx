@@ -1,8 +1,11 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-
-import { withStyles, createStyles, WithStyles } from "@material-ui/core";
-import Typography from "@material-ui/core/Typography";
+import {
+  withStyles,
+  createStyles,
+  WithStyles,
+  Typography
+} from "@material-ui/core";
 
 const styles = createStyles({
   url: {

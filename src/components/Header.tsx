@@ -12,11 +12,10 @@ import {
   LinearProgress,
   Snackbar,
   Menu,
-  MenuItem
+  MenuItem,
+  makeStyles
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import { AccountCircle, Brightness4 } from "@material-ui/icons";
-
 import { CustomDialog } from "@components";
 
 const useStyles = makeStyles(theme => {

@@ -3,14 +3,16 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import { withStyles, createStyles, WithStyles, Theme } from "@material-ui/core";
-
 import {
   Snackbar,
   Typography,
   Divider,
   Tooltip,
-  Button
+  Button,
+  withStyles,
+  createStyles,
+  WithStyles,
+  Theme
 } from "@material-ui/core";
 
 import {

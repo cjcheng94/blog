@@ -2,7 +2,6 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { compose } from "redux";
 import { iRootState, Dispatch } from "../store";
-
 import {
   withStyles,
   createStyles,

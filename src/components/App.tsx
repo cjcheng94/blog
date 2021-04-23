@@ -2,20 +2,20 @@ import React, { useState, useEffect } from "react";
 import { connect } from "react-redux";
 import { Route, withRouter } from "react-router-dom";
 import { iRootState, Dispatch } from "../store";
-
 import {
+  CssBaseline,
+  Snackbar,
+  useMediaQuery,
   MuiThemeProvider,
   createMuiTheme,
   makeStyles
-} from "@material-ui/core/styles";
-import { CssBaseline, Snackbar, useMediaQuery } from "@material-ui/core";
-
+} from "@material-ui/core";
 import { Header, Main } from "@components";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
     ".richEditorBlockQuote": {
-      color: "#999",
+      color: "red",
       fontFamily: "Georgia, serif",
       fontStyle: "italic",
       textAlign: "center",
