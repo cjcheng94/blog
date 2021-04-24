@@ -1,8 +1,6 @@
 import React from "react";
 import { DiscussionEmbed } from "disqus-react";
-
-import Divider from "@material-ui/core/Divider";
-import Typography from "@material-ui/core/Typography";
+import { Divider, Typography } from "@material-ui/core";
 
 type Props = {
   identifier: string;

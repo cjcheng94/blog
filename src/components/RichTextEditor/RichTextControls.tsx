@@ -1,25 +1,27 @@
 import React, { useState, useEffect, useRef } from "react";
 import { EditorState } from "draft-js";
-
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import TextField from "@material-ui/core/TextField";
-import Divider from "@material-ui/core/Divider";
-import InputAdornment from "@material-ui/core/InputAdornment";
-import IconButton from "@material-ui/core/IconButton";
-import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core";
-
-import FormatBoldIcon from "@material-ui/icons/FormatBold";
-import FormatItalicIcon from "@material-ui/icons/FormatItalic";
-import FormatListNumberedIcon from "@material-ui/icons/FormatListNumbered";
-import FormatListBulletedIcon from "@material-ui/icons/FormatListBulleted";
-import FormatQuoteIcon from "@material-ui/icons/FormatQuote";
-import FormatUnderlinedIcon from "@material-ui/icons/FormatUnderlined";
-import ImageIcon from "@material-ui/icons/Image";
-import InsertLinkIcon from "@material-ui/icons/InsertLink";
-import LinkOffIcon from "@material-ui/icons/LinkOff";
-import FormatSizeIcon from "@material-ui/icons/FormatSize";
-import Check from "@material-ui/icons/Check";
+import {
+  makeStyles,
+  TextField,
+  Divider,
+  InputAdornment,
+  IconButton,
+  Paper
+} from "@material-ui/core";
+import {
+  FormatBold as FormatBoldIcon,
+  FormatItalic as FormatItalicIcon,
+  FormatListNumbered as FormatListNumberedIcon,
+  FormatListBulleted as FormatListBulletedIcon,
+  FormatQuote as FormatQuoteIcon,
+  FormatUnderlined as FormatUnderlinedIcon,
+  Image as ImageIcon,
+  InsertLink as InsertLinkIcon,
+  LinkOff as LinkOffIcon,
+  FormatSize as FormatSizeIcon,
+  Check as CheckIcon
+} from "@material-ui/icons";
 
 interface RichTextControlsProps {
   editorState: EditorState;
@@ -293,7 +295,7 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
               endAdornment: (
                 <InputAdornment position="start">
                   <IconButton onClick={insertLinkAndHideInput}>
-                    <Check />
+                    <CheckIcon />
                   </IconButton>
                 </InputAdornment>
               )

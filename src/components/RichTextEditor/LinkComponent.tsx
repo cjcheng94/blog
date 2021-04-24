@@ -1,6 +1,6 @@
 import React from "react";
 import { ContentState } from "draft-js";
-import Link from "@material-ui/core/Link";
+import { Link } from '@material-ui/core';
 
 type Props = {
   contentState: ContentState;

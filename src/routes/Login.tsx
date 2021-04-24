@@ -11,12 +11,15 @@ import { connect } from "react-redux";
 import { compose } from "redux";
 import { iRootState, Dispatch } from "../store";
 import { UserCredential } from "UserTypes";
-
-import { withStyles, createStyles, WithStyles } from "@material-ui/core";
-import Snackbar from "@material-ui/core/Snackbar";
-import Button from "@material-ui/core/Button";
-import Typography from "@material-ui/core/Typography";
-import TextField from "@material-ui/core/TextField";
+import {
+  withStyles,
+  createStyles,
+  WithStyles,
+  Snackbar,
+  Button,
+  Typography,
+  TextField
+} from "@material-ui/core";
 
 import { ErrorAlert } from "@components";
 
