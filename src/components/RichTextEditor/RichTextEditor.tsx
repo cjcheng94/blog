@@ -1,7 +1,6 @@
 "use strict";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { makeStyles } from "@material-ui/core";
-
 import {
   Editor,
   EditorState,
@@ -14,7 +13,6 @@ import {
   convertFromRaw,
   CompositeDecorator
 } from "draft-js";
-
 import { MediaComponent, LinkComponent, RichTextControls } from "@components";
 
 const useStyles = makeStyles(theme => ({

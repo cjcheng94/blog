@@ -1,14 +1,14 @@
 import React from "react";
 import {
+  Card,
+  CardActionArea,
+  CardContent,
+  Grid,
   withStyles,
   createStyles,
   Theme,
   WithStyles
-} from "@material-ui/core/styles";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import Grid from "@material-ui/core/Grid";
+} from "@material-ui/core";
 
 const styles = (theme: Theme) =>
   createStyles({

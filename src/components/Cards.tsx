@@ -2,19 +2,20 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { Link } from "react-router-dom";
-import Card from "@material-ui/core/Card";
-import CardActionArea from "@material-ui/core/CardActionArea";
-import CardContent from "@material-ui/core/CardContent";
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
+import { PostsHub } from "PostTypes";
+import { RichTextEditor } from "@components";
+
 import {
+  Card,
+  CardActionArea,
+  CardContent,
+  Typography,
+  Grid,
   withStyles,
   createStyles,
   Theme,
   WithStyles
-} from "@material-ui/core/styles";
-import { PostsHub } from "PostTypes";
-import { RichTextEditor } from "@components";
+} from "@material-ui/core";
 
 const styles = (theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
