@@ -1,110 +1,70 @@
-import React, { Component, Fragment } from "react";
-import { connect } from "react-redux";
-import { compose } from "redux";
-import { iRootState, Dispatch } from "../store";
-import {
-  withStyles,
-  createStyles,
-  WithStyles,
-  Grid,
-  Tooltip,
-  Switch
-} from "@material-ui/core";
+import React, { Fragment, useState } from "react";
+import { gql, useQuery } from "@apollo/client";
+import { makeStyles, Grid, Tooltip, Switch } from "@material-ui/core";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 
-const styles = createStyles({
+const useStyles = makeStyles(theme => ({
   switch: {
     width: "100%",
     marginTop: "-12px",
     marginBottom: "-12px",
     fontSize: "0.6em"
   }
-});
+}));
 
-const mapState = (state: iRootState) => ({
-  posts: state.posts,
-  isPending: state.isPending,
-  stateError: state.error,
-  isAuthenticated: state.user.isAuthenticated
-});
+const GET_ALLPOSTS = gql`
+  query getAllPosts {
+    posts {
+      _id
+      title
+      author
+      content
+      date
+    }
+  }
+`;
 
-const mapDispatch = (dispatch: Dispatch) => ({
-  fetchPosts: dispatch.posts.fetchPosts,
-  setIsPending: dispatch.isPending.setIsPending
-});
+const PostIndex = () => {
+  const isAuthenticated = false; // TODO
+  const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> &
-  WithStyles<typeof styles>;
+  const [orderChecked, setOrderChecked] = useState(false);
+  const { loading, error, data } = useQuery(GET_ALLPOSTS);
+  const classes = useStyles();
 
-type State = {
-  orderChecked: boolean;
+  return (
+    <Fragment>
+      <Grid container spacing={3}>
+        {error && <ErrorAlert />}
+        {/* Sorting switch */}
+        <div className={classes.switch}>
+          <Switch
+            checked={orderChecked}
+            onChange={e => {
+              setOrderChecked(e.target.checked);
+            }}
+            value="orderChecked"
+          />
+          Sorting by:{" "}
+          <strong>{orderChecked ? "latest" : "oldest"} first</strong>
+        </div>
+
+        {
+          //Show placeholders when loading
+          loading ? (
+            <CardPlaceholder />
+          ) : (
+            <Cards posts={data.posts} latestFirst={orderChecked} />
+          )
+        }
+
+        {/* Direct user to sign up page or if already signed in, write new page */}
+        <Tooltip title="Write a story">
+          <NewPostButton destination={writeButtonPath} />
+        </Tooltip>
+      </Grid>
+    </Fragment>
+  );
 };
 
-class PostIndex extends Component<Props, State> {
-  state = {
-    orderChecked: false
-  };
-
-  componentDidMount() {
-    //Get posts on mount
-    this.props.fetchPosts();
-  }
-
-  componentWillUnmount() {
-    //Clear the progress bar on unmount
-    this.props.setIsPending(false);
-  }
-
-  handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    this.setState({ orderChecked: event.target.checked });
-  };
-
-  render() {
-    const {
-      stateError,
-      isPending,
-      posts,
-      classes,
-      isAuthenticated
-    } = this.props;
-    const { orderChecked } = this.state;
-    const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
-    return (
-      <Fragment>
-        <Grid container spacing={3}>
-          {stateError.showError && <ErrorAlert />}
-          {/* Sorting switch */}
-          <div className={classes.switch}>
-            <Switch
-              checked={orderChecked}
-              onChange={this.handleChange}
-              value="orderChecked"
-            />
-            Sorting by:{" "}
-            <strong>{orderChecked ? "latest" : "oldest"} first</strong>
-          </div>
-
-          {
-            //Show placeholders when loading
-            isPending ? (
-              <CardPlaceholder />
-            ) : (
-              <Cards posts={posts} latestFirst={orderChecked} />
-            )
-          }
-
-          {/* Direct user to sign up page or if already signed in, write new page */}
-          <Tooltip title="Write a story">
-            <NewPostButton destination={writeButtonPath} />
-          </Tooltip>
-        </Grid>
-      </Fragment>
-    );
-  }
-}
-
-export default compose<typeof PostIndex>(
-  connect(mapState, mapDispatch),
-  withStyles(styles, { name: "PostIndex" })
-)(PostIndex);
+export default PostIndex;

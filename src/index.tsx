@@ -6,11 +6,20 @@ import registerServiceWorker from "./registerServiceWorker";
 import { store } from "./store";
 import { App } from "@components";
 
+import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
+
+const client = new ApolloClient({
+  uri: "https://blog-gql.herokuapp.com",
+  cache: new InMemoryCache()
+});
+
 ReactDOM.render(
   <Provider store={store}>
-    <Router>
-      <App />
-    </Router>
+    <ApolloProvider client={client}>
+      <Router>
+        <App />
+      </Router>
+    </ApolloProvider>
   </Provider>,
   document.getElementById("root") as HTMLElement
 );
