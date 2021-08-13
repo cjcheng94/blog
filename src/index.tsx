@@ -10,7 +10,13 @@ import { ApolloClient, InMemoryCache, ApolloProvider } from "@apollo/client";
 
 const client = new ApolloClient({
   uri: "https://blog-gql.herokuapp.com",
-  cache: new InMemoryCache()
+  cache: new InMemoryCache({
+    typePolicies: {
+      Post: {
+        keyFields: ["_id"]
+      }
+    }
+  })
 });
 
 ReactDOM.render(
