@@ -1,5 +1,5 @@
-import React, { useState, useEffect, Fragment } from "react";
-import { connect } from "react-redux";
+import React, { useState, Fragment } from "react";
+import { gql, useQuery } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
 import {
@@ -18,8 +18,6 @@ import {
   NewPostButton,
   RichTextEditor
 } from "@components";
-
-import { iRootState, Dispatch } from "../store";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -46,80 +44,68 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+const GET_CURRENT_POST = gql`
+  query getCurrentPost($_id: String!) {
+    getPostById(_id: $_id) {
+      _id
+      title
+      author
+      content
+      date
+    }
+  }
+`;
+
 type TParams = { _id: string };
-type OwnProps = RouteComponentProps<TParams>;
-
-const mapState = (state: iRootState, ownProps: OwnProps) => ({
-  post: state.posts[ownProps.match.params._id],
-  user: state.user,
-  stateError: state.error
-});
-
-const mapDispatch = (dispatch: Dispatch) => ({
-  fetchPost: dispatch.posts.fetchPost,
-  fetchPosts: dispatch.posts.fetchPosts,
-  deletePost: dispatch.posts.deletePost
-});
-
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> &
-  RouteComponentProps<TParams>;
+type Props = RouteComponentProps<TParams>;
 
 const PostDetails: React.FC<Props> = props => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
+  const isAuthenticated = false; // TODO
 
-  const {
-    stateError,
-    user: { isAuthenticated }
-  } = props;
-
-  //Extract post id from url, and compose url for editing page
+  //Extract post id from url
   const { _id } = props.match.params;
+  // compose url for editing page
   const url = `/posts/edit/${_id}`;
 
+  const { loading, error, data } = useQuery(GET_CURRENT_POST, {
+    variables: { _id }
+  });
+
+  if (loading || !data) {
+    return null;
+  }
+
+  const post = data.getPostById; // TODO: change query name on the backend
+
   // Show error page if any
-  if (!props.post) {
-    if (stateError.showError) {
+  if (!post) {
+    if (error) {
       return <ErrorAlert type="postDetail" />;
     }
     return null;
   }
 
-  const { title, author, content, date } = props.post;
+  const { title, author, content, date } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
-  useEffect(() => {
-    //Reset to top of the page
-    window.scrollTo(0, 0);
-
-    if (window.navigator.onLine) {
-      if (!props.post) {
-        // If a user refreshs a detail page or lands here via url,
-        // only fetch the post whose id corresponds to the id in the url
-        const { _id } = props.match.params;
-        props.fetchPost({ _id });
-      }
-    } else {
-      //In offline mode, fetch posts from runtime cache
-      props.fetchPosts();
-    }
-  }, []);
-
   const handleDelete = () => {
-    const { _id } = props.match.params;
-    //Disable confirm button once it's clicked
-    setClickedConfirm(true);
-    const deletCallback = () => {
-      setShowAlert(true);
-      setTimeout(() => {
-        props.history.push("/");
-      }, 1000);
-    };
-    props.deletePost({ _id, callback: deletCallback });
+    setClickedConfirm(true); // TODO
+    return;
+    // const { _id } = props.match.params;
+    // //Disable confirm button once it's clicked
+    // setClickedConfirm(true);
+    // const deletCallback = () => {
+    //   setShowAlert(true);
+    //   setTimeout(() => {
+    //     props.history.push("/");
+    //   }, 1000);
+    // };
+    // props.deletePost({ _id, callback: deletCallback }); TODO
   };
 
   const isJson = (str: string) => {
@@ -151,7 +137,7 @@ const PostDetails: React.FC<Props> = props => {
   return (
     <Fragment>
       <div className={classes.wrapper}>
-        {stateError.showError && <ErrorAlert type="postDetail" />}
+        {error && <ErrorAlert type="postDetail" />}
 
         <Typography variant="h3" gutterBottom>
           {title}
@@ -171,27 +157,30 @@ const PostDetails: React.FC<Props> = props => {
         <Divider />
         {renderContent(content)}
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
-        {author === props.user.username && isAuthenticated ? (
-          <Fragment>
-            <Button
-              className={classes.button}
-              onClick={() => setShowCustomDialog(true)}
-              variant="contained"
-              color="secondary"
-            >
-              Delete
-            </Button>
-            <Button
-              className={classes.button}
-              component={Link}
-              to={url}
-              variant="contained"
-              color="primary"
-            >
-              Edit
-            </Button>
-          </Fragment>
-        ) : null}
+        {
+          // author === props.user.username && isAuthenticated // TODO
+          false ? (
+            <Fragment>
+              <Button
+                className={classes.button}
+                onClick={() => setShowCustomDialog(true)}
+                variant="contained"
+                color="secondary"
+              >
+                Delete
+              </Button>
+              <Button
+                className={classes.button}
+                component={Link}
+                to={url}
+                variant="contained"
+                color="primary"
+              >
+                Edit
+              </Button>
+            </Fragment>
+          ) : null
+        }
 
         {/* Direct user to sign up page or if already signed in, write new page */}
         <Tooltip title="Write a story">
@@ -229,4 +218,4 @@ const PostDetails: React.FC<Props> = props => {
   );
 };
 
-export default connect(mapState, mapDispatch)(PostDetails);
+export default PostDetails;
