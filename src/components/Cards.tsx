@@ -101,7 +101,7 @@ const Cards: React.FC<Props> = props => {
                 {post.title}
               </Typography>
               <Typography className={classes.author}>
-                By {post.author}
+                By {post.authorInfo.username}
               </Typography>
               {renderContent(post.content, classes.article)}
             </CardContent>

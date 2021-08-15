@@ -17,9 +17,12 @@ const GET_ALLPOSTS = gql`
     posts {
       _id
       title
-      author
       content
       date
+      authorInfo {
+        _id
+        username
+      }
     }
   }
 `;

@@ -49,7 +49,10 @@ const GET_CURRENT_POST = gql`
     getPostById(_id: $_id) {
       _id
       title
-      author
+      authorInfo {
+        _id
+        username
+      }
       content
       date
     }
@@ -89,7 +92,7 @@ const PostDetails: React.FC<Props> = props => {
     return null;
   }
 
-  const { title, author, content, date } = post;
+  const { title, authorInfo, content, date } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
@@ -146,9 +149,9 @@ const PostDetails: React.FC<Props> = props => {
           By{" "}
           <Link
             className={classes.author}
-            to={`/user/profile/${encodeURIComponent(author)}`}
+            to={`/user/profile/${encodeURIComponent(authorInfo._id)}`}
           >
-            {author}
+            {authorInfo.username}
           </Link>
         </Typography>
         <Typography variant="body2" gutterBottom>
