@@ -3,7 +3,7 @@ import { gql, useQuery } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { tokenVar, usernameVar } from "../cache";
+import { tokenVar, currentUsernameVar } from "../cache";
 import {
   Snackbar,
   Typography,
@@ -69,7 +69,7 @@ const PostDetails: React.FC<Props> = props => {
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
   const isAuthenticated = !checkIfExpired(tokenVar());
-
+  const currentUser = currentUsernameVar();
   //Extract post id from url
   const { _id } = props.match.params;
   // compose url for editing page
@@ -161,7 +161,7 @@ const PostDetails: React.FC<Props> = props => {
         <Divider />
         {renderContent(content)}
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
-        {authorInfo.username === usernameVar() && isAuthenticated ? (
+        {authorInfo.username === currentUser && isAuthenticated ? (
           <Fragment>
             <Button
               className={classes.button}

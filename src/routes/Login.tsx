@@ -9,7 +9,7 @@ import {
   TextField
 } from "@material-ui/core";
 import { ErrorAlert } from "@components";
-import { usernameVar, tokenVar } from "../cache";
+import { currentUsernameVar, tokenVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -60,8 +60,10 @@ const Login: React.FC<Props> = props => {
     if (called && data) {
       const token = data.userLogin;
 
-      usernameVar(username);
+      currentUsernameVar(username);
       tokenVar(token);
+      localStorage.setItem("currentUsername", username);
+      localStorage.setItem("token", token);
 
       setShowAlert(true);
       setTimeout(() => props.history.push("/"), 1000);

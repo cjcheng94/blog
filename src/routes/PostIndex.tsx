@@ -30,14 +30,11 @@ const GET_ALLPOSTS = gql`
 `;
 
 const PostIndex = () => {
-  const isAuthenticated = !checkIfExpired(tokenVar());
-  console.log(tokenVar());
-
-  const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
-
   const [orderChecked, setOrderChecked] = useState(false);
   const { loading, error, data } = useQuery(GET_ALLPOSTS);
   const classes = useStyles();
+  const isAuthenticated = !checkIfExpired(tokenVar());
+  const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
   return (
     <Fragment>
