@@ -1,29 +1,17 @@
-import React, { Component, Fragment } from "react";
-import {
-  Field,
-  reduxForm,
-  InjectedFormProps,
-  FormErrors,
-  WrappedFieldProps
-} from "redux-form";
+import React, { useState, useEffect, Fragment, FormEvent } from "react";
+import { gql, useLazyQuery } from "@apollo/client";
 import { RouteComponentProps } from "react-router-dom";
-import { connect } from "react-redux";
-import { compose } from "redux";
-import { iRootState, Dispatch } from "../store";
-import { UserCredential } from "UserTypes";
 import {
-  withStyles,
-  createStyles,
-  WithStyles,
+  makeStyles,
   Snackbar,
   Button,
   Typography,
   TextField
 } from "@material-ui/core";
-
 import { ErrorAlert } from "@components";
+import { usernameVar, tokenVar } from "../cache";
 
-const styles = createStyles({
+const useStyles = makeStyles(theme => ({
   wrapper: {
     maxWidth: 300,
     margin: "0px auto"
@@ -32,138 +20,134 @@ const styles = createStyles({
     display: "block",
     margin: "30px auto"
   }
-});
+}));
 
-const mapState = (state: iRootState) => ({ stateError: state.error });
+const USER_LOGIN = gql`
+  query userLogin($username: String!, $password: String!) {
+    userLogin(username: $username, password: $password)
+  }
+`;
 
-const mapDispatch = (dispatch: Dispatch) => ({ login: dispatch.user.login });
+type Props = RouteComponentProps;
 
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> &
-  WithStyles<typeof styles> &
-  InjectedFormProps<UserCredential> &
-  RouteComponentProps;
+const Login: React.FC<Props> = props => {
+  const [showAlert, setShowAlert] = useState(false);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
+  const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const classes = useStyles();
+  const [userLogin, { loading, error, data, called }] =
+    useLazyQuery(USER_LOGIN);
 
-type State = { open: boolean };
+  // Clear error messages when user enters text
+  useEffect(() => {
+    if (username) {
+      setUsernameErrorMessage("");
+      return;
+    }
+  }, [username]);
 
-class Login extends Component<Props, State> {
-  state = {
-    open: false
+  useEffect(() => {
+    if (password) {
+      setPasswordErrorMessage("");
+      return;
+    }
+  }, [password]);
+
+  useEffect(() => {
+    // Called Api and successfully got token
+    if (called && data) {
+      const token = data.userLogin;
+
+      usernameVar(username);
+      tokenVar(token);
+
+      setShowAlert(true);
+      setTimeout(() => props.history.push("/"), 1000);
+    }
+  }, [called, data]);
+
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+
+    if (!username) {
+      setUsernameErrorMessage("Please enter your username");
+    }
+    if (!password) {
+      setPasswordErrorMessage("Please enter your password");
+    }
+
+    if (username && password) {
+      // Api call
+      userLogin({
+        variables: { username, password }
+      });
+    }
   };
 
-  showAlert() {
-    this.setState({ open: true });
-  }
-  hideAlert() {
-    this.setState({ open: false });
-  }
-  onComponentSubmit(values: UserCredential) {
-    const loginCallback = () => {
-      //Callback to execute when the action is resolved
-      this.showAlert();
-      setTimeout(() => this.props.history.push("/"), 1000);
-    };
+  console.log(loading); //TODO
 
-    this.props.login({
-      loginData: values,
-      callback: loginCallback
-    });
-  }
+  return (
+    <Fragment>
+      {error && <ErrorAlert type="login" />}
 
-  //For Redux Form's Field Component
-  renderField(field: WrappedFieldProps) {
-    //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
-    //and has 'error', which is an object returned by the validate() function.
-    const {
-      input: { name },
-      meta: { touched, error }
-    } = field;
-    const type = name === "password" ? "password" : "text";
-    const label = name === "password" ? "Password" : "Username";
+      <div className={classes.wrapper}>
+        <Typography variant="h3" align="center">
+          Log in
+        </Typography>
+        <form onSubmit={handleSubmit}>
+          <TextField
+            value={username}
+            onChange={e => {
+              setUsername(e.target.value);
+            }}
+            error={!!usernameErrorMessage}
+            label={"Username"}
+            type={"text"}
+            helperText={usernameErrorMessage}
+            margin="normal"
+            fullWidth
+          />
+          <TextField
+            value={password}
+            onChange={e => {
+              setPassword(e.target.value);
+            }}
+            error={!!passwordErrorMessage}
+            label={"Password"}
+            type={"password"}
+            helperText={passwordErrorMessage}
+            margin="normal"
+            fullWidth
+          />
 
-    return (
-      <TextField
-        error={!!(touched && error)}
-        label={label}
-        type={type}
-        helperText={touched ? error : ""}
-        margin="normal"
-        fullWidth
-        {...field.input}
-      />
-    );
-  }
-
-  render() {
-    const { handleSubmit, stateError, classes } = this.props;
-
-    return (
-      <Fragment>
-        {stateError.showError && <ErrorAlert type="login" />}
-
-        <div className={classes.wrapper}>
-          <Typography variant="h3" align="center">
-            Log in
-          </Typography>
-          <form
-            onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
-            //                      ▲ ▲ ▲ ▲ ▲ ▲ ▲
-            // this.onComponentSubmit() referes to the method of this component
+          <Button
+            className={classes.button}
+            variant="contained"
+            color="primary"
+            type="submit"
           >
-            <Field name="username" component={this.renderField} />
-            <Field name="password" component={this.renderField} />
-            <Button
-              className={classes.button}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Log In
-            </Button>
-          </form>
-        </div>
+            Log In
+          </Button>
+        </form>
+      </div>
 
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={this.state.open}
-          autoHideDuration={3000}
-          onClose={this.hideAlert.bind(this)}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">Login successful!</span>}
-        />
-      </Fragment>
-    );
-  }
-}
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        open={showAlert}
+        autoHideDuration={3000}
+        onClose={() => setShowAlert(false)}
+        ContentProps={{
+          "aria-describedby": "message-id"
+        }}
+        message={<span id="message-id">Login successful!</span>}
+      />
+    </Fragment>
+  );
+};
 
-// The 'validate' function will be called automaticalli by Redux Form
-// whenever a user attempts to submit the form
-function validate(values: UserCredential): FormErrors<UserCredential> {
-  const errors: FormErrors<UserCredential> = {};
-  // Validate the inputs from 'values'
-  if (!values.username) {
-    errors.username = "Please enter a username";
-  }
-  if (!values.password) {
-    errors.password = "Please enter a password";
-  }
-  //if the 'errors' object is empty, the form is valid and ok to submit
-  return errors;
-}
-
-export default compose<typeof Login>(
-  connect(mapState, mapDispatch),
-  withStyles(styles, {
-    name: "Login"
-  }),
-  reduxForm({
-    validate,
-    //value of 'form' must be unique
-    form: "LoginForm"
-  })
-)(Login);
+export default Login;
