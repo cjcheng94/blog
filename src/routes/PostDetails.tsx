@@ -2,6 +2,8 @@ import React, { useState, Fragment } from "react";
 import { gql, useQuery } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
+import checkIfExpired from "../middlewares/checkTokenExpired";
+import { tokenVar, usernameVar } from "../cache";
 import {
   Snackbar,
   Typography,
@@ -10,7 +12,6 @@ import {
   Button,
   makeStyles
 } from "@material-ui/core";
-
 import {
   DisqusComment,
   CustomDialog,
@@ -67,7 +68,7 @@ const PostDetails: React.FC<Props> = props => {
   const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
-  const isAuthenticated = false; // TODO
+  const isAuthenticated = !checkIfExpired(tokenVar());
 
   //Extract post id from url
   const { _id } = props.match.params;
@@ -82,7 +83,7 @@ const PostDetails: React.FC<Props> = props => {
     return null;
   }
 
-  const post = data.getPostById; // TODO: change query name on the backend
+  const post = data.getPostById;
 
   // Show error page if any
   if (!post) {
@@ -160,30 +161,27 @@ const PostDetails: React.FC<Props> = props => {
         <Divider />
         {renderContent(content)}
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
-        {
-          // author === props.user.username && isAuthenticated // TODO
-          false ? (
-            <Fragment>
-              <Button
-                className={classes.button}
-                onClick={() => setShowCustomDialog(true)}
-                variant="contained"
-                color="secondary"
-              >
-                Delete
-              </Button>
-              <Button
-                className={classes.button}
-                component={Link}
-                to={url}
-                variant="contained"
-                color="primary"
-              >
-                Edit
-              </Button>
-            </Fragment>
-          ) : null
-        }
+        {authorInfo.username === usernameVar() && isAuthenticated ? (
+          <Fragment>
+            <Button
+              className={classes.button}
+              onClick={() => setShowCustomDialog(true)}
+              variant="contained"
+              color="secondary"
+            >
+              Delete
+            </Button>
+            <Button
+              className={classes.button}
+              component={Link}
+              to={url}
+              variant="contained"
+              color="primary"
+            >
+              Edit
+            </Button>
+          </Fragment>
+        ) : null}
 
         {/* Direct user to sign up page or if already signed in, write new page */}
         <Tooltip title="Write a story">
