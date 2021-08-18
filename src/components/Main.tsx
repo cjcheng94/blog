@@ -54,7 +54,7 @@ const routes = [
     main: Signup
   },
   {
-    path: "/user/profile/:username",
+    path: "/user/profile/:userId",
     main: AsyncUserProfile
   },
   {

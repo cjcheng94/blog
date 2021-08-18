@@ -1,73 +1,66 @@
-import React, { Component, Fragment } from "react";
-import { connect } from "react-redux";
+import React, { Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { compose } from "redux";
-import { iRootState, Dispatch } from "../store";
-import { withStyles, WithStyles, Grid, Typography } from "@material-ui/core";
+import { gql, useQuery } from "@apollo/client";
+import { Grid, Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
+import { tokenVar } from "../cache";
+import checkIfExpired from "../middlewares/checkTokenExpired";
 
-const styles = {};
+type TParams = { userId: string };
+type Props = RouteComponentProps<TParams>;
 
-type TParams = { username: string };
-type OwnProps = RouteComponentProps<TParams>;
-
-const mapState = (state: iRootState, ownProps: OwnProps) => ({
-  posts: state.posts,
-  isPending: state.isPending,
-  stateError: state.error,
-  isAuthenticated: state.user.isAuthenticated,
-  userFilter: decodeURIComponent(ownProps.match.params.username)
-});
-
-const mapDispatch = (dispatch: Dispatch) => ({
-  fetchPosts: dispatch.posts.fetchPosts
-});
-
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> &
-  WithStyles<typeof styles> &
-  RouteComponentProps;
-
-class UserProfile extends Component<Props, {}> {
-  componentDidMount() {
-    //if this.props.posts is already there, don't waste network usage on fetching again
-    if (Object.keys(this.props.posts).length === 0) {
-      this.props.fetchPosts();
-    }
-  }
-  render() {
-    const { stateError, posts, userFilter, isAuthenticated } = this.props;
-
-    //filter all posts whose author prop matches the username in url
-    const userPosts = {};
-    for (let key in posts) {
-      if (posts[key]["author"] === userFilter) {
-        userPosts[key] = posts[key];
+const GET_USER_POSTS = gql`
+  query getUserPosts($_id: String!) {
+    getUserPosts(_id: $_id) {
+      _id
+      title
+      authorInfo {
+        _id
+        username
       }
+      content
+      date
     }
-    const postCount = Object.keys(userPosts).length;
-
-    return (
-      <Fragment>
-        <Typography variant="h5" gutterBottom align="center">
-          There are {postCount} post
-          {postCount > 1 && "s"} by {userFilter}
-        </Typography>
-        {stateError.showError && <ErrorAlert />}
-        <Grid container spacing={3}>
-          <Fragment>
-            <Cards posts={userPosts} />
-            {isAuthenticated && <NewPostButton destination="/posts/new" />}
-          </Fragment>
-        </Grid>
-      </Fragment>
-    );
   }
-}
+`;
 
-export default compose(
-  connect(mapState, mapDispatch),
-  withStyles(styles, {
-    name: "UserProfile"
-  })
-)(UserProfile);
+const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
+
+const UserProfile: React.FC<Props> = props => {
+  const { loading, error, data } = useQuery(GET_USER_POSTS, {
+    variables: {
+      _id: props.match.params.userId
+    }
+  });
+
+  const urlQuery = getUrlQuery(props.location.search);
+  const isAuthenticated = !checkIfExpired(tokenVar());
+  const username = urlQuery.get("username");
+
+  if (loading || !data) {
+    return null;
+  }
+
+  console.log(loading); // TODO
+
+  const userPosts = data.getUserPosts;
+  const postCount = userPosts.length;
+
+  return (
+    <Fragment>
+      <Typography variant="h5" gutterBottom align="center">
+        There are {postCount} post
+        {postCount > 1 && "s"} by {username}
+      </Typography>
+      {error && <ErrorAlert />}
+      <Grid container spacing={3}>
+        <Fragment>
+          <Cards posts={userPosts} />
+          {isAuthenticated && <NewPostButton destination="/posts/new" />}
+        </Fragment>
+      </Grid>
+    </Fragment>
+  );
+};
+
+export default UserProfile;

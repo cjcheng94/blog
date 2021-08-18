@@ -138,6 +138,10 @@ const PostDetails: React.FC<Props> = props => {
     );
   };
 
+  const userPostUrl = `/user/profile/${
+    authorInfo._id
+  }?username=${encodeURIComponent(authorInfo.username)}`;
+
   return (
     <Fragment>
       <div className={classes.wrapper}>
@@ -148,10 +152,7 @@ const PostDetails: React.FC<Props> = props => {
         </Typography>
         <Typography variant="body2">
           By{" "}
-          <Link
-            className={classes.author}
-            to={`/user/profile/${encodeURIComponent(authorInfo._id)}`}
-          >
+          <Link className={classes.author} to={userPostUrl}>
             {authorInfo.username}
           </Link>
         </Typography>
