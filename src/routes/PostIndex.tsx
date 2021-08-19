@@ -1,9 +1,10 @@
 import React, { Fragment, useState } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { makeStyles, Grid, Tooltip, Switch } from "@material-ui/core";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import { tokenVar } from "../cache";
+import { GET_ALL_POSTS } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   switch: {
@@ -14,24 +15,9 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const GET_ALLPOSTS = gql`
-  query getAllPosts {
-    posts {
-      _id
-      title
-      content
-      date
-      authorInfo {
-        _id
-        username
-      }
-    }
-  }
-`;
-
 const PostIndex = () => {
   const [orderChecked, setOrderChecked] = useState(false);
-  const { loading, error, data } = useQuery(GET_ALLPOSTS);
+  const { loading, error, data } = useQuery(GET_ALL_POSTS);
   const classes = useStyles();
   const isAuthenticated = !checkIfExpired(tokenVar());
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";

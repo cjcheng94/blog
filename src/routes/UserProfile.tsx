@@ -1,28 +1,14 @@
 import React, { Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Grid, Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 import { tokenVar } from "../cache";
 import checkIfExpired from "../middlewares/checkTokenExpired";
+import { GET_USER_POSTS } from "../gqlDocuments";
 
 type TParams = { userId: string };
 type Props = RouteComponentProps<TParams>;
-
-const GET_USER_POSTS = gql`
-  query getUserPosts($_id: String!) {
-    getUserPosts(_id: $_id) {
-      _id
-      title
-      authorInfo {
-        _id
-        username
-      }
-      content
-      date
-    }
-  }
-`;
 
 const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
 

@@ -1,9 +1,10 @@
 import React, { useState, Fragment } from "react";
-import { gql, useQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import { tokenVar, currentUsernameVar } from "../cache";
+import { GET_CURRENT_POST } from "../gqlDocuments";
 import {
   Snackbar,
   Typography,
@@ -44,21 +45,6 @@ const useStyles = makeStyles(theme => ({
     fontWeight: "bold"
   }
 }));
-
-const GET_CURRENT_POST = gql`
-  query getCurrentPost($_id: String!) {
-    getPostById(_id: $_id) {
-      _id
-      title
-      authorInfo {
-        _id
-        username
-      }
-      content
-      date
-    }
-  }
-`;
 
 type TParams = { _id: string };
 type Props = RouteComponentProps<TParams>;

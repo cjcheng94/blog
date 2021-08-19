@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment, FormEvent } from "react";
-import { gql, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { RouteComponentProps } from "react-router-dom";
 import {
   makeStyles,
@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { ErrorAlert } from "@components";
 import { currentUsernameVar, tokenVar } from "../cache";
+import { USER_LOGIN } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -21,12 +22,6 @@ const useStyles = makeStyles(theme => ({
     margin: "30px auto"
   }
 }));
-
-const USER_LOGIN = gql`
-  query userLogin($username: String!, $password: String!) {
-    userLogin(username: $username, password: $password)
-  }
-`;
 
 type Props = RouteComponentProps;
 
@@ -44,16 +39,11 @@ const Login: React.FC<Props> = props => {
   useEffect(() => {
     if (username) {
       setUsernameErrorMessage("");
-      return;
     }
-  }, [username]);
-
-  useEffect(() => {
     if (password) {
       setPasswordErrorMessage("");
-      return;
     }
-  }, [password]);
+  }, [username, password]);
 
   useEffect(() => {
     // Called Api and successfully got token

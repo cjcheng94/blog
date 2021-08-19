@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment, FormEvent } from "react";
-import { gql, useLazyQuery } from "@apollo/client";
+import { useLazyQuery } from "@apollo/client";
 import { RouteComponentProps } from "react-router-dom";
 import {
   makeStyles,
@@ -8,8 +8,8 @@ import {
   Typography,
   TextField
 } from "@material-ui/core";
-
 import { ErrorAlert } from "@components";
+import { USER_SIGNUP } from "../gqlDocuments";
 
 const useStyles = makeStyles({
   wrapper: {
@@ -24,15 +24,6 @@ const useStyles = makeStyles({
     color: "red"
   }
 });
-
-const USER_SIGNUP = gql`
-  query userSignup($username: String!, $password: String!) {
-    userSignup(username: $username, password: $password) {
-      _id
-      username
-    }
-  }
-`;
 
 const Signup: React.FC<RouteComponentProps> = props => {
   const [showAlert, setShowAlert] = useState(false);
