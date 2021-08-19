@@ -49,12 +49,13 @@ const findLinkEntities = (
 
 type RichTextEditorProps = {
   onChange?: (value: string) => void;
+  isEmpty?: (isEmpty: boolean) => void;
   readOnly?: boolean;
   rawContent?: string;
 };
 
 const RichTextEditor: React.FC<RichTextEditorProps> = props => {
-  const { onChange, readOnly, rawContent } = props;
+  const { onChange, readOnly, rawContent, isEmpty } = props;
   const editor = React.useRef<Editor>(null);
   const classes = useStyles();
 
@@ -89,6 +90,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
 
   useEffect(() => {
     onChange && onChange(memoizedEditorData);
+    if (isEmpty) {
+      const contentState = editorState.getCurrentContent();
+      isEmpty(!contentState.hasText());
+    }
   }, [memoizedEditorData]);
 
   const focusEditor = useCallback(() => {
