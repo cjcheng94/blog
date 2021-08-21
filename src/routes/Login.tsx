@@ -9,7 +9,6 @@ import {
   TextField
 } from "@material-ui/core";
 import { ErrorAlert } from "@components";
-import { currentUsernameVar, tokenVar } from "../cache";
 import { USER_LOGIN } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
@@ -49,11 +48,8 @@ const Login: React.FC<Props> = props => {
     // Called Api and successfully got token
     if (called && data) {
       const token = data.userLogin;
-
-      currentUsernameVar(username);
-      tokenVar(token);
       localStorage.setItem("currentUsername", username);
-      localStorage.setItem("token", token);
+      localStorage.setItem("currentUserToken", token);
 
       setShowAlert(true);
       setTimeout(() => props.history.push("/"), 1000);

@@ -3,7 +3,6 @@ import { useQuery } from "@apollo/client";
 import { makeStyles, Grid, Tooltip, Switch } from "@material-ui/core";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { tokenVar } from "../cache";
 import { GET_ALL_POSTS } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
@@ -19,7 +18,7 @@ const PostIndex = () => {
   const [orderChecked, setOrderChecked] = useState(false);
   const { loading, error, data } = useQuery(GET_ALL_POSTS);
   const classes = useStyles();
-  const isAuthenticated = !checkIfExpired(tokenVar());
+  const isAuthenticated = !checkIfExpired();
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
   return (

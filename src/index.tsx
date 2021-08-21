@@ -5,7 +5,6 @@ import { Provider } from "react-redux";
 import registerServiceWorker from "./registerServiceWorker";
 import { store } from "./store";
 import { App } from "@components";
-import { currentUsernameVar, tokenVar } from "./cache";
 import {
   ApolloClient,
   InMemoryCache,
@@ -36,22 +35,6 @@ const client = new ApolloClient({
     typePolicies: {
       Post: {
         keyFields: ["_id"]
-      },
-      User: {
-        fields: {
-          token: {
-            read() {
-              return localStorage.getItem("token") || tokenVar();
-            }
-          },
-          currentUsername: {
-            read() {
-              return (
-                localStorage.getItem("currentUsername") || currentUsernameVar()
-              );
-            }
-          }
-        }
       }
     }
   })

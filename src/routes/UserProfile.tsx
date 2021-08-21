@@ -3,7 +3,6 @@ import { RouteComponentProps } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { Grid, Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
-import { tokenVar } from "../cache";
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import { GET_USER_POSTS } from "../gqlDocuments";
 
@@ -20,7 +19,7 @@ const UserProfile: React.FC<Props> = props => {
   });
 
   const urlQuery = getUrlQuery(props.location.search);
-  const isAuthenticated = !checkIfExpired(tokenVar());
+  const isAuthenticated = !checkIfExpired();
   const username = urlQuery.get("username");
 
   if (loading || !data) {

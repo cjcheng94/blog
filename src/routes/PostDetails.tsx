@@ -3,7 +3,6 @@ import { useQuery } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { tokenVar, currentUsernameVar } from "../cache";
 import { GET_CURRENT_POST } from "../gqlDocuments";
 import {
   Snackbar,
@@ -54,8 +53,10 @@ const PostDetails: React.FC<Props> = props => {
   const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
-  const isAuthenticated = !checkIfExpired(tokenVar());
-  const currentUser = currentUsernameVar();
+
+  const currentUsername = localStorage.getItem("currentUsername");
+  const isAuthenticated = !checkIfExpired();
+
   //Extract post id from url
   const { _id } = props.match.params;
   // compose url for editing page
@@ -148,7 +149,7 @@ const PostDetails: React.FC<Props> = props => {
         <Divider />
         {renderContent(content)}
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
-        {authorInfo.username === currentUser && isAuthenticated ? (
+        {authorInfo.username === currentUsername && isAuthenticated ? (
           <Fragment>
             <Button
               className={classes.button}
