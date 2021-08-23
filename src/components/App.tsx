@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { connect } from "react-redux";
 import { Route, withRouter } from "react-router-dom";
-import { iRootState, Dispatch } from "../store";
+import { darkModeVar } from "../cache";
 import {
   CssBaseline,
   Snackbar,
@@ -10,7 +9,9 @@ import {
   createMuiTheme,
   makeStyles
 } from "@material-ui/core";
+import { useQuery } from "@apollo/client";
 import { Header, Main } from "@components";
+import { GET_IS_DARK_MODE } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -27,17 +28,14 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const mapState = (state: iRootState) => ({
-  userDarkModeSetting: state.user.isDarkMode
-});
-const mapDispatch = (dispatch: Dispatch) => ({
-  setDarkMode: dispatch.user.setDarkMode
-});
-
-type AppProps = ReturnType<typeof mapState> & ReturnType<typeof mapDispatch>;
-
-const App: React.FC<AppProps> = ({ userDarkModeSetting, setDarkMode }) => {
+const App: React.FC = () => {
   const classes = useStyles();
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [alertMessage, setAlertMessage] = useState<string>("");
+  const [alertDuration, setAlertDuration] = useState<number>(0);
+  const { data } = useQuery(GET_IS_DARK_MODE);
+
+  const userDarkModeSetting = data.isDarkMode;
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const theme = React.useMemo(
@@ -49,10 +47,6 @@ const App: React.FC<AppProps> = ({ userDarkModeSetting, setDarkMode }) => {
       }),
     [userDarkModeSetting]
   );
-
-  const [showAlert, setShowAlert] = useState<boolean>(false);
-  const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertDuration, setAlertDuration] = useState<number>(0);
 
   useEffect(() => {
     const isOnline = window.navigator.onLine;
@@ -110,7 +104,7 @@ const App: React.FC<AppProps> = ({ userDarkModeSetting, setDarkMode }) => {
 
   // set dark mode by detecting system preference
   useEffect(() => {
-    setDarkMode({ setting: prefersDarkMode });
+    darkModeVar(prefersDarkMode);
   }, [prefersDarkMode]);
 
   return (
@@ -139,6 +133,4 @@ const App: React.FC<AppProps> = ({ userDarkModeSetting, setDarkMode }) => {
   );
 };
 
-const connectedApp = connect(mapState, mapDispatch)(App);
-
-export default withRouter(connectedApp);
+export default withRouter(App);

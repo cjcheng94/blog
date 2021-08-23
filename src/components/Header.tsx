@@ -1,7 +1,6 @@
 import React, { useState, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { connect } from "react-redux";
-import { Dispatch, iRootState } from "../store";
+import { darkModeVar, loadingVar } from "../cache";
 import {
   Tooltip,
   AppBar,
@@ -17,6 +16,7 @@ import {
 } from "@material-ui/core";
 import { AccountCircle, Brightness4 } from "@material-ui/icons";
 import { CustomDialog } from "@components";
+import checkIfExpired from "../middlewares/checkTokenExpired";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -54,35 +54,28 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-const mapState = (state: iRootState) => ({
-  isAuthenticated: state.user.isAuthenticated,
-  username: state.user.username,
-  isPending: state.isPending
-});
+const toggleDarkMode = () => {
+  const prevIsDarkMode = darkModeVar();
+  darkModeVar(!prevIsDarkMode);
+};
 
-const mapDispatch = (dispatch: Dispatch) => ({
-  userLogout: dispatch.user.logout,
-  toggleDarkMode: dispatch.user.toggleDarkMode
-});
+type UserLogout = (callback: () => void) => void;
+const userLogout: UserLogout = callback => {
+  localStorage.removeItem("token");
+  localStorage.removeItem("currentUsername");
+  callback();
+};
 
-type ConnectedProps = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch>;
-
-type HeaderProps = RouteComponentProps & ConnectedProps;
-
-const Header: React.FC<HeaderProps> = ({
-  isAuthenticated,
-  username,
-  isPending,
-  history,
-  userLogout,
-  toggleDarkMode
-}) => {
-  const classes = useStyles();
-
+type HeaderProps = RouteComponentProps;
+const Header: React.FC<HeaderProps> = ({ history }) => {
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [openCustomDialog, setOpenCustomDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+  const classes = useStyles();
+
+  const isLoading = loadingVar();
+  const isAuthenticated = !checkIfExpired();
+  const currentUsername = localStorage.getItem("currentUsername");
 
   const showAlert = () => {
     setOpenAlert(true);
@@ -119,13 +112,13 @@ const Header: React.FC<HeaderProps> = ({
       }, 1000);
     };
 
-    userLogout({
-      callback: logoutCallback
-    });
+    userLogout(logoutCallback);
   };
 
   const getUserPath = () =>
-    !!username ? `/user/profile/${encodeURIComponent(username)}` : "";
+    !!currentUsername
+      ? `/user/profile/${encodeURIComponent(currentUsername)}`
+      : "";
 
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
 
@@ -169,7 +162,7 @@ const Header: React.FC<HeaderProps> = ({
                   open={!!anchorEl}
                   onClose={hideMenu}
                 >
-                  <MenuItem button={false}>{username}</MenuItem>
+                  <MenuItem button={false}>{currentUsername}</MenuItem>
                   <MenuItem component={Link} to={getUserPath()}>
                     My Posts
                   </MenuItem>
@@ -203,7 +196,7 @@ const Header: React.FC<HeaderProps> = ({
 
         <div className={classes.progressContainer}>
           {/* Show Progress Bar */}
-          {isPending && <LinearProgress color="secondary" />}
+          {isLoading && <LinearProgress color="secondary" />}
         </div>
       </AppBar>
       {/* material-ui's Alert Component */}
@@ -231,4 +224,4 @@ const Header: React.FC<HeaderProps> = ({
   );
 };
 
-export default connect(mapState, mapDispatch)(Header);
+export default Header;

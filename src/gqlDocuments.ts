@@ -89,3 +89,9 @@ export const UPDATE_POST = gql`
     }
   }
 `;
+
+export const GET_IS_DARK_MODE = gql`
+  query getIsDarkMode {
+    isDarkMode @client
+  }
+`;
