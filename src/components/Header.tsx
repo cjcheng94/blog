@@ -61,7 +61,7 @@ const toggleDarkMode = () => {
 
 type UserLogout = (callback: () => void) => void;
 const userLogout: UserLogout = callback => {
-  localStorage.removeItem("token");
+  localStorage.removeItem("currentUserToken");
   localStorage.removeItem("currentUsername");
   localStorage.removeItem("currentUserId");
 
