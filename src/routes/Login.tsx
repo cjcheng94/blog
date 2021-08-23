@@ -47,9 +47,10 @@ const Login: React.FC<Props> = props => {
   useEffect(() => {
     // Called Api and successfully got token
     if (called && data) {
-      const token = data.userLogin;
+      const { token, username, userId } = data.userLogin;
       localStorage.setItem("currentUsername", username);
       localStorage.setItem("currentUserToken", token);
+      localStorage.setItem("currentUserId", userId);
 
       setShowAlert(true);
       setTimeout(() => props.history.push("/"), 1000);

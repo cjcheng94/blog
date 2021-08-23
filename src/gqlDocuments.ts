@@ -2,7 +2,11 @@ import { gql } from "@apollo/client";
 
 export const USER_LOGIN = gql`
   query userLogin($username: String!, $password: String!) {
-    userLogin(username: $username, password: $password)
+    userLogin(username: $username, password: $password) {
+      token
+      username
+      userId
+    }
   }
 `;
 

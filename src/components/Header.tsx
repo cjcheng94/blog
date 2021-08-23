@@ -63,6 +63,8 @@ type UserLogout = (callback: () => void) => void;
 const userLogout: UserLogout = callback => {
   localStorage.removeItem("token");
   localStorage.removeItem("currentUsername");
+  localStorage.removeItem("currentUserId");
+
   callback();
 };
 
@@ -76,6 +78,7 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
   const isLoading = loadingVar();
   const isAuthenticated = !checkIfExpired();
   const currentUsername = localStorage.getItem("currentUsername");
+  const currentUserId = localStorage.getItem("currentUserId");
 
   const showAlert = () => {
     setOpenAlert(true);
@@ -115,10 +118,14 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
     userLogout(logoutCallback);
   };
 
-  const getUserPath = () =>
-    !!currentUsername
-      ? `/user/profile/${encodeURIComponent(currentUsername)}`
-      : "";
+  const getUserPath = () => {
+    if (!!currentUsername) {
+      return `/user/profile/${currentUserId}?username=${encodeURIComponent(
+        currentUsername
+      )}`;
+    }
+    return "";
+  };
 
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
 
