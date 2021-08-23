@@ -10,6 +10,7 @@ import {
 import { CustomDialog, ErrorAlert, RichTextEditor } from "@components";
 import { GET_CURRENT_POST, UPDATE_POST, GET_ALL_POSTS } from "../gqlDocuments";
 import { useQuery, useMutation } from "@apollo/client";
+import { loadingVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {
@@ -99,6 +100,10 @@ const PostUpdate: React.FC<Props> = props => {
     }
   }, [title, contentEmpty]);
 
+  useEffect(() => {
+    loadingVar(updatePostLoading || updatePostLoading);
+  }, [getPostLoading, updatePostLoading]);
+
   // Check if title or content field is empty
   const validate = () => {
     if (title && !contentEmpty) {
@@ -167,12 +172,6 @@ const PostUpdate: React.FC<Props> = props => {
       />
     );
   };
-
-  // TODO
-  if (getPostLoading) {
-    return null;
-  }
-  console.log(updatePostLoading); // TODO
 
   return (
     <Fragment>

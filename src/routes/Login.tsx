@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { ErrorAlert } from "@components";
 import { USER_LOGIN } from "../gqlDocuments";
+import { loadingVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -57,6 +58,10 @@ const Login: React.FC<Props> = props => {
     }
   }, [called, data]);
 
+  useEffect(() => {
+    loadingVar(loading);
+  }, [loading]);
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
@@ -74,8 +79,6 @@ const Login: React.FC<Props> = props => {
       });
     }
   };
-
-  console.log(loading); //TODO
 
   return (
     <Fragment>

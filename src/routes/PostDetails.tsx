@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { useQuery } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
@@ -19,6 +19,7 @@ import {
   NewPostButton,
   RichTextEditor
 } from "@components";
+import { loadingVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -53,18 +54,13 @@ const PostDetails: React.FC<Props> = props => {
   const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
-
-  const currentUsername = localStorage.getItem("currentUsername");
-  const isAuthenticated = !checkIfExpired();
-
-  //Extract post id from url
-  const { _id } = props.match.params;
-  // compose url for editing page
-  const url = `/posts/edit/${_id}`;
-
   const { loading, error, data } = useQuery(GET_CURRENT_POST, {
-    variables: { _id }
+    variables: { _id: props.match.params._id }
   });
+
+  useEffect(() => {
+    loadingVar(loading);
+  }, [loading]);
 
   if (loading || !data) {
     return null;
@@ -80,6 +76,9 @@ const PostDetails: React.FC<Props> = props => {
     return null;
   }
 
+  const url = `/posts/edit/${props.match.params._id}`;
+  const currentUsername = localStorage.getItem("currentUsername");
+  const isAuthenticated = !checkIfExpired();
   const { title, authorInfo, content, date } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
@@ -201,7 +200,7 @@ const PostDetails: React.FC<Props> = props => {
         />
 
         {/*Disqus plugin*/}
-        <DisqusComment identifier={_id} title={title} />
+        <DisqusComment identifier={props.match.params._id} title={title} />
       </div>
     </Fragment>
   );

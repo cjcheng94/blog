@@ -11,6 +11,7 @@ import {
 } from "@material-ui/core";
 import { ErrorAlert, CustomDialog, RichTextEditor } from "@components";
 import { CREATE_NEW_POST, GET_ALL_POSTS } from "../gqlDocuments";
+import { loadingVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
@@ -57,6 +58,10 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     }
   }, [called, data]);
 
+  useEffect(() => {
+    loadingVar(loading);
+  }, [loading]);
+
   // Check if title or content field is empty
   const validate = () => {
     if (title && !contentEmpty) {
@@ -89,8 +94,6 @@ const PostNew: React.FC<RouteComponentProps> = props => {
       });
     }
   };
-
-  console.log(loading); // TODO
 
   return (
     <Fragment>

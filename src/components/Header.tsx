@@ -1,6 +1,7 @@
 import React, { useState, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { darkModeVar, loadingVar } from "../cache";
+import { useQuery } from "@apollo/client";
+import { darkModeVar } from "../cache";
 import {
   Tooltip,
   AppBar,
@@ -17,6 +18,7 @@ import {
 import { AccountCircle, Brightness4 } from "@material-ui/icons";
 import { CustomDialog } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
+import { GET_IS_LOADING } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -73,9 +75,10 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
   const [openAlert, setOpenAlert] = useState<boolean>(false);
   const [openCustomDialog, setOpenCustomDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+  const { data } = useQuery(GET_IS_LOADING);
   const classes = useStyles();
 
-  const isLoading = loadingVar();
+  const { isLoading } = data;
   const isAuthenticated = !checkIfExpired();
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");

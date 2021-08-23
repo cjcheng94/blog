@@ -12,7 +12,7 @@ import {
   createHttpLink
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { darkModeVar } from "./cache";
+import { darkModeVar, loadingVar } from "./cache";
 const httpLink = createHttpLink({
   uri: "https://blog-gql.herokuapp.com"
 });
@@ -41,6 +41,11 @@ const client = new ApolloClient({
           isDarkMode: {
             read() {
               return darkModeVar();
+            }
+          },
+          isLoading: {
+            read() {
+              return loadingVar();
             }
           }
         }

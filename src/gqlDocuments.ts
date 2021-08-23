@@ -99,3 +99,9 @@ export const GET_IS_DARK_MODE = gql`
     isDarkMode @client
   }
 `;
+
+export const GET_IS_LOADING = gql`
+  query getIsLoading {
+    isLoading @client
+  }
+`;

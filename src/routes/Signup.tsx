@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import { ErrorAlert } from "@components";
 import { USER_SIGNUP } from "../gqlDocuments";
+import { loadingVar } from "../cache";
 
 const useStyles = makeStyles({
   wrapper: {
@@ -61,6 +62,10 @@ const Signup: React.FC<RouteComponentProps> = props => {
     }
   }, [called, data]);
 
+  useEffect(() => {
+    loadingVar(loading);
+  }, [loading]);
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
@@ -84,8 +89,6 @@ const Signup: React.FC<RouteComponentProps> = props => {
       });
     }
   };
-
-  console.log(loading); //TODO
 
   return (
     <Fragment>
