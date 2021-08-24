@@ -175,6 +175,8 @@ const PostUpdate: React.FC<Props> = props => {
 
   return (
     <Fragment>
+      {getPostError && <ErrorAlert error={getPostError} />}
+      {updatePostError && <ErrorAlert error={updatePostError} />}
       <form
         id="update-form"
         className={classes.formEdit}
@@ -183,10 +185,6 @@ const PostUpdate: React.FC<Props> = props => {
         <Typography variant="h4" gutterBottom align="center">
           Edit Your Story
         </Typography>
-
-        {getPostError || updatePostError ? (
-          <ErrorAlert type="postUpdate" />
-        ) : null}
 
         <TextField
           label={name}

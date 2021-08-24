@@ -62,6 +62,10 @@ const PostDetails: React.FC<Props> = props => {
     loadingVar(loading);
   }, [loading]);
 
+  if (error) {
+    return <ErrorAlert error={error} />;
+  }
+
   if (loading || !data) {
     return null;
   }
@@ -70,9 +74,6 @@ const PostDetails: React.FC<Props> = props => {
 
   // Show error page if any
   if (!post) {
-    if (error) {
-      return <ErrorAlert type="postDetail" />;
-    }
     return null;
   }
 
@@ -130,9 +131,8 @@ const PostDetails: React.FC<Props> = props => {
 
   return (
     <Fragment>
+      {error && <ErrorAlert error={error} />}
       <div className={classes.wrapper}>
-        {error && <ErrorAlert type="postDetail" />}
-
         <Typography variant="h3" gutterBottom>
           {title}
         </Typography>

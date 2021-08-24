@@ -97,7 +97,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
   return (
     <Fragment>
-      {error && <ErrorAlert type="postNew" />}
+      {error && <ErrorAlert error={error} />}
 
       <Typography variant="h4" gutterBottom align="center">
         Write Your Story

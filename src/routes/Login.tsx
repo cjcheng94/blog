@@ -82,8 +82,7 @@ const Login: React.FC<Props> = props => {
 
   return (
     <Fragment>
-      {error && <ErrorAlert type="login" />}
-
+      {error && <ErrorAlert error={error} />}
       <div className={classes.wrapper}>
         <Typography variant="h3" align="center">
           Log in

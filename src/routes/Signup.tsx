@@ -92,7 +92,7 @@ const Signup: React.FC<RouteComponentProps> = props => {
 
   return (
     <Fragment>
-      {error && <ErrorAlert type="signup" />}
+      {error && <ErrorAlert error={error} />}
       <div className={classes.wrapper}>
         <Typography variant="h3" align="center">
           Sign up

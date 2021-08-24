@@ -36,11 +36,11 @@ const UserProfile: React.FC<Props> = props => {
 
   return (
     <Fragment>
+      {error && <ErrorAlert error={error} />}
       <Typography variant="h5" gutterBottom align="center">
         There are {postCount} post
         {postCount > 1 && "s"} by {username}
       </Typography>
-      {error && <ErrorAlert />}
       <Grid container spacing={3}>
         <Fragment>
           <Cards posts={userPosts} />

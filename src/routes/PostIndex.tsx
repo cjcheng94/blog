@@ -29,8 +29,8 @@ const PostIndex = () => {
 
   return (
     <Fragment>
+      {error && <ErrorAlert error={error} />}
       <Grid container spacing={3}>
-        {error && <ErrorAlert />}
         {/* Sorting switch */}
         <div className={classes.switch}>
           <Switch
