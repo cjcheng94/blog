@@ -1,9 +1,9 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { GET_CURRENT_POST } from "../gqlDocuments";
+import { GET_CURRENT_POST, DELETE_POST, GET_ALL_POSTS } from "../gqlDocuments";
 import {
   Snackbar,
   Typography,
@@ -54,23 +54,48 @@ const PostDetails: React.FC<Props> = props => {
   const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
-  const { loading, error, data } = useQuery(GET_CURRENT_POST, {
+
+  const {
+    loading: getPostLoading,
+    error: getPostError,
+    data: getPostData
+  } = useQuery(GET_CURRENT_POST, {
     variables: { _id: props.match.params._id }
   });
 
-  useEffect(() => {
-    loadingVar(loading);
-  }, [loading]);
+  const [
+    deletePost,
+    {
+      data: deletePostData,
+      called: deletePostCalled,
+      loading: deletePostLoading,
+      error: deletePostError
+    }
+  ] = useMutation(DELETE_POST, { refetchQueries: [{ query: GET_ALL_POSTS }] });
 
-  if (error) {
-    return <ErrorAlert error={error} />;
+  useEffect(() => {
+    loadingVar(getPostLoading || deletePostLoading);
+  }, [getPostLoading, deletePostLoading]);
+
+  useEffect(() => {
+    if (deletePostCalled && deletePostData) {
+      setShowAlert(true);
+      setShowCustomDialog(false);
+      setTimeout(() => {
+        props.history.push("/");
+      }, 1000);
+    }
+  }, [deletePostCalled, deletePostData]);
+
+  if (getPostError) {
+    return <ErrorAlert error={getPostError} />;
   }
 
-  if (loading || !data) {
+  if (getPostLoading || !getPostData) {
     return null;
   }
 
-  const post = data.getPostById;
+  const post = getPostData.getPostById;
 
   // Show error page if any
   if (!post) {
@@ -85,18 +110,9 @@ const PostDetails: React.FC<Props> = props => {
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
   const handleDelete = () => {
-    setClickedConfirm(true); // TODO
-    return;
-    // const { _id } = props.match.params;
-    // //Disable confirm button once it's clicked
-    // setClickedConfirm(true);
-    // const deletCallback = () => {
-    //   setShowAlert(true);
-    //   setTimeout(() => {
-    //     props.history.push("/");
-    //   }, 1000);
-    // };
-    // props.deletePost({ _id, callback: deletCallback }); TODO
+    setClickedConfirm(true);
+    const { _id } = props.match.params;
+    deletePost({ variables: { _id } });
   };
 
   const isJson = (str: string) => {
@@ -131,7 +147,8 @@ const PostDetails: React.FC<Props> = props => {
 
   return (
     <Fragment>
-      {error && <ErrorAlert error={error} />}
+      {getPostError && <ErrorAlert error={getPostError} />}
+      {deletePostError && <ErrorAlert error={deletePostError} />}
       <div className={classes.wrapper}>
         <Typography variant="h3" gutterBottom>
           {title}
