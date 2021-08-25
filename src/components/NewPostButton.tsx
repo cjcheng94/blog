@@ -17,18 +17,20 @@ type Props = {
   destination: string;
 };
 
-const NewPostButton: React.FC<Props> = ({ destination }) => {
+const NewPostButton = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
   const classes = useStyles();
   return (
-    <Fab
-      color="secondary"
-      aria-label="new post"
-      className={classes.fab}
-      component={Link}
-      to={destination}
-    >
-      <Edit />
-    </Fab>
+    <div {...props} ref={ref}>
+      <Fab
+        color="secondary"
+        aria-label="new post"
+        className={classes.fab}
+        component={Link}
+        to={props.destination}
+      >
+        <Edit />
+      </Fab>
+    </div>
   );
-};
+});
 export default NewPostButton;
