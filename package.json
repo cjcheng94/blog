@@ -32,7 +32,7 @@
     "react": "^16.13.1",
     "react-dev-utils": "^6.1.1",
     "react-dom": "^16.13.1",
-    "react-router-dom": "^4.3.1",
+    "react-router-dom": "^5.2.0",
     "source-map-loader": "^0.2.4",
     "sw-precache-webpack-plugin": "0.11.4",
     "ts-jest": "22.0.1",
