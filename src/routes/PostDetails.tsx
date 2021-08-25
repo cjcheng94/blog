@@ -1,20 +1,17 @@
-import React, { Component, Fragment } from "react";
-import { connect } from "react-redux";
-import { compose } from "redux";
+import React, { useState, useEffect, Fragment } from "react";
+import { useQuery, useMutation } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
+import checkIfExpired from "../middlewares/checkTokenExpired";
+import { GET_CURRENT_POST, DELETE_POST, GET_ALL_POSTS } from "../gqlDocuments";
 import {
   Snackbar,
   Typography,
   Divider,
   Tooltip,
   Button,
-  withStyles,
-  createStyles,
-  WithStyles,
-  Theme
+  makeStyles
 } from "@material-ui/core";
-
 import {
   DisqusComment,
   CustomDialog,
@@ -22,128 +19,103 @@ import {
   NewPostButton,
   RichTextEditor
 } from "@components";
+import { loadingVar } from "../cache";
 
-import { iRootState, Dispatch } from "../store";
-
-const styles = (theme: Theme) =>
-  createStyles({
-    wrapper: {
-      maxWidth: 1000,
-      margin: "0px auto"
-    },
-    content: {
-      marginTop: theme.spacing(2),
-      marginBottom: theme.spacing(2),
-      fontSize: 18,
-      whiteSpace: "pre-wrap",
-      lineHeight: 1.58,
-      letterSpacing: -"0.003em"
-    },
-    author: {
-      "&:visited": {
-        color: "blue"
-      }
-    },
-    button: {
-      marginTop: theme.spacing(2),
-      marginRight: theme.spacing(1),
-      fontWeight: "bold"
+const useStyles = makeStyles(theme => ({
+  wrapper: {
+    maxWidth: 1000,
+    margin: "0px auto"
+  },
+  content: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    fontSize: 18,
+    whiteSpace: "pre-wrap",
+    lineHeight: 1.58,
+    letterSpacing: -"0.003em"
+  },
+  author: {
+    "&:visited": {
+      color: "blue"
     }
-  });
+  },
+  button: {
+    marginTop: theme.spacing(2),
+    marginRight: theme.spacing(1),
+    fontWeight: "bold"
+  }
+}));
 
 type TParams = { _id: string };
-type OwnProps = RouteComponentProps<TParams>;
+type Props = RouteComponentProps<TParams>;
 
-const mapState = (state: iRootState, ownProps: OwnProps) => ({
-  post: state.posts[ownProps.match.params._id],
-  user: state.user,
-  stateError: state.error
-});
+const PostDetails: React.FC<Props> = props => {
+  const [showCustomDialog, setShowCustomDialog] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [clickedConfirm, setClickedConfirm] = useState(false);
+  const classes = useStyles();
 
-const mapDispatch = (dispatch: Dispatch) => ({
-  fetchPost: dispatch.posts.fetchPost,
-  fetchPosts: dispatch.posts.fetchPosts,
-  deletePost: dispatch.posts.deletePost
-});
+  const {
+    loading: getPostLoading,
+    error: getPostError,
+    data: getPostData
+  } = useQuery(GET_CURRENT_POST, {
+    variables: { _id: props.match.params._id }
+  });
 
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> &
-  RouteComponentProps<TParams> &
-  WithStyles<typeof styles>;
-
-type State = {
-  showCustomDialog: boolean;
-  showAlert: boolean;
-  clickedConfirm: boolean;
-};
-
-class PostDetails extends Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      showCustomDialog: false,
-      showAlert: false,
-      clickedConfirm: false
-    };
-    this.showAlert = this.showAlert.bind(this);
-    this.hideAlert = this.hideAlert.bind(this);
-    this.handleCustomDialogShow = this.handleCustomDialogShow.bind(this);
-    this.handleCustomDialogHide = this.handleCustomDialogHide.bind(this);
-    this.handleDelete = this.handleDelete.bind(this);
-    this.isJson = this.isJson.bind(this);
-    this.renderContent = this.renderContent.bind(this);
-  }
-  componentDidMount() {
-    //Reset to top of the page
-    window.scrollTo(0, 0);
-
-    if (window.navigator.onLine) {
-      if (!this.props.post) {
-        // If a user refreshs a detail page or lands here via url,
-        // only fetch the post whose id corresponds to the id in the url
-        const { _id } = this.props.match.params;
-        this.props.fetchPost({ _id });
-      }
-    } else {
-      //In offline mode, fetch posts from runtime cache
-      this.props.fetchPosts();
+  const [
+    deletePost,
+    {
+      data: deletePostData,
+      called: deletePostCalled,
+      loading: deletePostLoading,
+      error: deletePostError
     }
-  }
-  componentWillUnmount() {
-    //Clear the progress bar on unmount
-    // this.props.clearLoader();
-  }
-  showAlert() {
-    this.setState({ showAlert: true });
-  }
-  hideAlert() {
-    this.setState({ showAlert: false });
-  }
-  handleCustomDialogShow() {
-    this.setState({
-      showCustomDialog: true
-    });
-  }
-  handleCustomDialogHide() {
-    this.setState({
-      showCustomDialog: false
-    });
-  }
+  ] = useMutation(DELETE_POST, { refetchQueries: [{ query: GET_ALL_POSTS }] });
 
-  handleDelete() {
-    const { _id } = this.props.match.params;
-    //Disable confirm button once it's clicked
-    this.setState({ clickedConfirm: true });
-    const deletCallback = () => {
-      this.showAlert();
+  useEffect(() => {
+    loadingVar(getPostLoading || deletePostLoading);
+  }, [getPostLoading, deletePostLoading]);
+
+  useEffect(() => {
+    if (deletePostCalled && deletePostData) {
+      setShowAlert(true);
+      setShowCustomDialog(false);
       setTimeout(() => {
-        this.props.history.push("/");
+        props.history.push("/");
       }, 1000);
-    };
-    this.props.deletePost({ _id, callback: deletCallback });
+    }
+  }, [deletePostCalled, deletePostData]);
+
+  if (getPostError) {
+    return <ErrorAlert error={getPostError} />;
   }
 
-  isJson(str: string) {
+  if (getPostLoading || !getPostData) {
+    return null;
+  }
+
+  const post = getPostData.getPostById;
+
+  // Show error page if any
+  if (!post) {
+    return null;
+  }
+
+  const url = `/posts/edit/${props.match.params._id}`;
+  const currentUsername = localStorage.getItem("currentUsername");
+  const isAuthenticated = !checkIfExpired();
+  const { title, authorInfo, content, date } = post;
+  const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
+  const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
+
+  const handleDelete = () => {
+    setClickedConfirm(true);
+    const { _id } = props.match.params;
+    deletePost({ variables: { _id } });
+  };
+
+  const isJson = (str: string) => {
     if (typeof str !== "string") {
       return false;
     }
@@ -153,125 +125,102 @@ class PostDetails extends Component<Props, State> {
       return false;
     }
     return true;
-  }
+  };
 
-  renderContent(content: string) {
+  const renderContent = (content: string) => {
     // Temporary solution, add isRichText prop later
-    const isContentJson = this.isJson(content);
+    const isContentJson = isJson(content);
 
     if (isContentJson) {
       return <RichTextEditor readOnly={true} rawContent={content} />;
     }
     return (
-      <Typography variant="body1" className={this.props.classes.content}>
+      <Typography variant="body1" className={classes.content}>
         {content}
       </Typography>
     );
-  }
+  };
 
-  render() {
-    // Show error page if any
-    const { stateError, classes } = this.props;
-    if (!this.props.post) {
-      if (stateError.showError) {
-        return <ErrorAlert type="postDetail" />;
-      }
-      return null;
-    }
+  const userPostUrl = `/user/profile/${
+    authorInfo._id
+  }?username=${encodeURIComponent(authorInfo.username)}`;
 
-    const { title, author, content, date } = this.props.post;
-    const {
-      user: { isAuthenticated }
-    } = this.props;
-
-    const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
-    const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
-
-    //Extract post id from url, and compose url for editing page
-    const { _id } = this.props.match.params;
-    const url = `/posts/edit/${_id}`;
-
-    return (
-      <Fragment>
-        <div className={classes.wrapper}>
-          {stateError.showError && <ErrorAlert type="postDetail" />}
-
-          <Typography variant="h3" gutterBottom>
-            {title}
-          </Typography>
-          <Typography variant="body2">
-            By{" "}
-            <Link
-              className={classes.author}
-              to={`/user/profile/${encodeURIComponent(author)}`}
+  return (
+    <Fragment>
+      {getPostError && <ErrorAlert error={getPostError} />}
+      {deletePostError && <ErrorAlert error={deletePostError} />}
+      <div className={classes.wrapper}>
+        <Typography variant="h3" gutterBottom>
+          {title}
+        </Typography>
+        <Typography variant="body2">
+          By{" "}
+          <Link className={classes.author} to={userPostUrl}>
+            {authorInfo.username}
+          </Link>
+        </Typography>
+        <Typography variant="body2" gutterBottom>
+          {postTime}
+        </Typography>
+        <Divider />
+        {renderContent(content)}
+        {/* Conditionally render 'Edit' and 'Delete' buttons*/}
+        {authorInfo.username === currentUsername && isAuthenticated ? (
+          <Fragment>
+            <Button
+              className={classes.button}
+              onClick={() => setShowCustomDialog(true)}
+              variant="contained"
+              color="secondary"
             >
-              {author}
-            </Link>
-          </Typography>
-          <Typography variant="body2" gutterBottom>
-            {postTime}
-          </Typography>
-          <Divider />
-          {this.renderContent(content)}
-          {/* Conditionally render 'Edit' and 'Delete' buttons*/}
-          {author === this.props.user.username && isAuthenticated ? (
-            <Fragment>
-              <Button
-                className={classes.button}
-                onClick={this.handleCustomDialogShow}
-                variant="contained"
-                color="secondary"
-              >
-                Delete
-              </Button>
-              <Button
-                className={classes.button}
-                component={Link}
-                to={url}
-                variant="contained"
-                color="primary"
-              >
-                Edit
-              </Button>
-            </Fragment>
-          ) : null}
+              Delete
+            </Button>
+            <Button
+              className={classes.button}
+              component={Link}
+              to={url}
+              variant="contained"
+              color="primary"
+            >
+              Edit
+            </Button>
+          </Fragment>
+        ) : null}
 
-          {/* Direct user to sign up page or if already signed in, write new page */}
-          <Tooltip title="Write a story">
-            <NewPostButton destination={writeButtonPath} />
-          </Tooltip>
+        {/* Direct user to sign up page or if already signed in, write new page */}
+        <Tooltip title="Write a story">
+          <NewPostButton destination={writeButtonPath} />
+        </Tooltip>
 
-          <CustomDialog
-            dialogTitle="Delete this Article?"
-            open={this.state.showCustomDialog}
-            handleClose={this.handleCustomDialogHide.bind(this)}
-            handleConfirm={this.handleDelete}
-            isDisabled={this.state.clickedConfirm}
-          />
+        <CustomDialog
+          dialogTitle="Delete this Article?"
+          open={showCustomDialog}
+          handleClose={() => setShowCustomDialog(false)}
+          handleConfirm={handleDelete}
+          isDisabled={clickedConfirm}
+        />
 
-          <Snackbar
-            anchorOrigin={{
-              vertical: "bottom",
-              horizontal: "left"
-            }}
-            open={this.state.showAlert}
-            autoHideDuration={3000}
-            onClose={this.hideAlert}
-            ContentProps={{
-              "aria-describedby": "message-id"
-            }}
-            message={<span id="message-id">Post deleted</span>}
-          />
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={showAlert}
+          autoHideDuration={3000}
+          onClose={() => {
+            setShowAlert(false);
+          }}
+          ContentProps={{
+            "aria-describedby": "message-id"
+          }}
+          message={<span id="message-id">Post deleted</span>}
+        />
 
-          {/*Disqus plugin*/}
-          <DisqusComment identifier={_id} title={title} />
-        </div>
-      </Fragment>
-    );
-  }
-}
+        {/*Disqus plugin*/}
+        <DisqusComment identifier={props.match.params._id} title={title} />
+      </div>
+    </Fragment>
+  );
+};
 
-export default compose<typeof PostDetails>(
-  connect(mapState, mapDispatch),
-  withStyles(styles, { name: "PostDetails" })
-)(PostDetails);
+export default PostDetails;

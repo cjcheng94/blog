@@ -1,28 +1,19 @@
-import React, { Component, Fragment } from "react";
-import {
-  Field,
-  reduxForm,
-  InjectedFormProps,
-  FormErrors,
-  WrappedFieldProps
-} from "redux-form";
+import React, { useState, useEffect, Fragment, FormEvent } from "react";
+import { useMutation } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { connect } from "react-redux";
-import { compose } from "redux";
-import { iRootState, Dispatch } from "../store";
-import { InPostData } from "PostTypes";
 import {
-  withStyles,
-  createStyles,
-  WithStyles,
+  makeStyles,
   Snackbar,
   TextField,
   Button,
-  Typography
+  Typography,
+  FormHelperText
 } from "@material-ui/core";
 import { ErrorAlert, CustomDialog, RichTextEditor } from "@components";
+import { CREATE_NEW_POST, GET_ALL_POSTS } from "../gqlDocuments";
+import { loadingVar } from "../cache";
 
-const styles = createStyles({
+const useStyles = makeStyles(theme => ({
   formNew: {
     maxWidth: 1000,
     margin: "0px auto"
@@ -31,179 +22,156 @@ const styles = createStyles({
     marginTop: 20,
     marginRight: 20
   }
-});
+}));
 
-const mapState = (state: iRootState) => ({
-  isPending: state.isPending,
-  stateError: state.error
-});
+const PostNew: React.FC<RouteComponentProps> = props => {
+  const [showCustomDialog, setShowCustomDialog] = useState(false);
+  const [showAlert, setShowAlert] = useState(false);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [contentEmpty, setContentEmpty] = useState(true);
+  const [titleErrorMessage, setTitleErrorMessage] = useState("");
+  const [contentErrorMessage, setContentErrorMessage] = useState("");
+  const [createNewPost, { loading, error, data, called }] = useMutation(
+    CREATE_NEW_POST,
+    {
+      refetchQueries: [{ query: GET_ALL_POSTS }]
+    }
+  );
+  const classes = useStyles();
 
-const mapDispatch = (dispatch: Dispatch) => ({
-  createPost: dispatch.posts.createPost
-});
+  // Clear error messages when user enters text
+  useEffect(() => {
+    if (title) {
+      setTitleErrorMessage("");
+    }
+    if (!contentEmpty) {
+      setContentErrorMessage("");
+    }
+  }, [title, contentEmpty]);
 
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> &
-  WithStyles<typeof styles> &
-  InjectedFormProps<InPostData> &
-  RouteComponentProps;
+  useEffect(() => {
+    // Called Api and successfully got token
+    if (called && data) {
+      setShowAlert(true);
+      setTimeout(() => props.history.push("/"), 1000);
+    }
+  }, [called, data]);
 
-type State = {
-  showCustomDialog: boolean;
-  showAlert: boolean;
-  clickedConfirm: boolean;
-};
+  useEffect(() => {
+    loadingVar(loading);
+  }, [loading]);
 
-class PostNew extends Component<Props, State> {
-  state = {
-    showCustomDialog: false,
-    showAlert: false,
-    clickedConfirm: false
+  // Check if title or content field is empty
+  const validate = () => {
+    if (title && !contentEmpty) {
+      return true;
+    }
+    if (!title) {
+      setTitleErrorMessage("Please enter a title");
+    }
+    if (contentEmpty) {
+      setContentErrorMessage("Content can't be empty");
+    }
+    return false;
   };
 
-  showAlert() {
-    this.setState({ showAlert: true });
-  }
-  hideAlert() {
-    this.setState({ showAlert: false });
-  }
-  handleCustomDialogShow() {
-    this.setState({
-      showCustomDialog: true
-    });
-  }
-  handleCustomDialogHide() {
-    this.setState({
-      showCustomDialog: false
-    });
-  }
-  //For Redux Form's Field Component
-  renderField(field: WrappedFieldProps) {
-    //Set the TextField(from Material-UI)'s erorr prop to true when a field is both 'touched',
-    //and has 'error', which is an object returned by the validate() function.
-    const {
-      input: { name },
-      meta: { touched, error }
-    } = field;
-    if (name === "content") {
-      return (
-        <RichTextEditor readOnly={false} onChange={field.input.onChange} />
-      );
+  // Check if any field is empty before showing confirm dialog
+  const handleSubmitClick = () => {
+    const isValid = validate();
+    if (isValid) {
+      setShowCustomDialog(true);
     }
-    return (
-      <TextField
-        label={name}
-        helperText={touched ? error : ""}
-        error={!!(touched && error)}
-        margin="normal"
-        type="text"
-        fullWidth
-        {...field.input}
-      />
-    );
-  }
+  };
 
-  onComponentSubmit(values: InPostData) {
-    this.handleCustomDialogHide.call(this);
-    const createCallback = () => {
-      this.showAlert();
-      setTimeout(() => {
-        this.props.history.push("/");
-      }, 1000);
-    };
-    this.props.createPost({ values, callback: createCallback });
-  }
+  const handleSubmit = (e: FormEvent) => {
+    e.preventDefault();
+    setShowCustomDialog(false);
+    if (validate()) {
+      // Api call
+      createNewPost({
+        variables: { title, content }
+      });
+    }
+  };
 
-  render() {
-    // handleSubmit is from Redux Form, it handles validation etc.
-    const { handleSubmit, stateError, classes } = this.props;
-    const { showAlert, showCustomDialog, clickedConfirm } = this.state;
-    return (
-      <Fragment>
-        {stateError.showError && <ErrorAlert type="postNew" />}
+  return (
+    <Fragment>
+      {error && <ErrorAlert error={error} />}
 
-        <Typography variant="h4" gutterBottom align="center">
-          Write Your Story
-        </Typography>
+      <Typography variant="h4" gutterBottom align="center">
+        Write Your Story
+      </Typography>
 
-        <form
-          id="create-form"
-          className={classes.formNew}
-          onSubmit={handleSubmit(this.onComponentSubmit.bind(this))}
-          //                     ▲ ▲ ▲ ▲ ▲ ▲ ▲
-          // this.onComponentSubmit() referes to the method of this component
+      <form
+        id="create-form"
+        className={classes.formNew}
+        onSubmit={handleSubmit}
+      >
+        <TextField
+          value={title}
+          onChange={e => {
+            setTitle(e.target.value);
+          }}
+          label={"title"}
+          helperText={titleErrorMessage}
+          error={!!titleErrorMessage}
+          margin="normal"
+          type="text"
+          fullWidth
+        />
+        <RichTextEditor
+          readOnly={false}
+          onChange={setContent}
+          isEmpty={setContentEmpty}
+        />
+        <FormHelperText error>{contentErrorMessage}</FormHelperText>
+        <Button
+          className={classes.button}
+          onClick={handleSubmitClick}
+          variant="contained"
+          color="primary"
         >
-          <Field name="title" component={this.renderField} />
-          <Field name="content" component={this.renderField} />
-          {/* <MyEditor /> */}
-          <Button
-            className={classes.button}
-            onClick={this.handleCustomDialogShow.bind(this)}
-            variant="contained"
-            color="primary"
-          >
-            Submit
-          </Button>
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="secondary"
-            component={Link}
-            to="/"
-          >
-            Back
-          </Button>
-        </form>
+          Submit
+        </Button>
+        <Button
+          className={classes.button}
+          variant="contained"
+          color="secondary"
+          component={Link}
+          to="/"
+        >
+          Back
+        </Button>
+      </form>
 
-        <CustomDialog
-          dialogTitle="Create Story?"
-          open={showCustomDialog}
-          handleClose={this.handleCustomDialogHide.bind(this)}
-          isDisabled={clickedConfirm}
-          formId="create-form"
-          type="submit"
-        />
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={showAlert}
-          autoHideDuration={4000}
-          onClose={this.hideAlert.bind(this)}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">Create new post successfull!</span>}
-        />
-      </Fragment>
-    );
-  }
-}
+      <CustomDialog
+        dialogTitle="Create Story?"
+        open={showCustomDialog}
+        handleClose={() => {
+          setShowCustomDialog(false);
+        }}
+        isDisabled={false}
+        formId="create-form"
+        type="submit"
+      />
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        open={showAlert}
+        autoHideDuration={4000}
+        onClose={() => {
+          setShowAlert(false);
+        }}
+        ContentProps={{
+          "aria-describedby": "message-id"
+        }}
+        message={<span id="message-id">Create new post successfull!</span>}
+      />
+    </Fragment>
+  );
+};
 
-// The 'validate' function will be called automaticalli by Redux Form
-// whenever a user attempts to submit the form
-function validate(values: InPostData): FormErrors<InPostData> {
-  const errors: FormErrors<InPostData> = {};
-  // Validate the inputs from 'values'
-  if (!values.title) {
-    errors.title = "Please enter a title";
-  }
-  if (!values.content) {
-    errors.content = "Please enter some content";
-  }
-  //if the "errors" object is empty, the form is valid and ok to submit
-  return errors;
-}
-
-export default compose<typeof PostNew>(
-  connect(mapState, mapDispatch),
-  reduxForm({
-    validate,
-    //value of "form" must be unique
-    form: "PostsNewForm"
-  }),
-  withStyles(styles, {
-    name: "PostNew"
-  })
-)(PostNew);
+export default PostNew;

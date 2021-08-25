@@ -1,7 +1,7 @@
 import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
-import { Link } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { PostsHub } from "PostTypes";
 import { RichTextEditor } from "@components";
 
@@ -11,13 +11,12 @@ import {
   CardContent,
   Typography,
   Grid,
-  withStyles,
+  makeStyles,
   createStyles,
-  Theme,
-  WithStyles
+  Theme
 } from "@material-ui/core";
 
-const styles = (theme: Theme) => {
+const useStyles = makeStyles((theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
   return createStyles({
     card: {
@@ -50,12 +49,12 @@ const styles = (theme: Theme) => {
       fontSize: "1.1em"
     }
   });
-};
+});
 
-interface Props extends WithStyles<typeof styles> {
+type Props = {
   latestFirst?: boolean;
   posts: PostsHub;
-}
+} & RouteComponentProps;
 
 const isJson = (str: string) => {
   if (typeof str !== "string") {
@@ -80,8 +79,8 @@ const renderContent = (content: string, textClass: string) => {
 };
 
 const Cards: React.FC<Props> = props => {
-  const { classes, latestFirst, posts } = props;
-
+  const { latestFirst, posts, history } = props;
+  const classes = useStyles();
   //Sort posts by time based on props.latestFirst
   const order = latestFirst ? "desc" : "asc";
   const ordered = orderBy(posts, ["date"], [order]);
@@ -92,8 +91,9 @@ const Cards: React.FC<Props> = props => {
       <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={post._id}>
         <CardActionArea
           className={classes.cardButton}
-          component={Link}
-          to={url}
+          onClick={() => {
+            history.push(url);
+          }}
         >
           <Card className={classes.card}>
             <CardContent className={classes.cardContent}>
@@ -101,7 +101,7 @@ const Cards: React.FC<Props> = props => {
                 {post.title}
               </Typography>
               <Typography className={classes.author}>
-                By {post.author}
+                By {post.authorInfo.username}
               </Typography>
               {renderContent(post.content, classes.article)}
             </CardContent>
@@ -114,4 +114,4 @@ const Cards: React.FC<Props> = props => {
   return <>{cards}</>;
 };
 
-export default withStyles(styles)(Cards);
+export default withRouter(Cards);

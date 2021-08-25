@@ -1,73 +1,54 @@
-import React, { Component, Fragment } from "react";
-import { connect } from "react-redux";
+import React, { useEffect, Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { compose } from "redux";
-import { iRootState, Dispatch } from "../store";
-import { withStyles, WithStyles, Grid, Typography } from "@material-ui/core";
+import { useQuery } from "@apollo/client";
+import { Grid, Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
+import checkIfExpired from "../middlewares/checkTokenExpired";
+import { GET_USER_POSTS } from "../gqlDocuments";
+import { loadingVar } from "../cache";
 
-const styles = {};
+type TParams = { userId: string };
+type Props = RouteComponentProps<TParams>;
 
-type TParams = { username: string };
-type OwnProps = RouteComponentProps<TParams>;
+const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
 
-const mapState = (state: iRootState, ownProps: OwnProps) => ({
-  posts: state.posts,
-  isPending: state.isPending,
-  stateError: state.error,
-  isAuthenticated: state.user.isAuthenticated,
-  userFilter: decodeURIComponent(ownProps.match.params.username)
-});
-
-const mapDispatch = (dispatch: Dispatch) => ({
-  fetchPosts: dispatch.posts.fetchPosts
-});
-
-type Props = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch> &
-  WithStyles<typeof styles> &
-  RouteComponentProps;
-
-class UserProfile extends Component<Props, {}> {
-  componentDidMount() {
-    //if this.props.posts is already there, don't waste network usage on fetching again
-    if (Object.keys(this.props.posts).length === 0) {
-      this.props.fetchPosts();
+const UserProfile: React.FC<Props> = props => {
+  const { loading, error, data } = useQuery(GET_USER_POSTS, {
+    variables: {
+      _id: props.match.params.userId
     }
+  });
+
+  useEffect(() => {
+    loadingVar(loading);
+  }, [loading]);
+
+  const urlQuery = getUrlQuery(props.location.search);
+  const isAuthenticated = !checkIfExpired();
+  const username = urlQuery.get("username");
+
+  if (loading || !data) {
+    return null;
   }
-  render() {
-    const { stateError, posts, userFilter, isAuthenticated } = this.props;
 
-    //filter all posts whose author prop matches the username in url
-    const userPosts = {};
-    for (let key in posts) {
-      if (posts[key]["author"] === userFilter) {
-        userPosts[key] = posts[key];
-      }
-    }
-    const postCount = Object.keys(userPosts).length;
+  const userPosts = data.getUserPosts;
+  const postCount = userPosts.length;
 
-    return (
-      <Fragment>
-        <Typography variant="h5" gutterBottom align="center">
-          There are {postCount} post
-          {postCount > 1 && "s"} by {userFilter}
-        </Typography>
-        {stateError.showError && <ErrorAlert />}
-        <Grid container spacing={3}>
-          <Fragment>
-            <Cards posts={userPosts} />
-            {isAuthenticated && <NewPostButton destination="/posts/new" />}
-          </Fragment>
-        </Grid>
-      </Fragment>
-    );
-  }
-}
+  return (
+    <Fragment>
+      {error && <ErrorAlert error={error} />}
+      <Typography variant="h5" gutterBottom align="center">
+        There are {postCount} post
+        {postCount > 1 && "s"} by {username}
+      </Typography>
+      <Grid container spacing={3}>
+        <Fragment>
+          <Cards posts={userPosts} />
+          {isAuthenticated && <NewPostButton destination="/posts/new" />}
+        </Fragment>
+      </Grid>
+    </Fragment>
+  );
+};
 
-export default compose(
-  connect(mapState, mapDispatch),
-  withStyles(styles, {
-    name: "UserProfile"
-  })
-)(UserProfile);
+export default UserProfile;

@@ -5,6 +5,10 @@ declare module "PostTypes" {
     content: string;
     date: string;
     title: string;
+    authorInfo: {
+      _id: string;
+      username: string;
+    };
     request: {
       type: string;
       url: string;

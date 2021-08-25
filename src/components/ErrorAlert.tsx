@@ -1,25 +1,14 @@
-import React, { Fragment } from "react";
-import { connect } from "react-redux";
+import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { iRootState, Dispatch } from "../store";
 import { TransitionProps } from "@material-ui/core/transitions";
 import {
   Button,
   Dialog,
   DialogActions,
   DialogContent,
-  DialogContentText,
   DialogTitle,
   Slide
 } from "@material-ui/core";
-
-const customMessage = {
-  login: "Password Incorrect or user doesn't exist",
-  signup: "User already exists",
-  postNew: "Login expired, please log in again",
-  postUpdate: "Unauthorized or Login expired, please log in again",
-  postDetail: "Unauthorized or Login expired, please log in again"
-};
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement<any, any> },
@@ -28,66 +17,39 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" {...props} />;
 });
 
-const mapState = (state: iRootState) => ({
-  status: state.error.status,
-  statusText: state.error.statusText,
-  message: state.error.message
-});
-
-const mapDispatch = (dispatch: Dispatch) => ({
-  clearError: dispatch.error.clearError
-});
-
-type connectedProps = ReturnType<typeof mapState> &
-  ReturnType<typeof mapDispatch>;
-
-type Props = connectedProps & {
-  type?: string;
+type ErrorAlertProps = {
+  error: any;
 };
 
-class ErrorAlert extends React.Component<Props> {
-  renderErrorMessage = () => {
-    const { type, status, statusText, message } = this.props;
-    const isErrorCode = status === 401 || status === 409;
+const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
+  const [isOpen, setIsOpen] = useState(true);
+  return (
+    <div>
+      <Dialog
+        open={isOpen}
+        TransitionComponent={Transition}
+        keepMounted
+        aria-labelledby="alert-dialog-slide-title"
+        aria-describedby="alert-dialog-slide-description"
+      >
+        <DialogTitle>Oops, Something went wrong...</DialogTitle>
+        <DialogContent>{error?.message}</DialogContent>
+        <DialogActions>
+          <Button component={Link} to="/" color="secondary">
+            Home
+          </Button>
+          <Button
+            onClick={() => {
+              setIsOpen(false);
+            }}
+            color="primary"
+          >
+            Back
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
+  );
+};
 
-    if (typeof type === "string" && isErrorCode) {
-      return <DialogContentText>{customMessage[type]}</DialogContentText>;
-    }
-
-    return (
-      <Fragment>
-        <DialogContentText>{status + " " + statusText}</DialogContentText>
-        <DialogContentText>{message}</DialogContentText>
-      </Fragment>
-    );
-  };
-
-  render() {
-    const { status, clearError } = this.props;
-
-    return (
-      <div>
-        <Dialog
-          open={!!status}
-          TransitionComponent={Transition}
-          keepMounted
-          aria-labelledby="alert-dialog-slide-title"
-          aria-describedby="alert-dialog-slide-description"
-        >
-          <DialogTitle>Oops, Something went wrong...</DialogTitle>
-          <DialogContent>{this.renderErrorMessage()}</DialogContent>
-          <DialogActions>
-            <Button component={Link} to="/" color="secondary">
-              Home
-            </Button>
-            <Button onClick={clearError} color="primary">
-              Back
-            </Button>
-          </DialogActions>
-        </Dialog>
-      </div>
-    );
-  }
-}
-
-export default connect(mapState, mapDispatch)(ErrorAlert);
+export default ErrorAlert;
