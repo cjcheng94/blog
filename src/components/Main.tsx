@@ -1,20 +1,16 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Route, Switch } from "react-router-dom";
 import { createStyles, makeStyles } from "@material-ui/core";
-import {
-  PostNew,
-  PostIndex,
-  PostDetails,
-  PostUpdate,
-  Login,
-  Signup,
-  NoMatch
-} from "@routes";
-import { AsyncComponent } from "@components";
+import { LoadingOverlay } from "@components";
 
-//As this app is quite small, we don't need to unnassisarily split the code into too many chunks,
-//but I'll leave AsyncUserProfile spit as a demonstration
-const AsyncUserProfile = AsyncComponent(() => import("../routes/UserProfile"));
+const PostIndex = React.lazy(() => import("../routes/PostIndex"));
+const PostNew = React.lazy(() => import("../routes/PostNew"));
+const PostDetails = React.lazy(() => import("../routes/PostDetails"));
+const PostUpdate = React.lazy(() => import("../routes/PostUpdate"));
+const Login = React.lazy(() => import("../routes/Login"));
+const Signup = React.lazy(() => import("../routes/Signup"));
+const NoMatch = React.lazy(() => import("../routes/NoMatch"));
+const UserProfile = React.lazy(() => import("../routes/UserProfile"));
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -55,7 +51,7 @@ const routes = [
   },
   {
     path: "/user/profile/:userId",
-    main: AsyncUserProfile
+    main: UserProfile
   },
   {
     main: NoMatch
@@ -66,16 +62,18 @@ const Main: React.FC = props => {
   const classes = useStyles();
   return (
     <main className={classes.pageComponent}>
-      <Switch>
-        {routes.map((route, index) => (
-          <Route
-            key={index}
-            path={route.path}
-            exact={route.exact}
-            component={route.main}
-          />
-        ))}
-      </Switch>
+      <Suspense fallback={<LoadingOverlay />}>
+        <Switch>
+          {routes.map((route, index) => (
+            <Route
+              key={index}
+              path={route.path}
+              exact={route.exact}
+              component={route.main}
+            />
+          ))}
+        </Switch>
+      </Suspense>
     </main>
   );
 };

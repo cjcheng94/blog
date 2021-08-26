@@ -6,7 +6,7 @@ import {
   Snackbar,
   useMediaQuery,
   MuiThemeProvider,
-  createMuiTheme,
+  createTheme,
   makeStyles
 } from "@material-ui/core";
 import { useQuery } from "@apollo/client";
@@ -40,7 +40,7 @@ const App: React.FC = () => {
 
   const theme = React.useMemo(
     () =>
-      createMuiTheme({
+      createTheme({
         palette: {
           type: userDarkModeSetting ? "dark" : "light"
         }
