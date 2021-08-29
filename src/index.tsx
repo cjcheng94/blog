@@ -1,7 +1,6 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
-import registerServiceWorker from "./registerServiceWorker";
 import { App } from "@components";
 import {
   ApolloClient,
@@ -11,6 +10,7 @@ import {
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
 import { darkModeVar, loadingVar } from "./cache";
+
 const httpLink = createHttpLink({
   uri: "https://blog-gql.herokuapp.com"
 });
@@ -60,4 +60,3 @@ ReactDOM.render(
   </ApolloProvider>,
   document.getElementById("root") as HTMLElement
 );
-registerServiceWorker();
