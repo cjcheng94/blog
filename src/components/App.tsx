@@ -66,58 +66,6 @@ const App: React.FC = () => {
         setAlertDuration(2000);
       }
     });
-
-    // const isOnline = window.navigator.onLine;
-
-    // // Check if api request to "https://alexsblogapi.herokuapp.com/posts" is cached:
-    // caches.open("runtime-cache").then(cache =>
-    //   cache.match("https://alexsblogapi.herokuapp.com/posts").then(res => {
-    //     if (typeof res !== "undefined") {
-    //       // Is indeed cached
-    //       if (isOnline) {
-    //         //Alert user posts are cached
-    //         setTimeout(() => {
-    //           setShowAlert(true);
-    //           setAlertMessage("Posts cached for offline use");
-    //           setAlertDuration(2000);
-    //         }, 1500);
-    //       } else {
-    //         // Alert user that they're in offline mode
-    //         setTimeout(() => {
-    //           setShowAlert(true);
-    //           setAlertMessage("You are in offline mode");
-    //           setAlertDuration(2000);
-    //         }, 1500);
-    //       }
-    //     }
-    //   })
-    // );
-
-    // Check the window.isUpdateAvailable promise that we defined in registerServiceWorker
-    // it resolves to true if a new version is available.
-
-    // Two reasons for the delay:
-    //  1. To allow the 'posts cached' alert to display first, without interruption;
-    //  2. There might be a race condition between this check and service worker registration,
-    //     otherwise window.isUpdateAvailable will be undefined
-    // const timeoutId = setTimeout(() => {
-    //   try {
-    //     window.isUpdateAvailable.then(isAvailable => {
-    //       if (isAvailable) {
-    //         // Alert user new version available
-    //         setShowAlert(true);
-    //         setAlertMessage("New version available, please refresh!");
-    //         setAlertDuration(2000);
-    //       }
-    //     });
-    //   } catch (err) {
-    //     //ignore errors
-    //   }
-    // }, 4000);
-
-    // return () => {
-    //   clearTimeout(timeoutId);
-    // };
   }, []);
 
   // set dark mode by detecting system preference
