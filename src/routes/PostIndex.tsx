@@ -27,6 +27,10 @@ const PostIndex = () => {
   const isAuthenticated = !checkIfExpired();
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
+  if (!data) {
+    return null;
+  }
+
   return (
     <Fragment>
       {error && <ErrorAlert error={error} />}
