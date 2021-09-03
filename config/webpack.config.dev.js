@@ -1,5 +1,6 @@
 "use strict";
 
+const fs = require("fs");
 const path = require("path");
 const webpack = require("webpack");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
@@ -22,6 +23,7 @@ const publicPath = "/";
 const publicUrl = "";
 // Get environment variables to inject into our app.
 const env = getClientEnvironment(publicUrl);
+// Get the path to the uncompiled service worker (if it exists).
 
 // This is the development configuration.
 // It is focused on developer experience and fast rebuilds.

@@ -3,7 +3,7 @@
     "strict": true,
     "module": "esnext",
     "target": "es6",
-    "lib": ["es6", "dom"],
+    "lib": ["es6", "dom", "dom.iterable"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
@@ -23,7 +23,7 @@
     "paths":{
       "@components": ["components"],
       "@routes": ["routes"]
-    }
+    },
   },
   "include":["src", "typings"],
   "exclude": [
