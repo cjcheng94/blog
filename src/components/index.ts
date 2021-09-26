@@ -9,4 +9,5 @@ export { default as Header } from "./Header";
 export { default as Main } from "./Main";
 export { default as NewPostButton } from "./NewPostButton";
 export { default as LoadingOverlay } from "./LoadingOverlay";
+export { default as InstallAlert } from "./InstallAlert";
 export * from "./RichTextEditor";

@@ -11,7 +11,7 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { useQuery } from "@apollo/client";
-import { Header, Main } from "@components";
+import { Header, Main, InstallAlert } from "@components";
 import { GET_IS_DARK_MODE } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
@@ -32,6 +32,7 @@ const useStyles = makeStyles(theme => ({
 const App: React.FC = () => {
   const classes = useStyles();
   const [showAlert, setShowAlert] = useState<boolean>(false);
+  const [showInstallSnackbar, setShowInstallSnackbar] = useState<boolean>(true);
   const [alertMessage, setAlertMessage] = useState<string>("");
   const [alertDuration, setAlertDuration] = useState<number>(0);
   const { data } = useQuery(GET_IS_DARK_MODE);
@@ -66,6 +67,12 @@ const App: React.FC = () => {
         setAlertDuration(2000);
       }
     });
+
+    window.addEventListener("beforeinstallprompt", (e: Event) => {
+      e.preventDefault();
+      setShowInstallSnackbar(true);
+      console.log("beforeinstallprompt event was fired");
+    });
   }, []);
 
   // set dark mode by detecting system preference
@@ -93,6 +100,13 @@ const App: React.FC = () => {
             "aria-describedby": "message-id"
           }}
           message={<span id="message-id">{alertMessage}</span>}
+        />
+        <InstallAlert
+          open={showInstallSnackbar}
+          onHide={() => {
+            setShowInstallSnackbar(false);
+          }}
+          onInstallClick={() => {}}
         />
       </div>
     </MuiThemeProvider>
