@@ -29,12 +29,19 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
+type AlertItem = {
+  type: "generic" | "install";
+  message: string;
+};
+
 const App: React.FC = () => {
   const classes = useStyles();
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  const [showInstallSnackbar, setShowInstallSnackbar] = useState<boolean>(true);
+  const [showInstallSnackbar, setShowInstallSnackbar] =
+    useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
-  const [alertDuration, setAlertDuration] = useState<number>(0);
+  // Use a queue structure to show alerts one at a time
+  const [alertQueue, setAlertQueue] = useState<Array<AlertItem>>([]);
   const { data } = useQuery(GET_IS_DARK_MODE);
 
   const userDarkModeSetting = data.isDarkMode;
@@ -50,35 +57,64 @@ const App: React.FC = () => {
     [userDarkModeSetting]
   );
 
+  const enqueueAlert = (item: AlertItem) => {
+    setAlertQueue(prevQueue => [...prevQueue, item]);
+  };
+
+  const dequeueAlert = () => {
+    setAlertQueue(prevQueue => prevQueue.slice(1));
+  };
+
   useEffect(() => {
     registerServiceWorker.register({
       onSuccess: () => {
-        setShowAlert(true);
-        setAlertMessage("Content is cached for offline use");
-        setAlertDuration(2000);
+        enqueueAlert({
+          type: "generic",
+          message: "Content is cached for offline use"
+        });
       },
       onUpdate: () => {
         // Alert user new version available
-        setShowAlert(true);
-        setAlertMessage(
-          "New content is available and will be used when all " +
+        enqueueAlert({
+          type: "generic",
+          message:
+            "New content is available and will be used when all " +
             "tabs for this page are closed."
-        );
-        setAlertDuration(2000);
+        });
       }
     });
 
     window.addEventListener("beforeinstallprompt", (e: Event) => {
       e.preventDefault();
-      setShowInstallSnackbar(true);
+      enqueueAlert({ type: "install", message: "" });
       console.log("beforeinstallprompt event was fired");
     });
   }, []);
 
-  // set dark mode by detecting system preference
+  // Set dark mode by detecting system preference
   useEffect(() => {
     darkModeVar(prefersDarkMode);
   }, [prefersDarkMode]);
+
+  // Show alerts one by one according to alertQueue
+  useEffect(() => {
+    console.log(alertQueue);
+    // There's an alert currently being shown, don't show another
+    if (showAlert || showInstallSnackbar) {
+      return;
+    }
+
+    const firstItem = alertQueue[0];
+    // Show the first alert in queue
+    if (firstItem) {
+      if (firstItem.type === "generic") {
+        setShowAlert(true);
+        setAlertMessage(firstItem.message);
+        return;
+      }
+      setShowInstallSnackbar(true);
+    }
+  }, [alertQueue]);
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -92,9 +128,10 @@ const App: React.FC = () => {
             horizontal: "left"
           }}
           open={showAlert}
-          autoHideDuration={alertDuration}
+          autoHideDuration={2000}
           onClose={() => {
             setShowAlert(false);
+            dequeueAlert();
           }}
           ContentProps={{
             "aria-describedby": "message-id"
@@ -105,6 +142,7 @@ const App: React.FC = () => {
           open={showInstallSnackbar}
           onHide={() => {
             setShowInstallSnackbar(false);
+            dequeueAlert();
           }}
           onInstallClick={() => {}}
         />
