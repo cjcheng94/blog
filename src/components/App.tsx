@@ -42,6 +42,9 @@ const App: React.FC = () => {
   const [alertMessage, setAlertMessage] = useState<string>("");
   // Use a queue structure to show alerts one at a time
   const [alertQueue, setAlertQueue] = useState<Array<AlertItem>>([]);
+  const [deferredPrompt, setDeferredPrompt] = useState<
+    BeforeInstallPromptEvent | undefined
+  >(undefined);
   const { data } = useQuery(GET_IS_DARK_MODE);
 
   const userDarkModeSetting = data.isDarkMode;
@@ -84,11 +87,18 @@ const App: React.FC = () => {
       }
     });
 
-    window.addEventListener("beforeinstallprompt", (e: Event) => {
-      e.preventDefault();
-      enqueueAlert({ type: "install", message: "" });
-      console.log("beforeinstallprompt event was fired");
-    });
+    window.addEventListener(
+      "beforeinstallprompt",
+      (e: BeforeInstallPromptEvent) => {
+        // Prevent the default prompt from showing
+        e.preventDefault();
+        // Stash the event so we can trigger it latter
+        setDeferredPrompt(e);
+        // Show custom install alert
+        enqueueAlert({ type: "install", message: "" });
+        console.log("beforeinstallprompt event was fired");
+      }
+    );
   }, []);
 
   // Set dark mode by detecting system preference
@@ -115,6 +125,28 @@ const App: React.FC = () => {
       setShowInstallSnackbar(true);
     }
   }, [alertQueue]);
+
+  const installHandler = async () => {
+    // Hide custom install alert
+    setShowInstallSnackbar(false);
+    dequeueAlert();
+
+    if (!deferredPrompt) {
+      return;
+    }
+
+    // Trigger the install prompt
+    deferredPrompt.prompt();
+
+    // Get the user choice
+    const { outcome } = await deferredPrompt.userChoice;
+
+    console.log(`User response to the install prompt: ${outcome}`);
+    // We've used the prompt, and can't use it again, throw it away
+    setDeferredPrompt(undefined);
+  };
+
+  console.log({ deferredPrompt });
 
   return (
     <MuiThemeProvider theme={theme}>
@@ -144,7 +176,7 @@ const App: React.FC = () => {
             setShowInstallSnackbar(false);
             dequeueAlert();
           }}
-          onInstallClick={() => {}}
+          onInstallClick={installHandler}
         />
       </div>
     </MuiThemeProvider>

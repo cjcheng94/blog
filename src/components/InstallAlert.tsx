@@ -27,7 +27,6 @@ const InstallAlert: React.FC<Props> = ({ open, onHide, onInstallClick }) => {
     <Snackbar
       open={open}
       className={classes.root}
-      autoHideDuration={6000}
       onClose={onHide}
       anchorOrigin={{
         vertical: "bottom",
