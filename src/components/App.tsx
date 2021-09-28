@@ -35,17 +35,20 @@ type AlertItem = {
 };
 
 const App: React.FC = () => {
-  const classes = useStyles();
   const [showAlert, setShowAlert] = useState<boolean>(false);
-  const [showInstallSnackbar, setShowInstallSnackbar] =
-    useState<boolean>(false);
   const [alertMessage, setAlertMessage] = useState<string>("");
   // Use a queue structure to show alerts one at a time
   const [alertQueue, setAlertQueue] = useState<Array<AlertItem>>([]);
+  // True if user already installed or prefers not to install
+  const [preventInstallAlert, setPreventInstallAlert] =
+    useState<boolean>(false);
+  const [showInstallSnackbar, setShowInstallSnackbar] =
+    useState<boolean>(false);
   const [deferredPrompt, setDeferredPrompt] = useState<
     BeforeInstallPromptEvent | undefined
   >(undefined);
   const { data } = useQuery(GET_IS_DARK_MODE);
+  const classes = useStyles();
 
   const userDarkModeSetting = data.isDarkMode;
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
@@ -87,18 +90,40 @@ const App: React.FC = () => {
       }
     });
 
-    window.addEventListener(
-      "beforeinstallprompt",
-      (e: BeforeInstallPromptEvent) => {
-        // Prevent the default prompt from showing
-        e.preventDefault();
-        // Stash the event so we can trigger it latter
-        setDeferredPrompt(e);
-        // Show custom install alert
-        enqueueAlert({ type: "install", message: "" });
-        console.log("beforeinstallprompt event was fired");
+    const onAppInstalled = () => {
+      // Hide the app-provided install promotion
+      setPreventInstallAlert(true);
+      // Hide the custom install alert if it's currently up
+      if (showInstallSnackbar) {
+        setAlertQueue(prevQueue =>
+          prevQueue.filter(alertItem => alertItem.type !== "install")
+        );
+        setShowInstallSnackbar(false);
       }
-    );
+      // Clear the deferredPrompt so it can be garbage collected
+      setDeferredPrompt(undefined);
+      // Optionally, send analytics event to indicate successful install
+      console.log("PWA was installed");
+    };
+
+    const onBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+      // Prevent the default prompt from showing
+      e.preventDefault();
+      // Stash the event so we can trigger it latter
+      setDeferredPrompt(e);
+
+      // Show custom install alert
+      enqueueAlert({ type: "install", message: "" });
+      console.log("beforeinstallprompt event was fired");
+    };
+
+    window.addEventListener("appinstalled", onAppInstalled);
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("appinstalled", onAppInstalled);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    };
   }, []);
 
   // Set dark mode by detecting system preference
@@ -108,12 +133,10 @@ const App: React.FC = () => {
 
   // Show alerts one by one according to alertQueue
   useEffect(() => {
-    console.log(alertQueue);
     // There's an alert currently being shown, don't show another
     if (showAlert || showInstallSnackbar) {
       return;
     }
-
     const firstItem = alertQueue[0];
     // Show the first alert in queue
     if (firstItem) {
@@ -122,31 +145,31 @@ const App: React.FC = () => {
         setAlertMessage(firstItem.message);
         return;
       }
+      // Don't show the alert if user prefers not to, or already installed
+      if (preventInstallAlert) {
+        return;
+      }
       setShowInstallSnackbar(true);
     }
   }, [alertQueue]);
 
   const installHandler = async () => {
-    // Hide custom install alert
-    setShowInstallSnackbar(false);
-    dequeueAlert();
-
     if (!deferredPrompt) {
       return;
     }
-
     // Trigger the install prompt
     deferredPrompt.prompt();
-
+    // Avoid shoing custom alert again
+    setPreventInstallAlert(true);
     // Get the user choice
     const { outcome } = await deferredPrompt.userChoice;
-
     console.log(`User response to the install prompt: ${outcome}`);
+    // Hide custom install alert
+    setShowInstallSnackbar(false);
+    dequeueAlert();
     // We've used the prompt, and can't use it again, throw it away
     setDeferredPrompt(undefined);
   };
-
-  console.log({ deferredPrompt });
 
   return (
     <MuiThemeProvider theme={theme}>
