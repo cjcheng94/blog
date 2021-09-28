@@ -72,7 +72,7 @@ const userLogout: UserLogout = callback => {
 
 type HeaderProps = RouteComponentProps;
 const Header: React.FC<HeaderProps> = ({ history }) => {
-  const [openAlert, setOpenAlert] = useState<boolean>(false);
+  const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [openCustomDialog, setOpenCustomDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const { data } = useQuery(GET_IS_LOADING);
@@ -82,14 +82,6 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
   const isAuthenticated = !checkIfExpired();
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
-
-  const showAlert = () => {
-    setOpenAlert(true);
-  };
-
-  const hideAlert = () => {
-    setOpenAlert(false);
-  };
 
   const showMenu = (e: React.MouseEvent) => {
     setAnchorEl(e.currentTarget);
@@ -112,7 +104,7 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
 
     const logoutCallback = () => {
       hideCustomDialog();
-      showAlert();
+      setShowLogoutAlert(true);
       setTimeout(() => {
         history.push("/");
       }, 1000);
@@ -148,6 +140,7 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
             <IconButton
+              title="Toggle darkmode"
               aria-haspopup="true"
               color="inherit"
               onClick={toggleDarkMode}
@@ -215,9 +208,9 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
           vertical: "bottom",
           horizontal: "left"
         }}
-        open={openAlert}
+        open={showLogoutAlert}
         autoHideDuration={4000}
-        onClose={hideAlert}
+        onClose={() => setShowLogoutAlert(false)}
         ContentProps={{
           "aria-describedby": "message-id"
         }}
