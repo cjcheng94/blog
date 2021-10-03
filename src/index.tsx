@@ -31,9 +31,6 @@ const client = new ApolloClient({
   link: authLink.concat(httpLink),
   cache: new InMemoryCache({
     typePolicies: {
-      Post: {
-        keyFields: ["_id"]
-      },
       Query: {
         fields: {
           isDarkMode: {

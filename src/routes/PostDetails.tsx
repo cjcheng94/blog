@@ -1,9 +1,14 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { GET_CURRENT_POST, DELETE_POST, GET_ALL_POSTS } from "../gqlDocuments";
+import {
+  GET_CURRENT_POST,
+  DELETE_POST,
+  GET_ALL_POSTS,
+  GET_CACHED_POST_FRAGMENT
+} from "../gqlDocuments";
 import {
   Snackbar,
   Typography,
@@ -54,13 +59,25 @@ const PostDetails: React.FC<Props> = props => {
   const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
+  const isOnline = navigator.onLine;
 
+  // Get post from server
   const {
     loading: getPostLoading,
     error: getPostError,
     data: getPostData
   } = useQuery(GET_CURRENT_POST, {
     variables: { _id: props.match.params._id }
+  });
+
+  // Get post from cache
+  const client = useApolloClient();
+  // Apollo client only caches *queries*, so we have to use readFragment.
+  // This allows us to read cached post data even when user only called GET_ALL_POSTS
+  // and never called GET_CURRENT_POST.
+  const cachedPostData = client.readFragment({
+    id: `Post:${props.match.params._id}`,
+    fragment: GET_CACHED_POST_FRAGMENT
   });
 
   const [
@@ -87,17 +104,23 @@ const PostDetails: React.FC<Props> = props => {
     }
   }, [deletePostCalled, deletePostData]);
 
-  if (getPostError) {
-    return <ErrorAlert error={getPostError} />;
+  let post = undefined;
+
+  if (isOnline) {
+    // Hide network error when offline
+    if (getPostError) {
+      return <ErrorAlert error={getPostError} />;
+    }
+    if (getPostLoading || !getPostData) {
+      return null;
+    }
+    // If user is online, get post data from the server,
+    post = getPostData.getPostById;
+  } else {
+    // Offline, get data from cache
+    post = cachedPostData;
   }
 
-  if (getPostLoading || !getPostData) {
-    return null;
-  }
-
-  const post = getPostData.getPostById;
-
-  // Show error page if any
   if (!post) {
     return null;
   }
@@ -147,8 +170,8 @@ const PostDetails: React.FC<Props> = props => {
 
   return (
     <Fragment>
-      {getPostError && <ErrorAlert error={getPostError} />}
-      {deletePostError && <ErrorAlert error={deletePostError} />}
+      {getPostError && isOnline && <ErrorAlert error={getPostError} />}
+      {deletePostError && isOnline && <ErrorAlert error={deletePostError} />}
       <div className={classes.wrapper}>
         <Typography variant="h3" gutterBottom>
           {title}
