@@ -79,6 +79,19 @@ export const GET_CURRENT_POST = gql`
   }
 `;
 
+export const GET_CACHED_POST_FRAGMENT = gql`
+  fragment MyPost on Post {
+    _id
+    title
+    content
+    date
+    authorInfo {
+      _id
+      username
+    }
+  }
+`;
+
 export const UPDATE_POST = gql`
   mutation updatePost($_id: String!, $title: String!, $content: String!) {
     updatePost(_id: $_id, title: $title, content: $content) {
