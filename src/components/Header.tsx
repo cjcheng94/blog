@@ -8,7 +8,6 @@ import {
   Toolbar,
   Typography,
   IconButton,
-  Button,
   LinearProgress,
   Snackbar,
   Menu,
@@ -147,53 +146,45 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
             >
               <Brightness4 />
             </IconButton>
-            {isAuthenticated ? (
-              <Fragment>
-                <Tooltip title="My Account">
-                  <IconButton
-                    aria-haspopup="true"
-                    color="inherit"
-                    onClick={showMenu}
-                  >
-                    <AccountCircle />
-                  </IconButton>
-                </Tooltip>
+            <Fragment>
+              <Tooltip title="My Account">
+                <IconButton
+                  aria-haspopup="true"
+                  color="inherit"
+                  onClick={showMenu}
+                >
+                  <AccountCircle />
+                </IconButton>
+              </Tooltip>
 
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
-                  open={!!anchorEl}
-                  onClose={hideMenu}
-                >
-                  <MenuItem button={false}>{currentUsername}</MenuItem>
-                  <MenuItem component={Link} to={getUserPath()}>
-                    My Posts
-                  </MenuItem>
-                  <MenuItem onClick={showCustomDialog} color="inherit">
-                    Log Out
-                  </MenuItem>
-                </Menu>
-              </Fragment>
-            ) : (
-              <Fragment>
-                <Button
-                  aria-haspopup="true"
-                  color="inherit"
-                  component={Link}
-                  to="/user/login"
-                >
-                  Log In
-                </Button>
-                <Button
-                  aria-haspopup="true"
-                  color="inherit"
-                  component={Link}
-                  to="/user/signup"
-                >
-                  Sign Up
-                </Button>
-              </Fragment>
-            )}
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                open={!!anchorEl}
+                onClose={hideMenu}
+              >
+                {isAuthenticated ? (
+                  <>
+                    <MenuItem button={false}>{currentUsername}</MenuItem>
+                    <MenuItem component={Link} to={getUserPath()}>
+                      My Posts
+                    </MenuItem>
+                    <MenuItem onClick={showCustomDialog} color="inherit">
+                      Log Out
+                    </MenuItem>
+                  </>
+                ) : (
+                  <>
+                    <MenuItem component={Link} to={"/user/login"}>
+                      Log In
+                    </MenuItem>
+                    <MenuItem component={Link} to={"/user/signup"}>
+                      Sign Up
+                    </MenuItem>
+                  </>
+                )}
+              </Menu>
+            </Fragment>
           </div>
         </Toolbar>
 
