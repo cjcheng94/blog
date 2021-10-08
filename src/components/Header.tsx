@@ -1,7 +1,7 @@
 import React, { useState, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { darkModeVar } from "../cache";
+import { darkModeVar, searchOverlayVar } from "../cache";
 import {
   Tooltip,
   AppBar,
@@ -14,7 +14,7 @@ import {
   MenuItem,
   makeStyles
 } from "@material-ui/core";
-import { AccountCircle, Brightness4 } from "@material-ui/icons";
+import { AccountCircle, Brightness4, Search } from "@material-ui/icons";
 import { CustomDialog } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import { GET_IS_LOADING } from "../gqlDocuments";
@@ -60,6 +60,11 @@ const toggleDarkMode = () => {
   darkModeVar(!prevIsDarkMode);
 };
 
+const toggleSearchOverlay = () => {
+  const prevShowSearchOverlay = searchOverlayVar();
+  searchOverlayVar(!prevShowSearchOverlay);
+};
+
 type UserLogout = (callback: () => void) => void;
 const userLogout: UserLogout = callback => {
   localStorage.removeItem("currentUserToken");
@@ -72,7 +77,7 @@ const userLogout: UserLogout = callback => {
 type HeaderProps = RouteComponentProps;
 const Header: React.FC<HeaderProps> = ({ history }) => {
   const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
-  const [openCustomDialog, setOpenCustomDialog] = useState<boolean>(false);
+  const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const { data } = useQuery(GET_IS_LOADING);
   const classes = useStyles();
@@ -90,19 +95,11 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
     setAnchorEl(null);
   };
 
-  const showCustomDialog = () => {
-    setOpenCustomDialog(true);
-  };
-
-  const hideCustomDialog = () => {
-    setOpenCustomDialog(false);
-  };
-
   const handleLogoutClick = (e: React.MouseEvent) => {
     e.preventDefault();
 
     const logoutCallback = () => {
-      hideCustomDialog();
+      setShowCustomDialog(false);
       setShowLogoutAlert(true);
       setTimeout(() => {
         history.push("/");
@@ -139,6 +136,14 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
             <IconButton
+              title="Search"
+              aria-haspopup="true"
+              color="inherit"
+              onClick={toggleSearchOverlay}
+            >
+              <Search />
+            </IconButton>
+            <IconButton
               title="Toggle darkmode"
               aria-haspopup="true"
               color="inherit"
@@ -146,6 +151,7 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
             >
               <Brightness4 />
             </IconButton>
+
             <Fragment>
               <Tooltip title="My Account">
                 <IconButton
@@ -169,7 +175,10 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
                     <MenuItem component={Link} to={getUserPath()}>
                       My Posts
                     </MenuItem>
-                    <MenuItem onClick={showCustomDialog} color="inherit">
+                    <MenuItem
+                      onClick={() => setShowCustomDialog(true)}
+                      color="inherit"
+                    >
                       Log Out
                     </MenuItem>
                   </>
@@ -209,8 +218,10 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
       />
       <CustomDialog
         dialogTitle="Log Out?"
-        open={openCustomDialog}
-        handleClose={hideCustomDialog}
+        open={showCustomDialog}
+        handleClose={() => {
+          setShowCustomDialog(false);
+        }}
         handleConfirm={handleLogoutClick}
         isDisabled={false}
       />

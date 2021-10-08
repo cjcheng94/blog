@@ -126,3 +126,9 @@ export const GET_IS_LOADING = gql`
     isLoading @client
   }
 `;
+
+export const GET_SHOW_SEARCH_OVERLAY = gql`
+  query getShowSearchOverlay {
+    showSearchOverlay @client
+  }
+`;
