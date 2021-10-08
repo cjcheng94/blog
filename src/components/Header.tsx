@@ -11,6 +11,7 @@ import {
   LinearProgress,
   Snackbar,
   Menu,
+  MenuList,
   MenuItem,
   makeStyles
 } from "@material-ui/core";
@@ -170,7 +171,7 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
                 onClose={hideMenu}
               >
                 {isAuthenticated ? (
-                  <>
+                  <MenuList>
                     <MenuItem button={false}>{currentUsername}</MenuItem>
                     <MenuItem component={Link} to={getUserPath()}>
                       My Posts
@@ -181,16 +182,16 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
                     >
                       Log Out
                     </MenuItem>
-                  </>
+                  </MenuList>
                 ) : (
-                  <>
+                  <MenuList>
                     <MenuItem component={Link} to={"/user/login"}>
                       Log In
                     </MenuItem>
                     <MenuItem component={Link} to={"/user/signup"}>
                       Sign Up
                     </MenuItem>
-                  </>
+                  </MenuList>
                 )}
               </Menu>
             </Fragment>
