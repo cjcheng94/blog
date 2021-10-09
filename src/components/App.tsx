@@ -22,6 +22,9 @@ const useStyles = makeStyles(theme => ({
       fontStyle: "italic",
       textAlign: "center",
       fontSize: "2em"
+    },
+    ".MuiChip-colorPrimary": {
+      border: "1px solid rgba(0,0,0,0)"
     }
   },
   root: {
