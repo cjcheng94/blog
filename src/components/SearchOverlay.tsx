@@ -1,6 +1,15 @@
 import React, { useState } from "react";
-import { Paper, TextField, Chip, makeStyles } from "@material-ui/core";
-import { Search } from "@material-ui/icons";
+import {
+  Paper,
+  TextField,
+  Chip,
+  ClickAwayListener,
+  IconButton,
+  Button,
+  makeStyles
+} from "@material-ui/core";
+import { Search, Close } from "@material-ui/icons";
+import { searchOverlayVar } from "../cache";
 
 type Props = {
   open: boolean;
@@ -28,6 +37,7 @@ const useStyles = makeStyles(theme => ({
     backdropFilter: "blur(1.5px)" // Uber-cool blur effect
   },
   paper: {
+    position: "relative",
     padding: 32,
     width: "80%",
     margin: "auto",
@@ -53,20 +63,37 @@ const useStyles = makeStyles(theme => ({
   chipContainer: {
     display: "flex",
     justifyContent: "flex-start",
-    flexWrap: "wrap"
+    flexWrap: "wrap",
+    marginBottom: 24
   },
   chip: {
     margin: theme.spacing(0.5)
+  },
+  closeButton: {
+    position: "absolute",
+    top: 4,
+    right: 4
+  },
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "flex-end"
   }
 }));
 
+const hideSelf = () => {
+  searchOverlayVar(false);
+};
+
 const SearchOverlay: React.FC<Props> = ({ open }) => {
   const [chipList, setChipList] = useState<string[]>([]);
+  const [searchWord, setSearchWord] = useState<string>("");
   const classes = useStyles();
 
-  console.log(chipList);
-
   const isChipSelected = (type: string) => chipList.includes(type);
+
+  const handleSearchWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchWord(e.target.value);
+  };
 
   // Add or remove clicked chip type from state
   const handleChipClick = (type: string) => () => {
@@ -78,6 +105,16 @@ const SearchOverlay: React.FC<Props> = ({ open }) => {
     });
   };
 
+  const handleSearch = () => {
+    console.log({ chipList, searchWord });
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleSearch();
+    }
+  };
+
   if (!open) {
     return null;
   }
@@ -86,35 +123,57 @@ const SearchOverlay: React.FC<Props> = ({ open }) => {
     <div className={classes.wrapper}>
       <div className={classes.toolbarSpacer}></div>
       <div className={classes.content}>
-        <Paper className={classes.paper} elevation={3}>
-          <div className={classes.inputContainer}>
-            <div className={classes.iconContainer}>
-              <Search />
-            </div>
-            <TextField className={classes.input} label="Search" />
-          </div>
+        <ClickAwayListener onClickAway={hideSelf}>
+          <Paper className={classes.paper} elevation={3}>
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              onClick={hideSelf}
+              className={classes.closeButton}
+            >
+              <Close />
+            </IconButton>
 
-          <div className={classes.chipContainer}>
-            {[
-              "Archive",
-              "Translations",
-              "Tutorials",
-              "Miscellaneous",
-              "Notes",
-              "Other"
-            ].map(type => (
-              <Chip
-                clickable
-                key={type}
-                label={type}
-                variant={isChipSelected(type) ? "default" : "outlined"}
-                color={isChipSelected(type) ? "primary" : "default"}
-                onClick={handleChipClick(type)}
-                className={classes.chip}
+            <div className={classes.inputContainer}>
+              <div className={classes.iconContainer}>
+                <Search />
+              </div>
+              <TextField
+                className={classes.input}
+                label="Search"
+                value={searchWord}
+                onChange={handleSearchWordChange}
+                onKeyDown={handleKeyDown}
               />
-            ))}
-          </div>
-        </Paper>
+            </div>
+
+            <div className={classes.chipContainer}>
+              {[
+                "Archive",
+                "Translations",
+                "Tutorials",
+                "Miscellaneous",
+                "Notes",
+                "Other"
+              ].map(type => (
+                <Chip
+                  clickable
+                  key={type}
+                  label={type}
+                  variant={isChipSelected(type) ? "default" : "outlined"}
+                  color={isChipSelected(type) ? "primary" : "default"}
+                  onClick={handleChipClick(type)}
+                  className={classes.chip}
+                />
+              ))}
+            </div>
+            <div className={classes.buttonContainer}>
+              <Button color="secondary" onClick={handleSearch}>
+                Search
+              </Button>
+            </div>
+          </Paper>
+        </ClickAwayListener>
       </div>
     </div>
   );
