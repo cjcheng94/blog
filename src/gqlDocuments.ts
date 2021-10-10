@@ -126,3 +126,24 @@ export const GET_IS_LOADING = gql`
     isLoading @client
   }
 `;
+
+export const GET_SHOW_SEARCH_OVERLAY = gql`
+  query getShowSearchOverlay {
+    showSearchOverlay @client
+  }
+`;
+
+export const SEARCH = gql`
+  query search($searchTerm: String!) {
+    search(searchTerm: $searchTerm) {
+      _id
+      title
+      authorInfo {
+        _id
+        username
+      }
+      content
+      date
+    }
+  }
+`;

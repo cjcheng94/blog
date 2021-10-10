@@ -11,8 +11,8 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { useQuery } from "@apollo/client";
-import { Header, Main, InstallAlert } from "@components";
-import { GET_IS_DARK_MODE } from "../gqlDocuments";
+import { Header, Main, InstallAlert, SearchOverlay } from "@components";
+import { GET_IS_DARK_MODE, GET_SHOW_SEARCH_OVERLAY } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -22,6 +22,9 @@ const useStyles = makeStyles(theme => ({
       fontStyle: "italic",
       textAlign: "center",
       fontSize: "2em"
+    },
+    ".MuiChip-colorPrimary": {
+      border: "1px solid rgba(0,0,0,0)"
     }
   },
   root: {
@@ -47,10 +50,15 @@ const App: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<
     BeforeInstallPromptEvent | undefined
   >(undefined);
-  const { data } = useQuery(GET_IS_DARK_MODE);
+
+  const { data: getDarkModeData } = useQuery(GET_IS_DARK_MODE);
+  const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_SEARCH_OVERLAY);
+
   const classes = useStyles();
 
-  const userDarkModeSetting = data.isDarkMode;
+  const userDarkModeSetting = getDarkModeData.isDarkMode;
+  const showSearchOverlay = getShowSearchOverlayData.showSearchOverlay;
+
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
   const theme = React.useMemo(
@@ -176,6 +184,7 @@ const App: React.FC = () => {
       <CssBaseline />
       <div className={classes.root}>
         <Route component={Header} />
+        <SearchOverlay open={showSearchOverlay} />
         <Main />
         <Snackbar
           anchorOrigin={{
