@@ -11,6 +11,7 @@ const Login = React.lazy(() => import("../routes/Login"));
 const Signup = React.lazy(() => import("../routes/Signup"));
 const NoMatch = React.lazy(() => import("../routes/NoMatch"));
 const UserProfile = React.lazy(() => import("../routes/UserProfile"));
+const SearchResults = React.lazy(() => import("../routes/SearchResults"));
 
 const useStyles = makeStyles(() =>
   createStyles({
@@ -52,6 +53,10 @@ const routes = [
   {
     path: "/user/profile/:userId",
     main: UserProfile
+  },
+  {
+    path: "/results",
+    main: SearchResults
   },
   {
     main: NoMatch

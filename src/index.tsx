@@ -9,7 +9,7 @@ import {
   createHttpLink
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { darkModeVar, loadingVar } from "./cache";
+import { darkModeVar, loadingVar, searchOverlayVar } from "./cache";
 
 const httpLink = createHttpLink({
   uri: "https://blog-gql.herokuapp.com"
@@ -41,6 +41,11 @@ const client = new ApolloClient({
           isLoading: {
             read() {
               return loadingVar();
+            }
+          },
+          showSearchOverlay: {
+            read() {
+              return searchOverlayVar();
             }
           }
         }
