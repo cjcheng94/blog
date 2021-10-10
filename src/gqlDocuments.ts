@@ -132,3 +132,18 @@ export const GET_SHOW_SEARCH_OVERLAY = gql`
     showSearchOverlay @client
   }
 `;
+
+export const SEARCH = gql`
+  query search($searchTerm: String!) {
+    search(searchTerm: $searchTerm) {
+      _id
+      title
+      authorInfo {
+        _id
+        username
+      }
+      content
+      date
+    }
+  }
+`;

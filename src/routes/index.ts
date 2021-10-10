@@ -6,3 +6,4 @@ export { default as PostNew } from "./PostNew";
 export { default as PostUpdate } from "./PostUpdate";
 export { default as Signup } from "./Signup";
 export { default as UserProfile } from "./UserProfile";
+export { default as SearchResults } from "./SearchResults";

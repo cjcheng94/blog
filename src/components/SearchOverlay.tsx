@@ -9,11 +9,8 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { Search, Close } from "@material-ui/icons";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { searchOverlayVar } from "../cache";
-
-type Props = {
-  open: boolean;
-};
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -84,7 +81,11 @@ const hideSelf = () => {
   searchOverlayVar(false);
 };
 
-const SearchOverlay: React.FC<Props> = ({ open }) => {
+type Props = {
+  open: boolean;
+} & RouteComponentProps;
+
+const SearchOverlay: React.FC<Props> = ({ open, history }) => {
   const [chipList, setChipList] = useState<string[]>([]);
   const [searchWord, setSearchWord] = useState<string>("");
   const classes = useStyles();
@@ -107,6 +108,10 @@ const SearchOverlay: React.FC<Props> = ({ open }) => {
 
   const handleSearch = () => {
     console.log({ chipList, searchWord });
+    // Pass search term in URL
+    const userPostUrl = `/results?searchTerm=${encodeURIComponent(searchWord)}`;
+    // Go to result page where we execute the query
+    history.push(userPostUrl);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -179,4 +184,4 @@ const SearchOverlay: React.FC<Props> = ({ open }) => {
   );
 };
 
-export default SearchOverlay;
+export default withRouter(SearchOverlay);
