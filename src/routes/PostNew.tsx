@@ -90,7 +90,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     if (validate()) {
       // Api call
       createNewPost({
-        variables: { title, content }
+        variables: { title, content, tagIds: [] }
       });
     }
   };

@@ -132,7 +132,7 @@ const PostUpdate: React.FC<Props> = props => {
     if (validate()) {
       // Api call
       updatePost({
-        variables: { _id, title, content }
+        variables: { _id, title, content, tagIds: [] }
       });
     }
   };
@@ -155,7 +155,6 @@ const PostUpdate: React.FC<Props> = props => {
     // content is a plain string
     return (
       <TextField
-        label={name}
         value={content}
         onChange={e => {
           setContent(e.target.value);
@@ -187,7 +186,6 @@ const PostUpdate: React.FC<Props> = props => {
         </Typography>
 
         <TextField
-          label={name}
           value={title}
           onChange={e => {
             setTitle(e.target.value);

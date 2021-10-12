@@ -28,6 +28,11 @@ export const GET_ALL_POSTS = gql`
       title
       content
       date
+      tagIds
+      tags {
+        _id
+        name
+      }
       authorInfo {
         _id
         username
@@ -41,12 +46,17 @@ export const GET_CURRENT_POST = gql`
     getPostById(_id: $_id) {
       _id
       title
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
       authorInfo {
         _id
         username
       }
-      content
-      date
     }
   }
 `;
@@ -56,42 +66,62 @@ export const GET_USER_POSTS = gql`
     getUserPosts(_id: $_id) {
       _id
       title
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
       authorInfo {
         _id
         username
       }
-      content
-      date
     }
   }
 `;
 
 export const CREATE_NEW_POST = gql`
-  mutation createPost($title: String!, $content: String!) {
-    createPost(title: $title, content: $content) {
+  mutation createPost($title: String!, $content: String!, $tagIds: [ID]!) {
+    createPost(title: $title, content: $content, tagIds: $tagIds) {
       _id
       title
       content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
       authorInfo {
         _id
         username
       }
-      date
     }
   }
 `;
 
 export const UPDATE_POST = gql`
-  mutation updatePost($_id: String!, $title: String!, $content: String!) {
-    updatePost(_id: $_id, title: $title, content: $content) {
+  mutation updatePost(
+    $_id: String!
+    $title: String!
+    $content: String!
+    $tagIds: [ID]!
+  ) {
+    updatePost(_id: $_id, title: $title, content: $content, tagIds: $tagIds) {
       _id
       title
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
       authorInfo {
         _id
         username
       }
-      content
-      date
     }
   }
 `;
@@ -131,7 +161,7 @@ export const GET_ALL_TAGS = gql`
 `;
 
 export const GET_TAG_BY_ID = gql`
-  query getTagsById($_id: String!) {
+  query getTagsById($_id: ID!) {
     tag(_id: $_id) {
       _id
       name
