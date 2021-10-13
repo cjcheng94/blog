@@ -1,10 +1,16 @@
 declare module "PostTypes" {
+  export type Tag = {
+    _id: string;
+    name: string;
+  };
   export type Post = {
     _id: string;
     author: string;
     content: string;
     date: string;
     title: string;
+    tagIds: string[];
+    tags: Tag[];
     authorInfo: {
       _id: string;
       username: string;

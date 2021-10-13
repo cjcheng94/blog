@@ -2,7 +2,7 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { PostsHub } from "PostTypes";
+import { PostsHub, Tag } from "PostTypes";
 import { RichTextEditor } from "@components";
 
 import {
@@ -102,12 +102,23 @@ const Cards: React.FC<Props> = props => {
   const order = latestFirst ? "desc" : "asc";
   const ordered = orderBy(posts, ["date"], [order]);
 
-  const tags = ["Archive", "Test", "Translation", "Other", "Notes"];
+  // TODO: apply ellipses to overflowed tags
+  const renderTags = (tags: Tag[]) => (
+    <>
+      {tags.slice(0, 3).map(({ _id, name }) => (
+        <div className={classes.tagText} key={_id}>
+          {name}
+        </div>
+      ))}
+      {tags.length > 3 ? "..." : ""}
+    </>
+  );
 
   const cards = map(ordered, post => {
-    const url = `/posts/detail/${post._id}`;
+    const { _id, title, authorInfo, content, tags } = post;
+    const url = `/posts/detail/${_id}`;
     return (
-      <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={post._id}>
+      <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={_id}>
         <CardActionArea
           className={classes.cardButton}
           onClick={() => {
@@ -117,19 +128,14 @@ const Cards: React.FC<Props> = props => {
           <Card className={classes.card}>
             <CardContent className={classes.cardContent}>
               <Typography variant="h5" className={classes.title}>
-                {post.title}
+                {title}
               </Typography>
               <Typography className={classes.author}>
-                By {post.authorInfo.username}
+                By {authorInfo.username}
               </Typography>
-              {renderContent(post.content, classes.article)}
+              {renderContent(content, classes.article)}
             </CardContent>
-            <div className={classes.tagsContainer}>
-              {tags.slice(0, 3).map(tag => (
-                <div className={classes.tagText}>{tag}</div>
-              ))}
-              {tags.length > 3 ? "..." : ""}
-            </div>
+            <div className={classes.tagsContainer}>{renderTags(tags)}</div>
           </Card>
         </CardActionArea>
       </Grid>
