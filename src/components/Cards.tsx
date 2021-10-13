@@ -21,18 +21,22 @@ const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     card: {
       width: "100%",
-      height: 200,
-      padding: theme.spacing(2),
-      paddingBottom: theme.spacing(3)
+      height: 214,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      padding: theme.spacing(2)
     },
     cardButton: {
       width: "100%"
     },
     cardContent: {
-      height: "100%",
       padding: 0,
       overflow: "hidden",
-      textOverflow: "ellipsis"
+      marginBottom: theme.spacing(2)
+      // display: "-webkit-box",
+      // "-webkit-line-clamp": 6,
+      // "-webkit-box-orient": "vertical",
     },
     title: {
       display: "inline",
@@ -47,6 +51,19 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     article: {
       fontSize: "1.1em"
+    },
+    tagsContainer: {
+      display: "flex",
+      flexWrap: "nowrap",
+      overflow: "hidden",
+      flexShrink: 0
+    },
+    tagText: {
+      ...theme.typography.button,
+      color: theme.palette.text.hint,
+      fontWeight: 700,
+      lineHeight: 1,
+      paddingRight: 4
     }
   });
 });
@@ -85,6 +102,8 @@ const Cards: React.FC<Props> = props => {
   const order = latestFirst ? "desc" : "asc";
   const ordered = orderBy(posts, ["date"], [order]);
 
+  const tags = ["Archive", "Test", "Translation", "Other", "Notes"];
+
   const cards = map(ordered, post => {
     const url = `/posts/detail/${post._id}`;
     return (
@@ -105,6 +124,12 @@ const Cards: React.FC<Props> = props => {
               </Typography>
               {renderContent(post.content, classes.article)}
             </CardContent>
+            <div className={classes.tagsContainer}>
+              {tags.slice(0, 3).map(tag => (
+                <div className={classes.tagText}>{tag}</div>
+              ))}
+              {tags.length > 3 ? "..." : ""}
+            </div>
           </Card>
         </CardActionArea>
       </Grid>
