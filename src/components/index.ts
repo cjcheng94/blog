@@ -11,5 +11,6 @@ export { default as NewPostButton } from "./NewPostButton";
 export { default as LoadingOverlay } from "./LoadingOverlay";
 export { default as InstallAlert } from "./InstallAlert";
 export { default as SearchOverlay } from "./SearchOverlay";
+export { default as TagBar } from "./TagBar";
 
 export * from "./RichTextEditor";

@@ -9,7 +9,7 @@ import {
   Typography,
   FormHelperText
 } from "@material-ui/core";
-import { ErrorAlert, CustomDialog, RichTextEditor } from "@components";
+import { ErrorAlert, CustomDialog, RichTextEditor, TagBar } from "@components";
 import { CREATE_NEW_POST, GET_ALL_POSTS } from "../gqlDocuments";
 import { loadingVar } from "../cache";
 
@@ -32,6 +32,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   const [contentEmpty, setContentEmpty] = useState(true);
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [createNewPost, { loading, error, data, called }] = useMutation(
     CREATE_NEW_POST,
     {
@@ -90,9 +91,18 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     if (validate()) {
       // Api call
       createNewPost({
-        variables: { title, content, tagIds: [] }
+        variables: { title, content, tagIds: selectedTagIds }
       });
     }
+  };
+
+  const handleTagsChange = (tag: any) => {
+    setSelectedTagIds(prevIds => {
+      if (prevIds.includes(tag._id)) {
+        return prevIds.filter(id => id !== tag._id);
+      }
+      return [...prevIds, tag._id];
+    });
   };
 
   return (
@@ -119,6 +129,11 @@ const PostNew: React.FC<RouteComponentProps> = props => {
           margin="normal"
           type="text"
           fullWidth
+        />
+        <TagBar
+          editable
+          selectedTagIds={selectedTagIds}
+          onChange={handleTagsChange}
         />
         <RichTextEditor
           readOnly={false}
