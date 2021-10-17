@@ -1,24 +1,12 @@
 import React from "react";
-import {
-  Chip,
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  CircularProgress,
-  makeStyles
-} from "@material-ui/core";
-import { ExpandMore } from "@material-ui/icons";
+import { Chip, CircularProgress, makeStyles } from "@material-ui/core";
 import { useQuery } from "@apollo/client";
 import { GET_ALL_TAGS } from "../gqlDocuments";
 import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
   container: {
-    width: "100%",
-    marginBottom: theme.spacing(1)
-  },
-  accordion: {
-    border: `1px solid ${theme.palette.divider}`
+    width: "100%"
   },
   tags: {
     marginRight: theme.spacing(1),
@@ -26,14 +14,74 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type TagsProps = {
+const mockTags = [
+  {
+    _id: "1",
+    name: "Ramdom"
+  },
+  {
+    _id: "11",
+    name: "Test"
+  },
+  {
+    _id: "12",
+    name: "Poetry"
+  },
+  {
+    _id: "13",
+    name: "Translation"
+  },
+  {
+    _id: "14",
+    name: "Prose"
+  },
+  {
+    _id: "15",
+    name: "Exposé"
+  },
+  {
+    _id: "133",
+    name: "Clickbait"
+  },
+  {
+    _id: "124r",
+    name: "News, Fake"
+  },
+  {
+    _id: "112",
+    name: "Hit Piece"
+  },
+  {
+    _id: "145",
+    name: "Tutorial"
+  },
+  {
+    _id: "525",
+    name: "Diary"
+  },
+  {
+    _id: "143",
+    name: "Mock"
+  },
+  {
+    _id: "431",
+    name: "Lyric"
+  }
+];
+mockTags;
+type TagRowProps = {
   editable: boolean;
   tagList?: Tag[];
   onChange?: (tag: Tag) => void;
   selectedTagIds?: string[];
 };
 
-const Tags: React.FC<TagsProps> = ({ editable, onChange, selectedTagIds }) => {
+const TagRow: React.FC<TagRowProps> = ({
+  editable,
+  tagList,
+  onChange,
+  selectedTagIds
+}) => {
   const { data, loading } = useQuery(GET_ALL_TAGS);
   const classes = useStyles();
 
@@ -57,7 +105,7 @@ const Tags: React.FC<TagsProps> = ({ editable, onChange, selectedTagIds }) => {
   };
 
   return (
-    <>
+    <div className={classes.container}>
       {tags.map((tag: Tag) => (
         <Chip
           size="small"
@@ -70,39 +118,6 @@ const Tags: React.FC<TagsProps> = ({ editable, onChange, selectedTagIds }) => {
           onClick={handleTagChange(tag)}
         />
       ))}
-    </>
-  );
-};
-
-type TagRowProps = {
-  editable: boolean;
-  tagList?: Tag[];
-  onChange?: (tag: Tag) => void;
-  selectedTagIds?: string[];
-};
-
-const TagRow: React.FC<TagRowProps> = ({
-  editable,
-  tagList,
-  onChange,
-  selectedTagIds
-}) => {
-  const classes = useStyles();
-
-  return (
-    <div className={classes.container}>
-      <Accordion className={classes.accordion}>
-        <AccordionSummary expandIcon={<ExpandMore />}>Tags</AccordionSummary>
-        <AccordionDetails>
-          <div>
-            <Tags
-              editable={editable}
-              onChange={onChange}
-              selectedTagIds={selectedTagIds}
-            />
-          </div>
-        </AccordionDetails>
-      </Accordion>
     </div>
   );
 };
