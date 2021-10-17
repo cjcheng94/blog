@@ -3,7 +3,7 @@ import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { PostsHub, Tag } from "PostTypes";
-import { RichTextEditor } from "@components";
+import { RichTextEditor, DisplayTag } from "@components";
 
 import {
   Card,
@@ -106,9 +106,7 @@ const Cards: React.FC<Props> = props => {
   const renderTags = (tags: Tag[]) => (
     <>
       {tags.slice(0, 3).map(({ _id, name }) => (
-        <div className={classes.tagText} key={_id}>
-          {name}
-        </div>
+        <DisplayTag key={_id} value={name} />
       ))}
       {tags.length > 3 ? "..." : ""}
     </>

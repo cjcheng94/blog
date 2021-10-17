@@ -12,5 +12,5 @@ export { default as LoadingOverlay } from "./LoadingOverlay";
 export { default as InstallAlert } from "./InstallAlert";
 export { default as SearchOverlay } from "./SearchOverlay";
 export { default as TagBar } from "./TagBar";
-
+export { default as DisplayTag } from "./DisplayTag";
 export * from "./RichTextEditor";
