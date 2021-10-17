@@ -7,7 +7,7 @@ import {
   Button,
   Typography
 } from "@material-ui/core";
-import { CustomDialog, ErrorAlert, RichTextEditor } from "@components";
+import { CustomDialog, ErrorAlert, RichTextEditor, TagBar } from "@components";
 import { GET_CURRENT_POST, UPDATE_POST, GET_ALL_POSTS } from "../gqlDocuments";
 import { useQuery, useMutation } from "@apollo/client";
 import { loadingVar } from "../cache";
@@ -48,6 +48,7 @@ const PostUpdate: React.FC<Props> = props => {
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const classes = useStyles();
 
   const { _id } = props.match.params;
@@ -74,9 +75,10 @@ const PostUpdate: React.FC<Props> = props => {
   // After get post actions
   useEffect(() => {
     if (getPostCalled && getPostData) {
-      const { title, content } = getPostData.getPostById;
+      const { title, content, tagIds } = getPostData.getPostById;
       setTitle(title);
       setContent(content);
+      setSelectedTagIds(tagIds);
     }
   }, [getPostCalled, getPostData]);
 
@@ -132,7 +134,7 @@ const PostUpdate: React.FC<Props> = props => {
     if (validate()) {
       // Api call
       updatePost({
-        variables: { _id, title, content, tagIds: [] }
+        variables: { _id, title, content, tagIds: selectedTagIds }
       });
     }
   };
@@ -172,6 +174,15 @@ const PostUpdate: React.FC<Props> = props => {
     );
   };
 
+  const handleTagsChange = (tag: any) => {
+    setSelectedTagIds(prevIds => {
+      if (prevIds.includes(tag._id)) {
+        return prevIds.filter(id => id !== tag._id);
+      }
+      return [...prevIds, tag._id];
+    });
+  };
+
   return (
     <Fragment>
       {getPostError && <ErrorAlert error={getPostError} />}
@@ -196,6 +207,11 @@ const PostUpdate: React.FC<Props> = props => {
           type="text"
           variant="outlined"
           fullWidth
+        />
+        <TagBar
+          editable
+          selectedTagIds={selectedTagIds}
+          onChange={handleTagsChange}
         />
         {renderContentField()}
 
