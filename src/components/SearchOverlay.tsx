@@ -10,7 +10,9 @@ import {
 } from "@material-ui/core";
 import { Search, Close } from "@material-ui/icons";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useQuery } from "@apollo/client";
 import { searchOverlayVar } from "../cache";
+import { GET_ALL_TAGS } from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -81,14 +83,14 @@ const hideSelf = () => {
   searchOverlayVar(false);
 };
 
-type Props = {
-  open: boolean;
-} & RouteComponentProps;
+type Props = {} & RouteComponentProps;
 
-const SearchOverlay: React.FC<Props> = ({ open, history }) => {
+const SearchOverlay: React.FC<Props> = ({ history }) => {
   const [chipList, setChipList] = useState<string[]>([]);
   const [searchWord, setSearchWord] = useState<string>("");
+  const { data } = useQuery(GET_ALL_TAGS);
   const classes = useStyles();
+  console.log({ data });
 
   const isChipSelected = (type: string) => chipList.includes(type);
 
@@ -120,10 +122,6 @@ const SearchOverlay: React.FC<Props> = ({ open, history }) => {
     }
   };
 
-  if (!open) {
-    return null;
-  }
-
   return (
     <div className={classes.wrapper}>
       <div className={classes.toolbarSpacer}></div>
@@ -144,6 +142,7 @@ const SearchOverlay: React.FC<Props> = ({ open, history }) => {
                 <Search />
               </div>
               <TextField
+                autoFocus
                 className={classes.input}
                 label="Search"
                 value={searchWord}
