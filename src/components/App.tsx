@@ -184,7 +184,7 @@ const App: React.FC = () => {
       <CssBaseline />
       <div className={classes.root}>
         <Route component={Header} />
-        <SearchOverlay open={showSearchOverlay} />
+        {showSearchOverlay && <SearchOverlay />}
         <Main />
         <Snackbar
           anchorOrigin={{

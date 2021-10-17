@@ -22,18 +22,33 @@ import {
   CustomDialog,
   ErrorAlert,
   NewPostButton,
-  RichTextEditor
+  RichTextEditor,
+  DisplayTag
 } from "@components";
 import { loadingVar } from "../cache";
+import { Post, GetPostVars, DeletePostVars } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
     maxWidth: 1000,
     margin: "0px auto"
   },
+  info: {
+    width: "100%",
+    display: "flex",
+    justifyContent: "space-between",
+    flexWrap: "wrap",
+    marginBottom: theme.spacing(1)
+  },
+  tagRow: {
+    width: "100%",
+    display: "flex"
+  },
+  divider: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2)
+  },
   content: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
     fontSize: 18,
     whiteSpace: "pre-wrap",
     lineHeight: 1.58,
@@ -66,7 +81,7 @@ const PostDetails: React.FC<Props> = props => {
     loading: getPostLoading,
     error: getPostError,
     data: getPostData
-  } = useQuery(GET_CURRENT_POST, {
+  } = useQuery<{ getPostById: Post }, GetPostVars>(GET_CURRENT_POST, {
     variables: { _id: props.match.params._id }
   });
 
@@ -75,7 +90,7 @@ const PostDetails: React.FC<Props> = props => {
   // Apollo client only caches *queries*, so we have to use readFragment.
   // This allows us to read cached post data even when user only called GET_ALL_POSTS
   // and never called GET_CURRENT_POST.
-  const cachedPostData = client.readFragment({
+  const cachedPostData: Post | null = client.readFragment({
     id: `Post:${props.match.params._id}`,
     fragment: GET_CACHED_POST_FRAGMENT
   });
@@ -88,7 +103,9 @@ const PostDetails: React.FC<Props> = props => {
       loading: deletePostLoading,
       error: deletePostError
     }
-  ] = useMutation(DELETE_POST, { refetchQueries: [{ query: GET_ALL_POSTS }] });
+  ] = useMutation<Post, DeletePostVars>(DELETE_POST, {
+    refetchQueries: [{ query: GET_ALL_POSTS }]
+  });
 
   useEffect(() => {
     loadingVar(getPostLoading || deletePostLoading);
@@ -104,7 +121,7 @@ const PostDetails: React.FC<Props> = props => {
     }
   }, [deletePostCalled, deletePostData]);
 
-  let post = undefined;
+  let post: Post | null = null;
 
   if (isOnline) {
     // Hide network error when offline
@@ -128,7 +145,7 @@ const PostDetails: React.FC<Props> = props => {
   const url = `/posts/edit/${props.match.params._id}`;
   const currentUsername = localStorage.getItem("currentUsername");
   const isAuthenticated = !checkIfExpired();
-  const { title, authorInfo, content, date } = post;
+  const { title, authorInfo, content, date, tags } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
   const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
@@ -164,6 +181,10 @@ const PostDetails: React.FC<Props> = props => {
     );
   };
 
+  const renderTags = () => {
+    return tags.map(({ _id, name }) => <DisplayTag key={_id} value={name} />);
+  };
+
   const userPostUrl = `/user/profile/${
     authorInfo._id
   }?username=${encodeURIComponent(authorInfo.username)}`;
@@ -176,16 +197,18 @@ const PostDetails: React.FC<Props> = props => {
         <Typography variant="h3" gutterBottom>
           {title}
         </Typography>
-        <Typography variant="body2">
-          By{" "}
-          <Link className={classes.author} to={userPostUrl}>
-            {authorInfo.username}
-          </Link>
-        </Typography>
-        <Typography variant="body2" gutterBottom>
-          {postTime}
-        </Typography>
-        <Divider />
+        <div className={classes.info}>
+          <Typography variant="body2">
+            By{" "}
+            <Link className={classes.author} to={userPostUrl}>
+              {authorInfo.username}
+            </Link>
+          </Typography>
+          <Typography variant="body2">{postTime}</Typography>
+        </div>
+
+        <div className={classes.tagRow}>{renderTags()}</div>
+        <Divider className={classes.divider} />
         {renderContent(content)}
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
         {authorInfo.username === currentUsername && isAuthenticated ? (

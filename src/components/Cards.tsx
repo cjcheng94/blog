@@ -2,8 +2,8 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { PostsHub } from "PostTypes";
-import { RichTextEditor } from "@components";
+import { PostsHub, Tag } from "PostTypes";
+import { RichTextEditor, DisplayTag } from "@components";
 
 import {
   Card,
@@ -21,18 +21,22 @@ const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     card: {
       width: "100%",
-      height: 200,
-      padding: theme.spacing(2),
-      paddingBottom: theme.spacing(3)
+      height: 214,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "space-between",
+      padding: theme.spacing(2)
     },
     cardButton: {
       width: "100%"
     },
     cardContent: {
-      height: "100%",
       padding: 0,
       overflow: "hidden",
-      textOverflow: "ellipsis"
+      marginBottom: theme.spacing(2)
+      // display: "-webkit-box",
+      // "-webkit-line-clamp": 6,
+      // "-webkit-box-orient": "vertical",
     },
     title: {
       display: "inline",
@@ -47,6 +51,19 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     article: {
       fontSize: "1.1em"
+    },
+    tagsContainer: {
+      display: "flex",
+      flexWrap: "nowrap",
+      overflow: "hidden",
+      flexShrink: 0
+    },
+    tagText: {
+      ...theme.typography.button,
+      color: theme.palette.text.hint,
+      fontWeight: 700,
+      lineHeight: 1,
+      paddingRight: 4
     }
   });
 });
@@ -85,10 +102,21 @@ const Cards: React.FC<Props> = props => {
   const order = latestFirst ? "desc" : "asc";
   const ordered = orderBy(posts, ["date"], [order]);
 
+  // TODO: apply ellipses to overflowed tags
+  const renderTags = (tags: Tag[]) => (
+    <>
+      {tags.slice(0, 3).map(({ _id, name }) => (
+        <DisplayTag key={_id} value={name} />
+      ))}
+      {tags.length > 3 ? "..." : ""}
+    </>
+  );
+
   const cards = map(ordered, post => {
-    const url = `/posts/detail/${post._id}`;
+    const { _id, title, authorInfo, content, tags } = post;
+    const url = `/posts/detail/${_id}`;
     return (
-      <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={post._id}>
+      <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={_id}>
         <CardActionArea
           className={classes.cardButton}
           onClick={() => {
@@ -98,13 +126,14 @@ const Cards: React.FC<Props> = props => {
           <Card className={classes.card}>
             <CardContent className={classes.cardContent}>
               <Typography variant="h5" className={classes.title}>
-                {post.title}
+                {title}
               </Typography>
               <Typography className={classes.author}>
-                By {post.authorInfo.username}
+                By {authorInfo.username}
               </Typography>
-              {renderContent(post.content, classes.article)}
+              {renderContent(content, classes.article)}
             </CardContent>
+            <div className={classes.tagsContainer}>{renderTags(tags)}</div>
           </Card>
         </CardActionArea>
       </Grid>
