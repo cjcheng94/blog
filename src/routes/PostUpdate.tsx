@@ -208,11 +208,7 @@ const PostUpdate: React.FC<Props> = props => {
           variant="outlined"
           fullWidth
         />
-        <TagBar
-          editable
-          selectedTagIds={selectedTagIds}
-          onChange={handleTagsChange}
-        />
+        <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
         {renderContentField()}
 
         <Button

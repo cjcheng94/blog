@@ -130,11 +130,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
           type="text"
           fullWidth
         />
-        <TagBar
-          editable
-          selectedTagIds={selectedTagIds}
-          onChange={handleTagsChange}
-        />
+        <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
         <RichTextEditor
           readOnly={false}
           onChange={setContent}

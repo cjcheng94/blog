@@ -70,18 +70,11 @@ const mockTags = [
 ];
 mockTags;
 type TagRowProps = {
-  editable: boolean;
-  tagList?: Tag[];
   onChange?: (tag: Tag) => void;
   selectedTagIds?: string[];
 };
 
-const TagRow: React.FC<TagRowProps> = ({
-  editable,
-  tagList,
-  onChange,
-  selectedTagIds
-}) => {
+const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
   const { data, loading } = useQuery(GET_ALL_TAGS);
   const classes = useStyles();
 
@@ -92,13 +85,13 @@ const TagRow: React.FC<TagRowProps> = ({
   const { tags } = data;
 
   const handleTagChange = (tag: Tag) => () => {
-    if (editable && onChange) {
+    if (onChange) {
       return onChange(tag);
     }
   };
 
   const isSelected = (id: string) => {
-    if (!editable || !selectedTagIds) {
+    if (!selectedTagIds) {
       return false;
     }
     return selectedTagIds.includes(id);
@@ -108,11 +101,11 @@ const TagRow: React.FC<TagRowProps> = ({
     <div className={classes.container}>
       {tags.map((tag: Tag) => (
         <Chip
+          clickable
           size="small"
           key={tag._id}
           label={tag.name}
           className={classes.tags}
-          clickable={editable ? true : false}
           color={isSelected(tag._id) ? "primary" : "default"}
           variant={isSelected(tag._id) ? "default" : "outlined"}
           onClick={handleTagChange(tag)}
