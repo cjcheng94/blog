@@ -105,9 +105,9 @@ const Cards: React.FC<Props> = props => {
   // TODO: apply ellipses to overflowed tags
   const renderTags = (tags: Tag[]) => (
     <>
-      {tags.slice(0, 3).map(({ _id, name }) => (
-        <DisplayTag key={_id} value={name} />
-      ))}
+      {tags
+        .slice(0, 3)
+        .map(tag => tag && <DisplayTag key={tag._id} value={tag.name} />)}
       {tags.length > 3 ? "..." : ""}
     </>
   );
