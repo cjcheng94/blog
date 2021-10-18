@@ -111,18 +111,21 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
 
     const { tags } = data;
 
-    return tags.map(tag => (
-      <Chip
-        clickable
-        size="small"
-        key={tag._id}
-        label={tag.name}
-        className={classes.tags}
-        color={isSelected(tag._id) ? "primary" : "default"}
-        variant={isSelected(tag._id) ? "default" : "outlined"}
-        onClick={handleTagChange(tag)}
-      />
-    ));
+    return tags.map(
+      tag =>
+        tag && (
+          <Chip
+            clickable
+            size="small"
+            key={tag._id}
+            label={tag.name}
+            className={classes.tags}
+            color={isSelected(tag._id) ? "primary" : "default"}
+            variant={isSelected(tag._id) ? "default" : "outlined"}
+            onClick={handleTagChange(tag)}
+          />
+        )
+    );
   };
 
   // Show/hide new tag input when clicking on toggle button

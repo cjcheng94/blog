@@ -182,7 +182,9 @@ const PostDetails: React.FC<Props> = props => {
   };
 
   const renderTags = () => {
-    return tags.map(({ _id, name }) => <DisplayTag key={_id} value={name} />);
+    return tags.map(
+      tag => tag && <DisplayTag key={tag._id} value={tag.name} />
+    );
   };
 
   const userPostUrl = `/user/profile/${
