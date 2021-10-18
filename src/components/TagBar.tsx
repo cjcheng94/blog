@@ -7,9 +7,8 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { Check, Close } from "@material-ui/icons";
-
-import { useQuery } from "@apollo/client";
-import { GET_ALL_TAGS } from "../gqlDocuments";
+import { useQuery, useMutation } from "@apollo/client";
+import { GET_ALL_TAGS, CREATE_TAG } from "../gqlDocuments";
 import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
@@ -71,15 +70,19 @@ type TagRowProps = {
 
 const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
   const [showInput, setShowInout] = useState<boolean>(false);
-  const { data, loading } = useQuery(GET_ALL_TAGS);
+  const [newTagName, setNewTagName] = useState<string>("Add tag");
   const classes = useStyles();
 
-  if (loading) {
-    return <CircularProgress />;
-  }
+  // Get all tags
+  const { data, loading: getAllTagsLoading } =
+    useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
 
-  const { tags } = data;
+  // Create-tag gql mutation
+  const [createTag, { loading: createTagLoading }] = useMutation(CREATE_TAG, {
+    refetchQueries: [{ query: GET_ALL_TAGS }]
+  });
 
+  // Trigger onChange function from parent
   const handleTagChange = (tag: Tag) => () => {
     if (onChange) {
       return onChange(tag);
@@ -91,6 +94,35 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
       return false;
     }
     return selectedTagIds.includes(id);
+  };
+
+  // Call create-tag gql mutation
+  const handleCreateTag = () => {
+    createTag({
+      variables: { name: newTagName }
+    });
+  };
+
+  // Render tags when network call completes, otherwise render a circular progress
+  const renderTags = () => {
+    if (getAllTagsLoading || !data || !data.tags) {
+      return <CircularProgress size={24} />;
+    }
+
+    const { tags } = data;
+
+    return tags.map(tag => (
+      <Chip
+        clickable
+        size="small"
+        key={tag._id}
+        label={tag.name}
+        className={classes.tags}
+        color={isSelected(tag._id) ? "primary" : "default"}
+        variant={isSelected(tag._id) ? "default" : "outlined"}
+        onClick={handleTagChange(tag)}
+      />
+    ));
   };
 
   // Show/hide new tag input when clicking on toggle button
@@ -117,31 +149,28 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
       </IconButton>
       <div className={tagContainerClass}>
         <TextField
-          defaultValue="Add tag"
           variant="outlined"
           size="small"
           className={classes.tagInput}
+          value={newTagName}
+          onChange={e => {
+            setNewTagName(e.target.value);
+          }}
+          onFocus={() => {
+            setNewTagName("");
+          }}
         />
         <IconButton
           color="primary"
           aria-label="add tag"
           className={classes.tagButtons}
+          onClick={handleCreateTag}
         >
           <Check />
         </IconButton>
       </div>
-      {tags.map((tag: Tag) => (
-        <Chip
-          clickable
-          size="small"
-          key={tag._id}
-          label={tag.name}
-          className={classes.tags}
-          color={isSelected(tag._id) ? "primary" : "default"}
-          variant={isSelected(tag._id) ? "default" : "outlined"}
-          onClick={handleTagChange(tag)}
-        />
-      ))}
+      {renderTags()}
+      {createTagLoading && <CircularProgress size={18} />}
     </div>
   );
 };
