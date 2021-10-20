@@ -98,6 +98,9 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
 
   // Call create-tag gql mutation
   const handleCreateTag = () => {
+    if (newTagName.length < 1) {
+      return;
+    }
     createTag({
       variables: { name: newTagName }
     });
