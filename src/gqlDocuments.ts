@@ -81,6 +81,26 @@ export const GET_USER_POSTS = gql`
   }
 `;
 
+export const GET_POSTS_BY_TAGS = gql`
+  query getPostsByTags($tagIds: [ID]!) {
+    getPostsByTags(tagIds: $tagIds) {
+      _id
+      title
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
+      authorInfo {
+        _id
+        username
+      }
+    }
+  }
+`;
+
 export const CREATE_NEW_POST = gql`
   mutation createPost($title: String!, $content: String!, $tagIds: [ID]!) {
     createPost(title: $title, content: $content, tagIds: $tagIds) {
@@ -136,16 +156,21 @@ export const DELETE_POST = gql`
 
 // Search Document
 export const SEARCH = gql`
-  query search($searchTerm: String!) {
-    search(searchTerm: $searchTerm) {
+  query search($searchTerm: String!, $tagIds: [ID]) {
+    search(searchTerm: $searchTerm, tagIds: $tagIds) {
       _id
       title
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
       authorInfo {
         _id
         username
       }
-      content
-      date
     }
   }
 `;
