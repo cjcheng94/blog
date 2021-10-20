@@ -2,7 +2,7 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import map from "lodash/map";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { PostsHub, Tag } from "PostTypes";
+import { PostsList, Tag } from "PostTypes";
 import { RichTextEditor, DisplayTag } from "@components";
 
 import {
@@ -70,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) => {
 
 type Props = {
   latestFirst?: boolean;
-  posts: PostsHub;
+  posts: PostsList;
 } & RouteComponentProps;
 
 const isJson = (str: string) => {

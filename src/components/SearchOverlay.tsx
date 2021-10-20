@@ -6,13 +6,15 @@ import {
   ClickAwayListener,
   IconButton,
   Button,
-  makeStyles
+  makeStyles,
+  LinearProgress
 } from "@material-ui/core";
 import { Search, Close } from "@material-ui/icons";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { searchOverlayVar } from "../cache";
 import { GET_ALL_TAGS } from "../gqlDocuments";
+import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -76,6 +78,11 @@ const useStyles = makeStyles(theme => ({
   buttonContainer: {
     display: "flex",
     justifyContent: "flex-end"
+  },
+  progress: {
+    width: "100%",
+    marginTop: 4,
+    marginBottom: 4
   }
 }));
 
@@ -86,40 +93,69 @@ const hideSelf = () => {
 type Props = {} & RouteComponentProps;
 
 const SearchOverlay: React.FC<Props> = ({ history }) => {
-  const [chipList, setChipList] = useState<string[]>([]);
-  const [searchWord, setSearchWord] = useState<string>("");
-  const { data } = useQuery(GET_ALL_TAGS);
+  const [tagList, setTagList] = useState<string[]>([]);
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
   const classes = useStyles();
-  console.log({ data });
 
-  const isChipSelected = (type: string) => chipList.includes(type);
+  const isTagSelected = (type: string) => tagList.includes(type);
 
-  const handleSearchWordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearchWord(e.target.value);
+  const handleSearchTermChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setSearchTerm(e.target.value);
   };
 
-  // Add or remove clicked chip type from state
-  const handleChipClick = (type: string) => () => {
-    setChipList(prevList => {
-      if (prevList.includes(type)) {
-        return prevList.filter(chipType => chipType !== type);
+  // Add or remove clicked tag type from state
+  const handleTagClick = (tagId: string) => () => {
+    setTagList(prevList => {
+      if (prevList.includes(tagId)) {
+        return prevList.filter(id => id !== tagId);
       }
-      return [...prevList, type];
+      return [...prevList, tagId];
     });
   };
 
   const handleSearch = () => {
-    console.log({ chipList, searchWord });
+    // Construct search params
+    const searchParams = new URLSearchParams({ searchTerm });
+    tagList.forEach(tagId => {
+      searchParams.append("tagIds", tagId);
+    });
+    const queryString = searchParams.toString();
     // Pass search term in URL
-    const userPostUrl = `/results?searchTerm=${encodeURIComponent(searchWord)}`;
+    const userPostUrl = `/results?${queryString}`;
     // Go to result page where we execute the query
     history.push(userPostUrl);
+    setTimeout(() => {
+      hideSelf();
+    }, 300);
   };
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       handleSearch();
     }
+  };
+
+  // Render searched tags
+  const renderTags = () => {
+    if (!data || !data.tags) {
+      return <LinearProgress className={classes.progress} />;
+    }
+    return data.tags.map(
+      tag =>
+        tag && (
+          <Chip
+            clickable
+            size="small"
+            key={tag._id}
+            label={tag.name}
+            variant={isTagSelected(tag._id) ? "default" : "outlined"}
+            color={isTagSelected(tag._id) ? "primary" : "default"}
+            onClick={handleTagClick(tag._id)}
+            className={classes.chip}
+          />
+        )
+    );
   };
 
   return (
@@ -145,32 +181,13 @@ const SearchOverlay: React.FC<Props> = ({ history }) => {
                 autoFocus
                 className={classes.input}
                 label="Search"
-                value={searchWord}
-                onChange={handleSearchWordChange}
+                value={searchTerm}
+                onChange={handleSearchTermChange}
                 onKeyDown={handleKeyDown}
               />
             </div>
 
-            <div className={classes.chipContainer}>
-              {[
-                "Archive",
-                "Translations",
-                "Tutorials",
-                "Miscellaneous",
-                "Notes",
-                "Other"
-              ].map(type => (
-                <Chip
-                  clickable
-                  key={type}
-                  label={type}
-                  variant={isChipSelected(type) ? "default" : "outlined"}
-                  color={isChipSelected(type) ? "primary" : "default"}
-                  onClick={handleChipClick(type)}
-                  className={classes.chip}
-                />
-              ))}
-            </div>
+            <div className={classes.chipContainer}>{renderTags()}</div>
             <div className={classes.buttonContainer}>
               <Button color="secondary" onClick={handleSearch}>
                 Search
