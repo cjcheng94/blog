@@ -21,14 +21,16 @@ const useStyles = makeStyles((theme: Theme) => {
   return createStyles({
     card: {
       width: "100%",
-      height: 214,
+      height: 214
+    },
+    cardButton: {
+      width: "100%",
+      height: "100%",
       display: "flex",
       flexDirection: "column",
       justifyContent: "space-between",
+      alignItems: "flex-start",
       padding: theme.spacing(2)
-    },
-    cardButton: {
-      width: "100%"
     },
     cardContent: {
       padding: 0,
@@ -117,13 +119,13 @@ const Cards: React.FC<Props> = props => {
     const url = `/posts/detail/${_id}`;
     return (
       <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={_id}>
-        <CardActionArea
-          className={classes.cardButton}
-          onClick={() => {
-            history.push(url);
-          }}
-        >
-          <Card className={classes.card}>
+        <Card className={classes.card}>
+          <CardActionArea
+            className={classes.cardButton}
+            onClick={() => {
+              history.push(url);
+            }}
+          >
             <CardContent className={classes.cardContent}>
               <Typography variant="h5" className={classes.title}>
                 {title}
@@ -134,8 +136,8 @@ const Cards: React.FC<Props> = props => {
               {renderContent(content, classes.article)}
             </CardContent>
             <div className={classes.tagsContainer}>{renderTags(tags)}</div>
-          </Card>
-        </CardActionArea>
+          </CardActionArea>
+        </Card>
       </Grid>
     );
   });
