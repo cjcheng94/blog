@@ -65,7 +65,15 @@ const getCache = async (request: Request) => {
 const setCache = async (request: Request, response: Response) => {
   const { operationName, variables, query } = await request.json();
   // Only cache "get" requests, i.e.: no mutation requests or user login etc.
-  const cacheableOperations = ["getAllPosts", "getUserPosts", "getCurrentPost"];
+  const cacheableOperations = [
+    "getAllPosts",
+    "getUserPosts",
+    "getCurrentPost",
+    "getPostsByTags",
+    "search",
+    "getAllTags",
+    "getTagsById"
+  ];
   const isCacheable = cacheableOperations.includes(operationName);
   if (!isCacheable) {
     return;
