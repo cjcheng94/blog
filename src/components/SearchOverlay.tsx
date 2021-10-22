@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Paper,
   TextField,
@@ -34,6 +34,12 @@ const useStyles = makeStyles(theme => ({
     width: "100%",
     height: "100%",
     padding: 24,
+    // transition props
+    backgroundColor: "rgba(0,0,0,0)",
+    backdropFilter: "blur(0)",
+    transition: " all 125ms cubic-bezier(0.4, 0, 0.2, 1)"
+  },
+  openedContent: {
     backgroundColor: "rgba(0,0,0,0.4)",
     backdropFilter: "blur(1.5px)" // Uber-cool blur effect
   },
@@ -90,13 +96,17 @@ const hideSelf = () => {
   searchOverlayVar(false);
 };
 
-type Props = {} & RouteComponentProps;
-
-const SearchOverlay: React.FC<Props> = ({ history }) => {
+const SearchOverlay: React.FC<RouteComponentProps> = ({ history }) => {
   const [tagList, setTagList] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
-  const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  const [mounted, setMounted] = useState<boolean>(false);
   const classes = useStyles();
+
+  const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const isTagSelected = (type: string) => tagList.includes(type);
 
@@ -158,10 +168,15 @@ const SearchOverlay: React.FC<Props> = ({ history }) => {
     );
   };
 
+  // Css transition animation on mount
+  const contentClass = `${classes.content} ${
+    mounted ? classes.openedContent : ""
+  }`;
+
   return (
     <div className={classes.wrapper}>
       <div className={classes.toolbarSpacer}></div>
-      <div className={classes.content}>
+      <div className={contentClass}>
         <ClickAwayListener onClickAway={hideSelf}>
           <Paper className={classes.paper} elevation={3}>
             <IconButton
