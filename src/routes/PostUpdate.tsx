@@ -106,6 +106,18 @@ const PostUpdate: React.FC<Props> = props => {
     loadingVar(updatePostLoading || updatePostLoading);
   }, [getPostLoading, updatePostLoading]);
 
+  useEffect(() => {
+    // Managing contentEmpty state when in plain text mode
+    const isContentJson = isJson(content);
+    if (!isContentJson) {
+      if (content) {
+        setContentEmpty(false);
+        return;
+      }
+      setContentEmpty(true);
+    }
+  }, [content]);
+
   // Check if title or content field is empty
   const validate = () => {
     if (title && !contentEmpty) {
@@ -164,8 +176,8 @@ const PostUpdate: React.FC<Props> = props => {
         helperText={contentErrorMessage}
         error={!!contentErrorMessage}
         multiline
-        rows="4"
-        rowsMax="900"
+        minRows="4"
+        maxRows="900"
         margin="normal"
         type="text"
         variant="outlined"

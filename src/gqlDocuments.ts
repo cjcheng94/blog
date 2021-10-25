@@ -209,6 +209,11 @@ export const GET_CACHED_POST_FRAGMENT = gql`
     title
     content
     date
+    tagIds
+    tags {
+      _id
+      name
+    }
     authorInfo {
       _id
       username
