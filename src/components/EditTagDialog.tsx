@@ -13,8 +13,8 @@ import {
 import { Label, Delete } from "@material-ui/icons";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_ALL_TAGS, DELETE_TAG } from "../gqlDocuments";
-import { ErrorAlert } from "@components";
+import { GET_ALL_TAGS, DELETE_TAG, CREATE_TAG } from "../gqlDocuments";
+import { ErrorAlert, NewTagInput } from "@components";
 import { Tag } from "PostTypes";
 
 const Transition = React.forwardRef(function Transition(
@@ -26,12 +26,13 @@ const Transition = React.forwardRef(function Transition(
 
 const useStyles = makeStyles(theme => ({
   dialog: {
-    [theme.breakpoints.up("md")]: {
-      width: 300
-    }
+    width: 300
   },
   content: {
     maxHeight: 250
+  },
+  tagsContainer: {
+    marginTop: 4
   },
   tagRow: {
     display: "flex",
@@ -63,6 +64,12 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
     error: getAllTagsError
   } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
 
+  // Create-tag gql mutation
+  const [createTag, { loading: createTagLoading, error: createTagError }] =
+    useMutation(CREATE_TAG, {
+      refetchQueries: [{ query: GET_ALL_TAGS }]
+    });
+
   // Delete tag mutation
   const [deleteTag, { loading: deleteTagLoading, error: deleteTagError }] =
     useMutation(DELETE_TAG, {
@@ -75,6 +82,18 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
         tagId
       }
     });
+  };
+
+  const handleCreateTag = (tagName: string) => {
+    createTag({ variables: { name: tagName } });
+  };
+
+  const renderError = () => {
+    const currentError = getAllTagsError || createTagError || deleteTagError;
+    if (!currentError) {
+      return;
+    }
+    return <ErrorAlert error={currentError} />;
   };
 
   const renderTags = () => {
@@ -117,8 +136,7 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
 
   return (
     <div>
-      {getAllTagsError && <ErrorAlert error={getAllTagsError} />}
-      {deleteTagError && <ErrorAlert error={deleteTagError} />}
+      {renderError()}
       <Dialog
         open={open}
         onClose={handleClose}
@@ -129,7 +147,12 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
       >
         <DialogTitle id="alert-dialog-slide-title">Edit Tags</DialogTitle>
         <DialogContent className={classes.content}>
-          {renderTags()}
+          <NewTagInput
+            placeholder="Add tag"
+            onSubmit={handleCreateTag}
+            loading={createTagLoading}
+          />
+          <div className={classes.tagsContainer}>{renderTags()}</div>
         </DialogContent>
         <DialogActions style={{ justifyContent: "space-evenly" }}>
           <Button onClick={handleClose} color="primary">
