@@ -85,6 +85,9 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
   };
 
   const handleCreateTag = (tagName: string) => {
+    if (tagName.length < 1) {
+      return;
+    }
     createTag({ variables: { name: tagName } });
   };
 
