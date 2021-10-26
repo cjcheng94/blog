@@ -2,7 +2,7 @@ import React from "react";
 import { Chip, CircularProgress, makeStyles } from "@material-ui/core";
 import { useQuery, useMutation } from "@apollo/client";
 import { NewTagInput } from "@components";
-import { GET_ALL_TAGS, CREATE_TAG } from "../gqlDocuments";
+import { GET_ALL_TAGS, CREATE_TAG } from "../../gqlDocuments";
 import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
