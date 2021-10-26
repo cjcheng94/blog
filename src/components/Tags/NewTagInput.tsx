@@ -1,23 +1,12 @@
 import React, { useState } from "react";
-import {
-  Chip,
-  TextField,
-  CircularProgress,
-  IconButton,
-  makeStyles
-} from "@material-ui/core";
+import { TextField, IconButton, makeStyles } from "@material-ui/core";
 import { Check, Close } from "@material-ui/icons";
-import { useQuery, useMutation } from "@apollo/client";
-import { GET_ALL_TAGS, CREATE_TAG } from "../gqlDocuments";
-import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
-  container: {
-    width: "100%",
+  wrapper: {
     display: "flex",
     alignItems: "center",
-    flexWrap: "wrap",
-    marginBottom: theme.spacing(0.5)
+    overflow: "hidden"
   },
   newTagContainer: {
     display: "flex",
@@ -31,7 +20,7 @@ const useStyles = makeStyles(theme => ({
       "opacity 187ms cubic-bezier(0.4, 0, 0.2, 1) 0ms, max-width 125ms cubic-bezier(0.4, 0, 0.2, 1) 62ms"
   },
   shownNewTagContainer: {
-    maxWidth: 150,
+    maxWidth: 212,
     opacity: 1
   },
   tagInput: {
@@ -56,80 +45,27 @@ const useStyles = makeStyles(theme => ({
   transformedNewTagButton: {
     transform: "rotate(0)"
   },
-  tags: {
-    marginTop: theme.spacing(0.5),
-    marginBottom: theme.spacing(0.5),
-    marginRight: theme.spacing(1)
+  placeholder: {
+    width: "100%",
+    whiteSpace: "pre",
+    cursor: "pointer"
   }
 }));
 
 type TagRowProps = {
-  onChange?: (tag: Tag) => void;
-  selectedTagIds?: string[];
+  placeholder?: string;
+  loading?: boolean;
+  onSubmit: (tagName: string) => void;
 };
 
-const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
+const NewTagInput: React.FC<TagRowProps> = ({
+  placeholder,
+  loading,
+  onSubmit
+}) => {
   const [showInput, setShowInout] = useState<boolean>(false);
   const [newTagName, setNewTagName] = useState<string>("Add tag");
   const classes = useStyles();
-
-  // Get all tags
-  const { data, loading: getAllTagsLoading } =
-    useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
-
-  // Create-tag gql mutation
-  const [createTag, { loading: createTagLoading }] = useMutation(CREATE_TAG, {
-    refetchQueries: [{ query: GET_ALL_TAGS }]
-  });
-
-  // Trigger onChange function from parent
-  const handleTagChange = (tag: Tag) => () => {
-    if (onChange) {
-      return onChange(tag);
-    }
-  };
-
-  const isSelected = (id: string) => {
-    if (!selectedTagIds) {
-      return false;
-    }
-    return selectedTagIds.includes(id);
-  };
-
-  // Call create-tag gql mutation
-  const handleCreateTag = () => {
-    if (newTagName.length < 1) {
-      return;
-    }
-    createTag({
-      variables: { name: newTagName }
-    });
-  };
-
-  // Render tags when network call completes, otherwise render a circular progress
-  const renderTags = () => {
-    if (getAllTagsLoading || !data || !data.tags) {
-      return <CircularProgress size={24} />;
-    }
-
-    const { tags } = data;
-
-    return tags.map(
-      tag =>
-        tag && (
-          <Chip
-            clickable
-            size="small"
-            key={tag._id}
-            label={tag.name}
-            className={classes.tags}
-            color={isSelected(tag._id) ? "primary" : "default"}
-            variant={isSelected(tag._id) ? "default" : "outlined"}
-            onClick={handleTagChange(tag)}
-          />
-        )
-    );
-  };
 
   // Show/hide new tag input when clicking on toggle button
   const tagContainerClass = showInput
@@ -142,7 +78,7 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
     : classes.newTagButton;
 
   return (
-    <div className={classes.container}>
+    <div className={classes.wrapper}>
       <IconButton
         color="primary"
         aria-label="toggle new tag input"
@@ -170,15 +106,26 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
           color="primary"
           aria-label="add tag"
           className={classes.tagButtons}
-          onClick={handleCreateTag}
+          disabled={loading || !showInput}
+          onClick={() => {
+            onSubmit(newTagName);
+          }}
         >
           <Check />
         </IconButton>
       </div>
-      {renderTags()}
-      {createTagLoading && <CircularProgress size={18} />}
+      {placeholder && !showInput && (
+        <div
+          className={classes.placeholder}
+          onClick={() => {
+            setShowInout(prevShow => !prevShow);
+          }}
+        >
+          {placeholder}
+        </div>
+      )}
     </div>
   );
 };
 
-export default TagRow;
+export default NewTagInput;

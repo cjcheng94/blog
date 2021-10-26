@@ -16,7 +16,7 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { AccountCircle, Brightness4, Search } from "@material-ui/icons";
-import { CustomDialog } from "@components";
+import { CustomDialog, EditTagDialog } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import { GET_IS_LOADING } from "../gqlDocuments";
 
@@ -79,6 +79,7 @@ type HeaderProps = RouteComponentProps;
 const Header: React.FC<HeaderProps> = ({ history }) => {
   const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
+  const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const { data } = useQuery(GET_IS_LOADING);
   const classes = useStyles();
@@ -182,6 +183,12 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
                     >
                       Log Out
                     </MenuItem>
+                    <MenuItem
+                      onClick={() => setShowEditTagDialog(true)}
+                      color="inherit"
+                    >
+                      Edit Tags
+                    </MenuItem>
                   </MenuList>
                 ) : (
                   <MenuList>
@@ -225,6 +232,12 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
         }}
         handleConfirm={handleLogoutClick}
         isDisabled={false}
+      />
+      <EditTagDialog
+        open={showEditTagDialog}
+        handleClose={() => {
+          setShowEditTagDialog(false);
+        }}
       />
     </Fragment>
   );
