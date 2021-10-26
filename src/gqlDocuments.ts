@@ -202,6 +202,15 @@ export const CREATE_TAG = gql`
     }
   }
 `;
+
+export const DELETE_TAG = gql`
+  mutation deleteTag($tagId: ID!) {
+    deleteTag(tagId: $tagId) {
+      _id
+      name
+    }
+  }
+`;
 // Local Documents
 export const GET_CACHED_POST_FRAGMENT = gql`
   fragment MyPost on Post {
