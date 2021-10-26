@@ -4,7 +4,6 @@ import { Check, Close } from "@material-ui/icons";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
-    width: "100%",
     display: "flex",
     alignItems: "center",
     overflow: "hidden"
