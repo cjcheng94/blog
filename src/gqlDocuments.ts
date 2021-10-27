@@ -247,3 +247,9 @@ export const GET_SHOW_SEARCH_OVERLAY = gql`
     showSearchOverlay @client
   }
 `;
+
+export const GET_SHOW_DRAWER = gql`
+  query getShowDrawer {
+    showDrawer @client
+  }
+`;
