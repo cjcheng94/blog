@@ -146,7 +146,7 @@ const userLogout: UserLogout = callback => {
 };
 
 type HeaderProps = RouteComponentProps;
-const Header: React.FC<HeaderProps> = ({ history }) => {
+const Header: React.FC<HeaderProps> = ({ history, location }) => {
   const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
@@ -163,6 +163,13 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
     error: getTagsError,
     data: getTagsData
   } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+
+  useEffect(() => {
+    // Reset selected tags when user goes back to index page
+    if (location.pathname === "/") {
+      setSelectedTagIds([]);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     loadingVar(getTagsLoading);
