@@ -14,6 +14,7 @@ const Signup = React.lazy(() => import("../routes/Signup"));
 const NoMatch = React.lazy(() => import("../routes/NoMatch"));
 const UserProfile = React.lazy(() => import("../routes/UserProfile"));
 const SearchResults = React.lazy(() => import("../routes/SearchResults"));
+const PostsByTags = React.lazy(() => import("../routes/PostsByTags"));
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -59,6 +60,10 @@ const routes = [
     main: PostUpdate
   },
   {
+    path: "/posts/tags",
+    main: PostsByTags
+  },
+  {
     path: "/user/login",
     main: Login
   },
@@ -74,6 +79,7 @@ const routes = [
     path: "/results",
     main: SearchResults
   },
+
   {
     main: NoMatch
   }

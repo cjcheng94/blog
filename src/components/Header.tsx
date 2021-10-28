@@ -150,6 +150,7 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
   const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
 
@@ -166,6 +167,16 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
   useEffect(() => {
     loadingVar(getTagsLoading);
   }, [getTagsLoading]);
+
+  useEffect(() => {
+    // Unselect all tags, return to index page
+    if (selectedTagIds.length < 1) {
+      history.push("/");
+      return;
+    }
+    // There are selected tags, go to postsByTags page
+    handleSearch();
+  }, [selectedTagIds]);
 
   const { isLoading } = getIsLoadingData;
   const { showDrawer } = getShowSearchOverlayData;
@@ -196,6 +207,28 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
     userLogout(logoutCallback);
   };
 
+  const handleTagSelect = (tagId: string) => (e: React.MouseEvent) => {
+    setSelectedTagIds(prevList => {
+      if (prevList.includes(tagId)) {
+        return prevList.filter(id => id !== tagId);
+      }
+      return [...prevList, tagId];
+    });
+  };
+
+  // Go to PostsByTags page and pass selected tagIds in query string
+  const handleSearch = () => {
+    const searchParams = new URLSearchParams();
+    selectedTagIds.forEach(tagId => {
+      searchParams.append("tagIds", tagId);
+    });
+    const queryString = searchParams.toString();
+    const postsByTagsUrl = `/posts/tags?${queryString}`;
+    history.push(postsByTagsUrl);
+  };
+
+  const isTagSelected = (tagId: string) => selectedTagIds.includes(tagId);
+
   const getUserPath = () => {
     if (!!currentUsername) {
       return `/user/profile/${currentUserId}?username=${encodeURIComponent(
@@ -208,7 +241,13 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
   const renderTags = () => {
     if (getTagsLoading || !getTagsData?.tags) return;
     return getTagsData.tags.map(tag => (
-      <ListItem button key={tag._id} title={tag.name}>
+      <ListItem
+        button
+        key={tag._id}
+        title={tag.name}
+        onClick={handleTagSelect(tag._id)}
+        selected={isTagSelected(tag._id)}
+      >
         <ListItemIcon className={classes.listIcons}>
           <Label />
         </ListItemIcon>
