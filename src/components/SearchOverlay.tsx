@@ -13,8 +13,10 @@ import { Search, Close } from "@material-ui/icons";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { searchOverlayVar } from "../cache";
-import { GET_ALL_TAGS } from "../gqlDocuments";
+import { GET_ALL_TAGS, GET_SHOW_DRAWER } from "../gqlDocuments";
 import { Tag } from "PostTypes";
+
+const drawerWidth = 240;
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -23,11 +25,25 @@ const useStyles = makeStyles(theme => ({
     left: 0,
     right: 0,
     bottom: 0,
-    width: "100%",
     height: "100vh",
     zIndex: 2,
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    marginLeft: 0,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    })
+  },
+  wrapperShift: {
+    marginLeft: drawerWidth,
+    transition: theme.transitions.create("margin", {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen
+    }),
+    [theme.breakpoints.down("xs")]: {
+      marginLeft: 0
+    }
   },
   toolbarSpacer: theme.mixins.toolbar,
   content: {
@@ -104,6 +120,9 @@ const SearchOverlay: React.FC<RouteComponentProps> = ({ history }) => {
 
   const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
 
+  const { data: getShowDrawer } = useQuery(GET_SHOW_DRAWER);
+  const { showDrawer } = getShowDrawer;
+
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -169,12 +188,16 @@ const SearchOverlay: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   // Css transition animation on mount
-  const contentClass = `${classes.content} ${
-    mounted ? classes.openedContent : ""
-  }`;
+  const contentClass = mounted
+    ? `${classes.content} ${classes.openedContent}`
+    : classes.content;
+
+  const wrapperClass = showDrawer
+    ? `${classes.wrapper} ${classes.wrapperShift}`
+    : classes.wrapper;
 
   return (
-    <div className={classes.wrapper}>
+    <div className={wrapperClass}>
       <div className={classes.toolbarSpacer}></div>
       <div className={contentClass}>
         <ClickAwayListener onClickAway={hideSelf}>
