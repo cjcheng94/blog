@@ -1,7 +1,7 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { darkModeVar, searchOverlayVar } from "../cache";
+import { darkModeVar, searchOverlayVar, drawerVar, loadingVar } from "../cache";
 import {
   Tooltip,
   AppBar,
@@ -13,15 +13,32 @@ import {
   Menu,
   MenuList,
   MenuItem,
+  Drawer,
+  Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
   makeStyles
 } from "@material-ui/core";
-import { AccountCircle, Brightness4, Search } from "@material-ui/icons";
-import { CustomDialog, EditTagDialog } from "@components";
+import {
+  Edit,
+  Label,
+  Search,
+  Brightness4,
+  AccountCircle,
+  ChevronLeft,
+  Menu as MenuIcon
+} from "@material-ui/icons";
+import { CustomDialog, EditTagDialog, ErrorAlert } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { GET_IS_LOADING } from "../gqlDocuments";
+import { GET_ALL_TAGS, GET_IS_LOADING, GET_SHOW_DRAWER } from "../gqlDocuments";
+import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
+  const drawerWidth = 240;
+
   return {
     toolBar: {
       justifyContent: "space-between",
@@ -34,10 +51,6 @@ const useStyles = makeStyles(theme => {
       marginTop: -16,
       textShadow:
         "0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
-    },
-    menuButton: {
-      marginLeft: -12,
-      marginRight: 20
     },
     //A transparent place holder for progress bar,
     //avoids page jumping issues
@@ -52,6 +65,59 @@ const useStyles = makeStyles(theme => {
       [theme.breakpoints.up("sm")]: {
         top: 64
       }
+    },
+    drawerPaper: {
+      width: drawerWidth,
+      [theme.breakpoints.down("xs")]: {
+        width: "100%"
+      }
+    },
+    drawerHeader: {
+      display: "flex",
+      alignItems: "center",
+      padding: theme.spacing(0, 1),
+      ...theme.mixins.toolbar,
+      justifyContent: "flex-end"
+    },
+    appBar: {
+      transition: theme.transitions.create(["margin", "width"], {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.leavingScreen
+      })
+    },
+    appBarShift: {
+      width: `calc(100% - ${drawerWidth}px)`,
+      marginLeft: drawerWidth,
+      transition: theme.transitions.create(["margin", "width"], {
+        easing: theme.transitions.easing.easeOut,
+        duration: theme.transitions.duration.enteringScreen
+      }),
+      [theme.breakpoints.down("xs")]: {
+        width: "initial",
+        marginLeft: 0
+      }
+    },
+    centerAligned: {
+      display: "flex",
+      alignItems: "center"
+    },
+    menuButton: {
+      marginRight: theme.spacing(1)
+    },
+    hideXsUp: {
+      display: "none",
+      [theme.breakpoints.down("xs")]: {
+        display: "initial"
+      }
+    },
+    listIcons: {
+      minWidth: "initial",
+      marginRight: theme.spacing(1)
+    },
+    listText: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
     }
   };
 });
@@ -66,6 +132,10 @@ const toggleSearchOverlay = () => {
   searchOverlayVar(!prevShowSearchOverlay);
 };
 
+const setShowDrawer = (state: boolean) => () => {
+  drawerVar(state);
+};
+
 type UserLogout = (callback: () => void) => void;
 const userLogout: UserLogout = callback => {
   localStorage.removeItem("currentUserToken");
@@ -76,15 +146,48 @@ const userLogout: UserLogout = callback => {
 };
 
 type HeaderProps = RouteComponentProps;
-const Header: React.FC<HeaderProps> = ({ history }) => {
+const Header: React.FC<HeaderProps> = ({ history, location }) => {
   const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-  const { data } = useQuery(GET_IS_LOADING);
   const classes = useStyles();
 
-  const { isLoading } = data;
+  const { data: getIsLoadingData } = useQuery(GET_IS_LOADING);
+  const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_DRAWER);
+
+  // Get all tags to render searched tags
+  const {
+    loading: getTagsLoading,
+    error: getTagsError,
+    data: getTagsData
+  } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+
+  useEffect(() => {
+    // Reset selected tags when user goes back to index page
+    if (location.pathname === "/") {
+      setSelectedTagIds([]);
+    }
+  }, [location.pathname]);
+
+  useEffect(() => {
+    loadingVar(getTagsLoading);
+  }, [getTagsLoading]);
+
+  useEffect(() => {
+    // Unselect all tags, return to index page
+    if (selectedTagIds.length < 1) {
+      history.push("/");
+      return;
+    }
+    // There are selected tags, go to postsByTags page
+    handleSearch();
+  }, [selectedTagIds]);
+
+  const { isLoading } = getIsLoadingData;
+  const { showDrawer } = getShowSearchOverlayData;
+
   const isAuthenticated = !checkIfExpired();
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
@@ -111,6 +214,28 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
     userLogout(logoutCallback);
   };
 
+  const handleTagSelect = (tagId: string) => (e: React.MouseEvent) => {
+    setSelectedTagIds(prevList => {
+      if (prevList.includes(tagId)) {
+        return prevList.filter(id => id !== tagId);
+      }
+      return [...prevList, tagId];
+    });
+  };
+
+  // Go to PostsByTags page and pass selected tagIds in query string
+  const handleSearch = () => {
+    const searchParams = new URLSearchParams();
+    selectedTagIds.forEach(tagId => {
+      searchParams.append("tagIds", tagId);
+    });
+    const queryString = searchParams.toString();
+    const postsByTagsUrl = `/posts/tags?${queryString}`;
+    history.push(postsByTagsUrl);
+  };
+
+  const isTagSelected = (tagId: string) => selectedTagIds.includes(tagId);
+
   const getUserPath = () => {
     if (!!currentUsername) {
       return `/user/profile/${currentUserId}?username=${encodeURIComponent(
@@ -120,20 +245,61 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
     return "";
   };
 
+  const renderTags = () => {
+    if (getTagsLoading || !getTagsData?.tags) return;
+    return getTagsData.tags.map(tag => (
+      <ListItem
+        button
+        key={tag._id}
+        title={tag.name}
+        onClick={handleTagSelect(tag._id)}
+        selected={isTagSelected(tag._id)}
+      >
+        <ListItemIcon className={classes.listIcons}>
+          <Label />
+        </ListItemIcon>
+        <ListItemText
+          primary={tag.name}
+          primaryTypographyProps={{ className: classes.listText }}
+        />
+      </ListItem>
+    ));
+  };
+
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
+
+  const appBarClass = showDrawer
+    ? `${classes.appBar} ${classes.appBarShift}`
+    : classes.appBar;
+
+  const menuButtonClass = showDrawer
+    ? `${classes.menuButton} ${classes.hideXsUp}`
+    : classes.menuButton;
 
   return (
     <Fragment>
-      <AppBar position="sticky">
+      {getTagsError && <ErrorAlert error={getTagsError} />}
+      <AppBar position="sticky" className={appBarClass}>
         <Toolbar className={classes.toolBar}>
-          <Typography
-            color="inherit"
-            className={classes.brand}
-            component={Link}
-            to="/"
-          >
-            {logo}
-          </Typography>
+          <div className={classes.centerAligned}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={setShowDrawer(true)}
+              edge="start"
+              className={menuButtonClass}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              color="inherit"
+              className={classes.brand}
+              component={Link}
+              to="/"
+            >
+              {logo}
+            </Typography>
+          </div>
 
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
@@ -183,12 +349,6 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
                     >
                       Log Out
                     </MenuItem>
-                    <MenuItem
-                      onClick={() => setShowEditTagDialog(true)}
-                      color="inherit"
-                    >
-                      Edit Tags
-                    </MenuItem>
                   </MenuList>
                 ) : (
                   <MenuList>
@@ -210,6 +370,31 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
           {isLoading && <LinearProgress color="secondary" />}
         </div>
       </AppBar>
+      <Drawer
+        anchor="left"
+        variant="persistent"
+        open={showDrawer}
+        classes={{
+          paper: classes.drawerPaper
+        }}
+      >
+        <div className={classes.drawerHeader}>
+          <IconButton onClick={setShowDrawer(false)}>
+            <ChevronLeft />
+          </IconButton>
+        </div>
+        <Divider />
+        <List>
+          <ListItem button onClick={() => setShowEditTagDialog(true)}>
+            <ListItemIcon className={classes.listIcons}>
+              <Edit />
+            </ListItemIcon>
+            <ListItemText primary="Edit Tags" />
+          </ListItem>
+        </List>
+        <Divider />
+        <List>{renderTags()}</List>
+      </Drawer>
       {/* material-ui's Alert Component */}
       <Snackbar
         anchorOrigin={{

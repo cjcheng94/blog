@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { Grid, Typography } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import { GET_USER_POSTS } from "../gqlDocuments";
@@ -41,12 +41,8 @@ const UserProfile: React.FC<Props> = props => {
         There are {postCount} post
         {postCount > 1 && "s"} by {username}
       </Typography>
-      <Grid container spacing={3}>
-        <Fragment>
-          <Cards posts={userPosts} />
-          {isAuthenticated && <NewPostButton destination="/posts/new" />}
-        </Fragment>
-      </Grid>
+      <Cards posts={userPosts} />
+      {isAuthenticated && <NewPostButton destination="/posts/new" />}
     </Fragment>
   );
 };

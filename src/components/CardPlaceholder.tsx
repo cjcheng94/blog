@@ -3,7 +3,6 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  Grid,
   withStyles,
   createStyles,
   Theme,
@@ -12,14 +11,21 @@ import {
 
 const styles = (theme: Theme) =>
   createStyles({
+    cardsContainer: {
+      display: "grid",
+      gap: 24,
+      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+    },
     card: {
       width: "100%",
-      [theme.breakpoints.up("sm")]: {
-        height: 200
-      }
+      height: 214
     },
     cardButton: {
-      width: "100%"
+      width: "100%",
+      height: "100%"
+    },
+    content: {
+      height: "100%"
     },
     title: {
       height: 28,
@@ -47,25 +53,23 @@ const CardPlaceholder: React.FC<Props> = props => {
   //Render 12 "empty" cards:
   //Create an ITERABLE array with a length of 12, and then .map()
   return (
-    <>
+    <div className={classes.cardsContainer}>
       {[...Array(12)].map((e, i) => {
         return (
-          <Grid item xs={12} sm={6} md={4} lg={3} key={i}>
+          <Card className={classes.card} key={i}>
             <CardActionArea className={classes.cardButton}>
-              <Card className={classes.card}>
-                <CardContent>
-                  <div className={classes.title} />
-                  <div className={classes.author} />
-                  <div className={classes.article} />
-                  <div className={classes.article} />
-                  <div className={classes.article} />
-                </CardContent>
-              </Card>
+              <CardContent className={classes.content}>
+                <div className={classes.title} />
+                <div className={classes.author} />
+                <div className={classes.article} />
+                <div className={classes.article} />
+                <div className={classes.article} />
+              </CardContent>
             </CardActionArea>
-          </Grid>
+          </Card>
         );
       })}
-    </>
+    </div>
   );
 };
 export default withStyles(styles)(CardPlaceholder);
