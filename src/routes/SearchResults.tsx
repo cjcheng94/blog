@@ -1,6 +1,6 @@
 import React, { useEffect, Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { Grid, Typography, makeStyles } from "@material-ui/core";
+import { Typography, makeStyles } from "@material-ui/core";
 import { useQuery, useLazyQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
@@ -134,12 +134,8 @@ const SearchResults: React.FC<Props> = props => {
           <div className={classes.tagsContainer}>{renderTags()}</div>
         </div>
       )}
-      <Grid container spacing={3}>
-        <Fragment>
-          <Cards posts={getResults()} />
-          {isAuthenticated && <NewPostButton destination="/posts/new" />}
-        </Fragment>
-      </Grid>
+      <Cards posts={getResults()} />
+      {isAuthenticated && <NewPostButton destination="/posts/new" />}
     </Fragment>
   );
 };
