@@ -10,15 +10,18 @@ import {
   CardActionArea,
   CardContent,
   Typography,
-  Grid,
   makeStyles,
-  createStyles,
   Theme
 } from "@material-ui/core";
 
 const useStyles = makeStyles((theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
-  return createStyles({
+  return {
+    cardsContainer: {
+      display: "grid",
+      gap: 24,
+      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+    },
     card: {
       width: "100%",
       height: 214
@@ -67,7 +70,7 @@ const useStyles = makeStyles((theme: Theme) => {
       lineHeight: 1,
       paddingRight: 4
     }
-  });
+  };
 });
 
 type Props = {
@@ -118,31 +121,29 @@ const Cards: React.FC<Props> = props => {
     const { _id, title, authorInfo, content, tags } = post;
     const url = `/posts/detail/${_id}`;
     return (
-      <Grid item xs={12} sm={6} md={4} lg={3} xl={2} key={_id}>
-        <Card className={classes.card}>
-          <CardActionArea
-            className={classes.cardButton}
-            onClick={() => {
-              history.push(url);
-            }}
-          >
-            <CardContent className={classes.cardContent}>
-              <Typography variant="h5" className={classes.title}>
-                {title}
-              </Typography>
-              <Typography className={classes.author}>
-                By {authorInfo.username}
-              </Typography>
-              {renderContent(content, classes.article)}
-            </CardContent>
-            <div className={classes.tagsContainer}>{renderTags(tags)}</div>
-          </CardActionArea>
-        </Card>
-      </Grid>
+      <Card className={classes.card} key={_id}>
+        <CardActionArea
+          className={classes.cardButton}
+          onClick={() => {
+            history.push(url);
+          }}
+        >
+          <CardContent className={classes.cardContent}>
+            <Typography variant="h5" className={classes.title}>
+              {title}
+            </Typography>
+            <Typography className={classes.author}>
+              By {authorInfo.username}
+            </Typography>
+            {renderContent(content, classes.article)}
+          </CardContent>
+          <div className={classes.tagsContainer}>{renderTags(tags)}</div>
+        </CardActionArea>
+      </Card>
     );
   });
 
-  return <>{cards}</>;
+  return <div className={classes.cardsContainer}>{cards}</div>;
 };
 
 export default withRouter(Cards);

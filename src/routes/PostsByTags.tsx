@@ -1,6 +1,5 @@
 import React, { useEffect, Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { Grid } from "@material-ui/core";
 import { useQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton } from "@components";
@@ -38,12 +37,8 @@ const PostsByTags: React.FC<RouteComponentProps> = props => {
   return (
     <Fragment>
       {error && <ErrorAlert error={error} />}
-      <Grid container spacing={3}>
-        <Fragment>
-          <Cards posts={getResults()} />
-          {isAuthenticated && <NewPostButton destination="/posts/new" />}
-        </Fragment>
-      </Grid>
+      <Cards posts={getResults()} />
+      {isAuthenticated && <NewPostButton destination="/posts/new" />}
     </Fragment>
   );
 };
