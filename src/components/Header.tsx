@@ -1,7 +1,7 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { darkModeVar, searchOverlayVar, drawerVar } from "../cache";
+import { darkModeVar, searchOverlayVar, drawerVar, loadingVar } from "../cache";
 import {
   Tooltip,
   AppBar,
@@ -15,18 +15,25 @@ import {
   MenuItem,
   Drawer,
   Divider,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemIcon,
   makeStyles
 } from "@material-ui/core";
 import {
-  AccountCircle,
-  Brightness4,
+  Edit,
+  Label,
   Search,
+  Brightness4,
+  AccountCircle,
   ChevronLeft,
   Menu as MenuIcon
 } from "@material-ui/icons";
-import { CustomDialog, EditTagDialog } from "@components";
+import { CustomDialog, EditTagDialog, ErrorAlert } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { GET_IS_LOADING, GET_SHOW_DRAWER } from "../gqlDocuments";
+import { GET_ALL_TAGS, GET_IS_LOADING, GET_SHOW_DRAWER } from "../gqlDocuments";
+import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -65,6 +72,13 @@ const useStyles = makeStyles(theme => {
         width: "100%"
       }
     },
+    drawerHeader: {
+      display: "flex",
+      alignItems: "center",
+      padding: theme.spacing(0, 1),
+      ...theme.mixins.toolbar,
+      justifyContent: "flex-end"
+    },
     appBar: {
       transition: theme.transitions.create(["margin", "width"], {
         easing: theme.transitions.easing.sharp,
@@ -95,6 +109,15 @@ const useStyles = makeStyles(theme => {
       [theme.breakpoints.down("xs")]: {
         display: "initial"
       }
+    },
+    listIcons: {
+      minWidth: "initial",
+      marginRight: theme.spacing(1)
+    },
+    listText: {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap"
     }
   };
 });
@@ -132,6 +155,17 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
 
   const { data: getIsLoadingData } = useQuery(GET_IS_LOADING);
   const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_DRAWER);
+
+  // Get all tags to render searched tags
+  const {
+    loading: getTagsLoading,
+    error: getTagsError,
+    data: getTagsData
+  } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+
+  useEffect(() => {
+    loadingVar(getTagsLoading);
+  }, [getTagsLoading]);
 
   const { isLoading } = getIsLoadingData;
   const { showDrawer } = getShowSearchOverlayData;
@@ -171,6 +205,21 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
     return "";
   };
 
+  const renderTags = () => {
+    if (getTagsLoading || !getTagsData?.tags) return;
+    return getTagsData.tags.map(tag => (
+      <ListItem button key={tag._id} title={tag.name}>
+        <ListItemIcon className={classes.listIcons}>
+          <Label />
+        </ListItemIcon>
+        <ListItemText
+          primary={tag.name}
+          primaryTypographyProps={{ className: classes.listText }}
+        />
+      </ListItem>
+    ));
+  };
+
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
 
   const appBarClass = showDrawer
@@ -183,6 +232,7 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
 
   return (
     <Fragment>
+      {getTagsError && <ErrorAlert error={getTagsError} />}
       <AppBar position="sticky" className={appBarClass}>
         <Toolbar className={classes.toolBar}>
           <div className={classes.centerAligned}>
@@ -253,12 +303,6 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
                     >
                       Log Out
                     </MenuItem>
-                    <MenuItem
-                      onClick={() => setShowEditTagDialog(true)}
-                      color="inherit"
-                    >
-                      Edit Tags
-                    </MenuItem>
                   </MenuList>
                 ) : (
                   <MenuList>
@@ -288,12 +332,22 @@ const Header: React.FC<HeaderProps> = ({ history }) => {
           paper: classes.drawerPaper
         }}
       >
-        <div>
+        <div className={classes.drawerHeader}>
           <IconButton onClick={setShowDrawer(false)}>
             <ChevronLeft />
           </IconButton>
         </div>
         <Divider />
+        <List>
+          <ListItem button onClick={() => setShowEditTagDialog(true)}>
+            <ListItemIcon className={classes.listIcons}>
+              <Edit />
+            </ListItemIcon>
+            <ListItemText primary="Edit Tags" />
+          </ListItem>
+        </List>
+        <Divider />
+        <List>{renderTags()}</List>
       </Drawer>
       {/* material-ui's Alert Component */}
       <Snackbar
