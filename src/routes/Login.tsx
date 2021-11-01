@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { RouteComponentProps } from "react-router-dom";
 import {
@@ -6,13 +6,19 @@ import {
   Snackbar,
   Button,
   Typography,
-  TextField
+  TextField,
+  Paper
 } from "@material-ui/core";
 import { ErrorAlert } from "@components";
 import { USER_LOGIN } from "../gqlDocuments";
 import { loadingVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
+  paper: {
+    maxWidth: 400,
+    margin: "auto",
+    padding: theme.spacing(2)
+  },
   wrapper: {
     maxWidth: 300,
     margin: "0px auto"
@@ -81,7 +87,7 @@ const Login: React.FC<Props> = props => {
   };
 
   return (
-    <Fragment>
+    <Paper className={classes.paper} elevation={3}>
       {error && <ErrorAlert error={error} />}
       <div className={classes.wrapper}>
         <Typography variant="h3" align="center">
@@ -137,7 +143,7 @@ const Login: React.FC<Props> = props => {
         }}
         message={<span id="message-id">Login successful!</span>}
       />
-    </Fragment>
+    </Paper>
   );
 };
 
