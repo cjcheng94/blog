@@ -253,3 +253,9 @@ export const GET_SHOW_DRAWER = gql`
     showDrawer @client
   }
 `;
+
+export const GET_SORT_LATEST_FIRST = gql`
+  query getSortLatestFirst {
+    sortLatestFirst @client
+  }
+`;

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment, FormEvent } from "react";
+import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
 import { RouteComponentProps } from "react-router-dom";
 import {
@@ -6,13 +6,19 @@ import {
   Snackbar,
   Button,
   Typography,
-  TextField
+  TextField,
+  Paper
 } from "@material-ui/core";
 import { ErrorAlert } from "@components";
 import { USER_SIGNUP } from "../gqlDocuments";
 import { loadingVar } from "../cache";
 
-const useStyles = makeStyles({
+const useStyles = makeStyles(theme => ({
+  paper: {
+    maxWidth: 400,
+    margin: "auto",
+    padding: theme.spacing(2)
+  },
   wrapper: {
     maxWidth: 300,
     margin: "0px auto"
@@ -20,11 +26,8 @@ const useStyles = makeStyles({
   button: {
     display: "block",
     margin: "30px auto"
-  },
-  KAGGIGER: {
-    color: "red"
   }
-});
+}));
 
 const Signup: React.FC<RouteComponentProps> = props => {
   const [showAlert, setShowAlert] = useState(false);
@@ -91,7 +94,7 @@ const Signup: React.FC<RouteComponentProps> = props => {
   };
 
   return (
-    <Fragment>
+    <Paper className={classes.paper} elevation={3}>
       {error && <ErrorAlert error={error} />}
       <div className={classes.wrapper}>
         <Typography variant="h3" align="center">
@@ -157,7 +160,7 @@ const Signup: React.FC<RouteComponentProps> = props => {
         }}
         message={<span id="message-id">Sign up successful!</span>}
       />
-    </Fragment>
+    </Paper>
   );
 };
 

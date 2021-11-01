@@ -1,7 +1,13 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { darkModeVar, searchOverlayVar, drawerVar, loadingVar } from "../cache";
+import {
+  darkModeVar,
+  searchOverlayVar,
+  drawerVar,
+  loadingVar,
+  sortLatestFirstVar
+} from "../cache";
 import {
   Tooltip,
   AppBar,
@@ -28,11 +34,17 @@ import {
   Brightness4,
   AccountCircle,
   ChevronLeft,
+  Sort,
   Menu as MenuIcon
 } from "@material-ui/icons";
 import { CustomDialog, EditTagDialog, ErrorAlert } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { GET_ALL_TAGS, GET_IS_LOADING, GET_SHOW_DRAWER } from "../gqlDocuments";
+import {
+  GET_ALL_TAGS,
+  GET_IS_LOADING,
+  GET_SHOW_DRAWER,
+  GET_SORT_LATEST_FIRST
+} from "../gqlDocuments";
 import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => {
@@ -127,6 +139,11 @@ const toggleDarkMode = () => {
   darkModeVar(!prevIsDarkMode);
 };
 
+const toggleSorting = () => {
+  const prevLatestFirst = sortLatestFirstVar();
+  sortLatestFirstVar(!prevLatestFirst);
+};
+
 const toggleSearchOverlay = () => {
   const prevShowSearchOverlay = searchOverlayVar();
   searchOverlayVar(!prevShowSearchOverlay);
@@ -156,6 +173,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
 
   const { data: getIsLoadingData } = useQuery(GET_IS_LOADING);
   const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_DRAWER);
+  const { data: getSortData } = useQuery(GET_SORT_LATEST_FIRST);
 
   // Get all tags to render searched tags
   const {
@@ -187,6 +205,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
 
   const { isLoading } = getIsLoadingData;
   const { showDrawer } = getShowSearchOverlayData;
+  const { sortLatestFirst } = getSortData;
 
   const isAuthenticated = !checkIfExpired();
   const currentUsername = localStorage.getItem("currentUsername");
@@ -267,6 +286,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   };
 
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
+  const sortButtonText = sortLatestFirst ? "Latest first" : "Oldest first";
 
   const appBarClass = showDrawer
     ? `${classes.appBar} ${classes.appBarShift}`
@@ -389,7 +409,13 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
             <ListItemIcon className={classes.listIcons}>
               <Edit />
             </ListItemIcon>
-            <ListItemText primary="Edit Tags" />
+            <ListItemText primary="Edit tags" />
+          </ListItem>
+          <ListItem button onClick={toggleSorting}>
+            <ListItemIcon className={classes.listIcons}>
+              <Sort />
+            </ListItemIcon>
+            <ListItemText primary={sortButtonText} />
           </ListItem>
         </List>
         <Divider />
