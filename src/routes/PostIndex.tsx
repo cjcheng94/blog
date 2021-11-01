@@ -20,7 +20,7 @@ const PostIndex = () => {
     if (loading || !data?.posts) {
       return <CardPlaceholder />;
     }
-    return <Cards posts={data.posts} latestFirst={false} />;
+    return <Cards posts={data.posts} />;
   };
 
   return (

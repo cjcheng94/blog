@@ -9,7 +9,13 @@ import {
   createHttpLink
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
-import { darkModeVar, loadingVar, searchOverlayVar, drawerVar } from "./cache";
+import {
+  darkModeVar,
+  loadingVar,
+  searchOverlayVar,
+  drawerVar,
+  sortLatestFirstVar
+} from "./cache";
 
 const httpLink = createHttpLink({
   uri: "https://blog-gql.herokuapp.com"
@@ -51,6 +57,11 @@ const client = new ApolloClient({
           showDrawer: {
             read() {
               return drawerVar();
+            }
+          },
+          sortLatestFirst: {
+            read() {
+              return sortLatestFirstVar();
             }
           }
         }
