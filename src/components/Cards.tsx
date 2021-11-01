@@ -4,7 +4,6 @@ import map from "lodash/map";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { PostsList, Tag } from "PostTypes";
 import { RichTextEditor, DisplayTag } from "@components";
-
 import {
   Card,
   CardActionArea,
@@ -13,6 +12,8 @@ import {
   makeStyles,
   Theme
 } from "@material-ui/core";
+import { useQuery } from "@apollo/client";
+import { GET_SORT_LATEST_FIRST } from "../gqlDocuments";
 
 const useStyles = makeStyles((theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -74,7 +75,6 @@ const useStyles = makeStyles((theme: Theme) => {
 });
 
 type Props = {
-  latestFirst?: boolean;
   posts: PostsList;
 } & RouteComponentProps;
 
@@ -101,10 +101,14 @@ const renderContent = (content: string, textClass: string) => {
 };
 
 const Cards: React.FC<Props> = props => {
-  const { latestFirst, posts, history } = props;
   const classes = useStyles();
+  const { data } = useQuery(GET_SORT_LATEST_FIRST);
+
+  const { posts, history } = props;
+  const { sortLatestFirst } = data;
+
   //Sort posts by time based on props.latestFirst
-  const order = latestFirst ? "desc" : "asc";
+  const order = sortLatestFirst ? "desc" : "asc";
   const ordered = orderBy(posts, ["date"], [order]);
 
   // TODO: apply ellipses to overflowed tags
