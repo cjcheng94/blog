@@ -45,6 +45,7 @@ const PostUpdate: React.FC<Props> = props => {
   const [showAlert, setShowAlert] = useState(false);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [plainText, setPlainText] = useState("");
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
@@ -146,9 +147,20 @@ const PostUpdate: React.FC<Props> = props => {
     if (validate()) {
       // Api call
       updatePost({
-        variables: { _id, title, content, tagIds: selectedTagIds }
+        variables: {
+          _id,
+          title,
+          content,
+          contentText: plainText,
+          tagIds: selectedTagIds
+        }
       });
     }
+  };
+
+  const handleRichTextEditorChange = (richData: string, plainText: string) => {
+    setContent(richData);
+    setPlainText(plainText);
   };
 
   // Render content field
@@ -161,7 +173,7 @@ const PostUpdate: React.FC<Props> = props => {
         <RichTextEditor
           readOnly={false}
           rawContent={content}
-          onChange={setContent}
+          onChange={handleRichTextEditorChange}
           isEmpty={setContentEmpty}
         />
       );

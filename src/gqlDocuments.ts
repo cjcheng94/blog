@@ -102,8 +102,18 @@ export const GET_POSTS_BY_TAGS = gql`
 `;
 
 export const CREATE_NEW_POST = gql`
-  mutation createPost($title: String!, $content: String!, $tagIds: [ID]!) {
-    createPost(title: $title, content: $content, tagIds: $tagIds) {
+  mutation createPost(
+    $title: String!
+    $content: String!
+    $contentText: String!
+    $tagIds: [ID]!
+  ) {
+    createPost(
+      title: $title
+      content: $content
+      contentText: $contentText
+      tagIds: $tagIds
+    ) {
       _id
       title
       content
@@ -126,9 +136,16 @@ export const UPDATE_POST = gql`
     $_id: String!
     $title: String!
     $content: String!
+    $contentText: String!
     $tagIds: [ID]!
   ) {
-    updatePost(_id: $_id, title: $title, content: $content, tagIds: $tagIds) {
+    updatePost(
+      _id: $_id
+      title: $title
+      content: $content
+      contentText: $contentText
+      tagIds: $tagIds
+    ) {
       _id
       title
       content
