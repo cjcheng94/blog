@@ -28,7 +28,8 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [richData, setRichData] = useState("");
+  const [plainText, setPlainText] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
@@ -91,7 +92,12 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     if (validate()) {
       // Api call
       createNewPost({
-        variables: { title, content, tagIds: selectedTagIds }
+        variables: {
+          title,
+          content: richData,
+          contentText: plainText,
+          tagIds: selectedTagIds
+        }
       });
     }
   };
@@ -103,6 +109,11 @@ const PostNew: React.FC<RouteComponentProps> = props => {
       }
       return [...prevIds, tag._id];
     });
+  };
+
+  const handleRichTextEditorChange = (richData: string, plainText: string) => {
+    setRichData(richData);
+    setPlainText(plainText);
   };
 
   return (
@@ -133,7 +144,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
         <RichTextEditor
           readOnly={false}
-          onChange={setContent}
+          onChange={handleRichTextEditorChange}
           isEmpty={setContentEmpty}
         />
         <FormHelperText error>{contentErrorMessage}</FormHelperText>
