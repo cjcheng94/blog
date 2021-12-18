@@ -162,12 +162,25 @@ const userLogout: UserLogout = callback => {
   callback();
 };
 
+const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
+
 type HeaderProps = RouteComponentProps;
+
 const Header: React.FC<HeaderProps> = ({ history, location }) => {
+  const getInitialTagIds = () => {
+    if (location.pathname === "/posts/tags") {
+      const urlQuery = getUrlQuery(location.search);
+      const tagIds = urlQuery.getAll("tagIds");
+      return tagIds;
+    }
+    return [];
+  };
+
   const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
-  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [selectedTagIds, setSelectedTagIds] =
+    useState<string[]>(getInitialTagIds);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
 
@@ -194,13 +207,16 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   }, [getTagsLoading]);
 
   useEffect(() => {
-    // Unselect all tags, return to index page
-    if (selectedTagIds.length < 1) {
-      history.push("/");
+    // There are selected tags, go to postsByTags page
+    if (selectedTagIds.length > 0) {
+      handleSearch();
       return;
     }
-    // There are selected tags, go to postsByTags page
-    handleSearch();
+
+    // Return to index page when no tags are selected AND we're in /tags route (prevent going to homepage on page refresh)
+    if (location.pathname === "/posts/tags") {
+      history.push("/");
+    }
   }, [selectedTagIds]);
 
   const { isLoading } = getIsLoadingData;
