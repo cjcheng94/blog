@@ -23,18 +23,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const isJson = (str: string) => {
-  if (typeof str !== "string") {
-    return false;
-  }
-  try {
-    JSON.parse(str);
-  } catch (error) {
-    return false;
-  }
-  return true;
-};
-
 type TParams = {
   _id: string;
 };
@@ -47,7 +35,6 @@ const PostUpdate: React.FC<Props> = props => {
   const [content, setContent] = useState("");
   const [plainText, setPlainText] = useState("");
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
-  const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const classes = useStyles();
@@ -98,26 +85,11 @@ const PostUpdate: React.FC<Props> = props => {
     if (title) {
       setTitleErrorMessage("");
     }
-    if (!contentEmpty) {
-      setContentErrorMessage("");
-    }
   }, [title, contentEmpty]);
 
   useEffect(() => {
     loadingVar(updatePostLoading || updatePostLoading);
   }, [getPostLoading, updatePostLoading]);
-
-  useEffect(() => {
-    // Managing contentEmpty state when in plain text mode
-    const isContentJson = isJson(content);
-    if (!isContentJson) {
-      if (content) {
-        setContentEmpty(false);
-        return;
-      }
-      setContentEmpty(true);
-    }
-  }, [content]);
 
   // Check if title or content field is empty
   const validate = () => {
@@ -126,9 +98,6 @@ const PostUpdate: React.FC<Props> = props => {
     }
     if (!title) {
       setTitleErrorMessage("Please enter a title");
-    }
-    if (contentEmpty) {
-      setContentErrorMessage("Content can't be empty");
     }
     return false;
   };
@@ -165,10 +134,7 @@ const PostUpdate: React.FC<Props> = props => {
 
   // Render content field
   const renderContentField = () => {
-    // Temporary solution, add isRichText prop later
-    const isContentJson = isJson(content);
-    // content is rich text format
-    if (isContentJson) {
+    if (content) {
       return (
         <RichTextEditor
           readOnly={false}
@@ -178,24 +144,7 @@ const PostUpdate: React.FC<Props> = props => {
         />
       );
     }
-    // content is a plain string
-    return (
-      <TextField
-        value={content}
-        onChange={e => {
-          setContent(e.target.value);
-        }}
-        helperText={contentErrorMessage}
-        error={!!contentErrorMessage}
-        multiline
-        minRows="4"
-        maxRows="900"
-        margin="normal"
-        type="text"
-        variant="outlined"
-        fullWidth
-      />
-    );
+    return <div>Loading content...</div>;
   };
 
   const handleTagsChange = (tag: any) => {
@@ -234,7 +183,6 @@ const PostUpdate: React.FC<Props> = props => {
         />
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
         {renderContentField()}
-
         <Button
           className={classes.button}
           onClick={handleSubmitClick}
