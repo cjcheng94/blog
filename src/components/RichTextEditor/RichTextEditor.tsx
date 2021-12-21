@@ -67,13 +67,19 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
       }
     ]);
     if (rawContent) {
-      // edit and preview existing content
-      const contentStateFromRaw = convertFromRaw(JSON.parse(rawContent));
-      const editorStateFromRaw = EditorState.createWithContent(
-        contentStateFromRaw,
-        compositeDecorator
-      );
-      return editorStateFromRaw;
+      // If rawContent is not compatible json format, catch the error
+      // and create empty state
+      try {
+        // edit and preview existing content
+        const contentStateFromRaw = convertFromRaw(JSON.parse(rawContent));
+        const editorStateFromRaw = EditorState.createWithContent(
+          contentStateFromRaw,
+          compositeDecorator
+        );
+        return editorStateFromRaw;
+      } catch (err) {
+        return EditorState.createEmpty(compositeDecorator);
+      }
     }
     // create new content
     return EditorState.createEmpty(compositeDecorator);
