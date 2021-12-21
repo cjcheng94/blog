@@ -55,9 +55,6 @@ const useStyles = makeStyles((theme: Theme) => {
       margin: "8px 0",
       fontSize: "0.8em"
     },
-    article: {
-      fontSize: "1.1em"
-    },
     tagsContainer: {
       display: "flex",
       flexWrap: "nowrap",
@@ -77,28 +74,6 @@ const useStyles = makeStyles((theme: Theme) => {
 type Props = {
   posts: PostsList;
 } & RouteComponentProps;
-
-const isJson = (str: string) => {
-  if (typeof str !== "string") {
-    return false;
-  }
-  try {
-    JSON.parse(str);
-  } catch (error) {
-    return false;
-  }
-  return true;
-};
-
-const renderContent = (content: string, textClass: string) => {
-  // Temporary solution, add isRichText prop later
-  const isContentJson = isJson(content);
-
-  if (isContentJson) {
-    return <RichTextEditor readOnly={true} rawContent={content} />;
-  }
-  return <Typography className={textClass}>{content}</Typography>;
-};
 
 const Cards: React.FC<Props> = props => {
   const classes = useStyles();
@@ -139,7 +114,7 @@ const Cards: React.FC<Props> = props => {
             <Typography className={classes.author}>
               By {authorInfo.username}
             </Typography>
-            {renderContent(content, classes.article)}
+            <RichTextEditor readOnly={true} rawContent={content} />
           </CardContent>
           <div className={classes.tagsContainer}>{renderTags(tags)}</div>
         </CardActionArea>

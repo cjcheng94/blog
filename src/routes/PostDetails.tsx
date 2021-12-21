@@ -155,32 +155,6 @@ const PostDetails: React.FC<Props> = props => {
     deletePost({ variables: { _id } });
   };
 
-  const isJson = (str: string) => {
-    if (typeof str !== "string") {
-      return false;
-    }
-    try {
-      JSON.parse(str);
-    } catch (error) {
-      return false;
-    }
-    return true;
-  };
-
-  const renderContent = (content: string) => {
-    // Temporary solution, add isRichText prop later
-    const isContentJson = isJson(content);
-
-    if (isContentJson) {
-      return <RichTextEditor readOnly={true} rawContent={content} />;
-    }
-    return (
-      <Typography variant="body1" className={classes.content}>
-        {content}
-      </Typography>
-    );
-  };
-
   const renderTags = () => {
     return tags.map(
       tag => tag && <DisplayTag key={tag._id} value={tag.name} />
@@ -211,7 +185,7 @@ const PostDetails: React.FC<Props> = props => {
 
         <div className={classes.tagRow}>{renderTags()}</div>
         <Divider className={classes.divider} />
-        {renderContent(content)}
+        <RichTextEditor readOnly={true} rawContent={content} />
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
         {authorInfo.username === currentUsername && isAuthenticated ? (
           <Fragment>
