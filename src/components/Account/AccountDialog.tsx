@@ -2,7 +2,7 @@ import React from "react";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { Dialog, DialogContent, Slide, makeStyles } from "@material-ui/core";
 
-import { Login, Signup } from "../../routes";
+import { Login, Signup } from "@components";
 
 const useStyles = makeStyles(theme => ({
   dialogContent: {

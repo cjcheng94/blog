@@ -9,8 +9,6 @@ const PostIndex = React.lazy(() => import("../routes/PostIndex"));
 const PostNew = React.lazy(() => import("../routes/PostNew"));
 const PostDetails = React.lazy(() => import("../routes/PostDetails"));
 const PostUpdate = React.lazy(() => import("../routes/PostUpdate"));
-const Login = React.lazy(() => import("../routes/Login"));
-const Signup = React.lazy(() => import("../routes/Signup"));
 const NoMatch = React.lazy(() => import("../routes/NoMatch"));
 const UserProfile = React.lazy(() => import("../routes/UserProfile"));
 const SearchResults = React.lazy(() => import("../routes/SearchResults"));
@@ -62,14 +60,6 @@ const routes = [
   {
     path: "/posts/tags",
     main: PostsByTags
-  },
-  {
-    path: "/user/login",
-    main: Login
-  },
-  {
-    path: "/user/signup",
-    main: Signup
   },
   {
     path: "/user/profile/:userId",

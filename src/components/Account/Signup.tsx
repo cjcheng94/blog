@@ -7,8 +7,8 @@ import {
   Typography,
   TextField
 } from "@material-ui/core";
-import { USER_LOGIN } from "../gqlDocuments";
-import { loadingVar } from "../cache";
+import { USER_SIGNUP } from "../../gqlDocuments";
+import { loadingVar } from "../../cache";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -30,7 +30,7 @@ const useStyles = makeStyles(theme => ({
   errorMessage: {
     color: theme.palette.error.main
   },
-  buttonText: {
+  loginText: {
     ...theme.typography.button,
     color: theme.palette.primary.main,
     fontWeight: 700,
@@ -43,18 +43,21 @@ const useStyles = makeStyles(theme => ({
 type Props = {
   onCancel: () => void;
   onSuccess: () => void;
-  goToSignup: () => void;
+  goToLogin: () => void;
 };
 
-const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
+const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+  const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
+    useState("");
   const classes = useStyles();
-  const [userLogin, { loading, error, data, called }] =
-    useLazyQuery(USER_LOGIN);
+  const [userSignup, { loading, error, data, called }] =
+    useLazyQuery(USER_SIGNUP);
 
   // Clear error messages when user enters text
   useEffect(() => {
@@ -64,18 +67,18 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
     if (password) {
       setPasswordErrorMessage("");
     }
-  }, [username, password]);
+    if (confirmPassword) {
+      setConfirmPasswordErrorMessage("");
+    }
+  }, [username, password, confirmPassword]);
 
   useEffect(() => {
-    // Called Api and successfully got token
+    // Called Api and successfully signed up
     if (called && data) {
-      const { token, username, userId } = data.userLogin;
-      localStorage.setItem("currentUsername", username);
-      localStorage.setItem("currentUserToken", token);
-      localStorage.setItem("currentUserId", userId);
-
       setShowAlert(true);
-      setTimeout(() => onSuccess(), 1000);
+      setTimeout(() => {
+        onSuccess();
+      }, 1000);
     }
   }, [called, data]);
 
@@ -92,10 +95,16 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
     if (!password) {
       setPasswordErrorMessage("Please enter your password");
     }
-
-    if (username && password) {
+    if (!confirmPassword) {
+      setConfirmPasswordErrorMessage("Please confirm your password");
+    }
+    // User entered in confirm password field and it doesn't match
+    if (confirmPassword && confirmPassword !== password) {
+      setConfirmPasswordErrorMessage("Passwords doesn't match");
+    }
+    if (username && password && password === confirmPassword) {
       // Api call
-      userLogin({
+      userSignup({
         variables: { username, password }
       });
     }
@@ -105,7 +114,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
     <div>
       <div className={classes.wrapper}>
         <Typography variant="h3" align="center">
-          Log in
+          Sign up
         </Typography>
 
         <form onSubmit={handleSubmit}>
@@ -133,6 +142,18 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
             margin="normal"
             fullWidth
           />
+          <TextField
+            value={confirmPassword}
+            onChange={e => {
+              setConfirmPassword(e.target.value);
+            }}
+            error={!!confirmPasswordErrorMessage}
+            label={"Confirm password"}
+            type={"password"}
+            helperText={confirmPasswordErrorMessage}
+            margin="normal"
+            fullWidth
+          />
 
           <div className={classes.bottomMessage}>
             <span className={classes.errorMessage}>
@@ -141,9 +162,9 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
           </div>
 
           <div className={classes.bottomMessage}>
-            <span>Don't have an account? </span>
-            <span className={classes.buttonText} onClick={goToSignup}>
-              Sign up
+            <span>Already have an account? </span>
+            <span className={classes.loginText} onClick={goToLogin}>
+              Log in
             </span>
           </div>
 
@@ -155,12 +176,11 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
               color="primary"
               type="submit"
             >
-              Log In
+              Sign Up
             </Button>
           </div>
         </form>
       </div>
-
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
@@ -172,10 +192,10 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
         ContentProps={{
           "aria-describedby": "message-id"
         }}
-        message={<span id="message-id">Login successful!</span>}
+        message={<span id="message-id">Sign up successful!</span>}
       />
     </div>
   );
 };
 
-export default Login;
+export default Signup;
