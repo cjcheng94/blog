@@ -1,35 +1,52 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { RouteComponentProps } from "react-router-dom";
 import {
   makeStyles,
   Snackbar,
   Button,
   Typography,
-  TextField,
-  Paper
+  TextField
 } from "@material-ui/core";
-import { ErrorAlert } from "@components";
 import { USER_SIGNUP } from "../gqlDocuments";
 import { loadingVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
-  paper: {
-    maxWidth: 400,
-    margin: "auto",
-    padding: theme.spacing(2)
-  },
   wrapper: {
     maxWidth: 300,
     margin: "0px auto"
   },
-  button: {
-    display: "block",
-    margin: "30px auto"
+  buttonContainer: {
+    display: "flex",
+    justifyContent: "flex-end",
+    marginTop: 32,
+    "& button:first-child": {
+      marginRight: 8
+    }
+  },
+  bottomMessage: {
+    margin: "8px 0px",
+    height: "1em"
+  },
+  errorMessage: {
+    color: theme.palette.error.main
+  },
+  loginText: {
+    ...theme.typography.button,
+    color: theme.palette.primary.main,
+    fontWeight: 700,
+    lineHeight: 1,
+    paddingRight: 4,
+    cursor: "pointer"
   }
 }));
 
-const Signup: React.FC<RouteComponentProps> = props => {
+type Props = {
+  onCancel: () => void;
+  onSuccess: () => void;
+  goToLogin: () => void;
+};
+
+const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
   const [showAlert, setShowAlert] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -60,7 +77,7 @@ const Signup: React.FC<RouteComponentProps> = props => {
     if (called && data) {
       setShowAlert(true);
       setTimeout(() => {
-        props.history.push("/user/login");
+        onSuccess();
       }, 1000);
     }
   }, [called, data]);
@@ -94,12 +111,12 @@ const Signup: React.FC<RouteComponentProps> = props => {
   };
 
   return (
-    <Paper className={classes.paper} elevation={3}>
-      {error && <ErrorAlert error={error} />}
+    <div>
       <div className={classes.wrapper}>
         <Typography variant="h3" align="center">
           Sign up
         </Typography>
+
         <form onSubmit={handleSubmit}>
           <TextField
             value={username}
@@ -137,14 +154,31 @@ const Signup: React.FC<RouteComponentProps> = props => {
             margin="normal"
             fullWidth
           />
-          <Button
-            className={classes.button}
-            variant="contained"
-            color="primary"
-            type="submit"
-          >
-            Sign Up
-          </Button>
+
+          <div className={classes.bottomMessage}>
+            <span className={classes.errorMessage}>
+              {error ? error?.message : ""}
+            </span>
+          </div>
+
+          <div className={classes.bottomMessage}>
+            <span>Already have an account? </span>
+            <span className={classes.loginText} onClick={goToLogin}>
+              Log in
+            </span>
+          </div>
+
+          <div className={classes.buttonContainer}>
+            <Button onClick={onCancel}>Cancel</Button>
+            <Button
+              disabled={loading}
+              variant="contained"
+              color="primary"
+              type="submit"
+            >
+              Sign Up
+            </Button>
+          </div>
         </form>
       </div>
       <Snackbar
@@ -160,7 +194,7 @@ const Signup: React.FC<RouteComponentProps> = props => {
         }}
         message={<span id="message-id">Sign up successful!</span>}
       />
-    </Paper>
+    </div>
   );
 };
 
