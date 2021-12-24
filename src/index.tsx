@@ -14,7 +14,8 @@ import {
   loadingVar,
   searchOverlayVar,
   drawerVar,
-  sortLatestFirstVar
+  sortLatestFirstVar,
+  accountDialogTypeVar
 } from "./cache";
 
 const httpLink = createHttpLink({
@@ -62,6 +63,11 @@ const client = new ApolloClient({
           sortLatestFirst: {
             read() {
               return sortLatestFirstVar();
+            }
+          },
+          accountDialogType: {
+            read() {
+              return accountDialogTypeVar();
             }
           }
         }

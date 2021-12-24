@@ -6,7 +6,6 @@ import { useQuery, useLazyQuery } from "@apollo/client";
 import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
 import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../gqlDocuments";
 import { loadingVar } from "../cache";
-import checkIfExpired from "../middlewares/checkTokenExpired";
 import { Tag, SearchResult, PostsList } from "PostTypes";
 
 type TParams = { searchTerm: string };
@@ -40,8 +39,6 @@ const SearchResults: React.FC<Props> = props => {
   const hasTags = tagIds.length > 0;
   const hasSearchTerm = !!searchTerm && searchTerm.length > 0;
   const tagsOnly = hasTags && !hasSearchTerm;
-
-  const isAuthenticated = !checkIfExpired();
 
   // Get all tags to render searched tags
   const {
@@ -135,7 +132,7 @@ const SearchResults: React.FC<Props> = props => {
         </div>
       )}
       <Cards posts={getResults()} />
-      {isAuthenticated && <NewPostButton destination="/posts/new" />}
+      <NewPostButton />
     </Fragment>
   );
 };

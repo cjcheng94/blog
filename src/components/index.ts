@@ -13,3 +13,4 @@ export { default as InstallAlert } from "./InstallAlert";
 export { default as SearchOverlay } from "./SearchOverlay";
 export * from "./RichTextEditor";
 export * from "./Tags";
+export * from "./Account";
