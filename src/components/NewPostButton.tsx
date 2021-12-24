@@ -1,36 +1,31 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Edit } from "@material-ui/icons";
-import { Fab, makeStyles, createStyles, Theme } from "@material-ui/core";
+import { Fab, Tooltip, makeStyles, Theme } from "@material-ui/core";
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    fab: {
-      position: "fixed",
-      bottom: "2em",
-      right: "2em"
-    }
-  })
-);
+const useStyles = makeStyles((theme: Theme) => ({
+  fab: {
+    position: "fixed",
+    bottom: "2em",
+    right: "2em"
+  }
+}));
 
-type Props = {
-  destination: string;
-};
-
-const NewPostButton = React.forwardRef<HTMLDivElement, Props>((props, ref) => {
+const NewPostButton: React.FC = () => {
   const classes = useStyles();
   return (
-    <div {...props} ref={ref}>
+    <Tooltip title="Write a story" aria-label="new post">
       <Fab
         color="secondary"
         aria-label="new post"
         className={classes.fab}
         component={Link}
-        to={props.destination}
+        to="/posts/new"
       >
         <Edit />
       </Fab>
-    </div>
+    </Tooltip>
   );
-});
+};
+
 export default NewPostButton;

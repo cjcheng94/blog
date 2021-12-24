@@ -11,7 +11,8 @@ import {
 } from "@material-ui/core";
 import { ErrorAlert, CustomDialog, RichTextEditor, TagBar } from "@components";
 import { CREATE_NEW_POST, GET_ALL_POSTS } from "../gqlDocuments";
-import { loadingVar } from "../cache";
+import checkIfExpired from "../middlewares/checkTokenExpired";
+import { loadingVar, accountDialogTypeVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
@@ -23,6 +24,10 @@ const useStyles = makeStyles(theme => ({
     marginRight: 20
   }
 }));
+
+const showAccountDialog = (type: "login" | "signup") => {
+  accountDialogTypeVar(type);
+};
 
 const PostNew: React.FC<RouteComponentProps> = props => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
@@ -40,7 +45,15 @@ const PostNew: React.FC<RouteComponentProps> = props => {
       refetchQueries: [{ query: GET_ALL_POSTS }]
     }
   );
+
   const classes = useStyles();
+  const isAuthenticated = !checkIfExpired();
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      showAccountDialog("login");
+    }
+  }, []);
 
   // Clear error messages when user enters text
   useEffect(() => {
@@ -116,6 +129,34 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     setPlainText(plainText);
   };
 
+  const renderSubmitOrLoginButton = () => {
+    if (isAuthenticated) {
+      return (
+        <Button
+          className={classes.button}
+          onClick={handleSubmitClick}
+          disabled={!isAuthenticated}
+          variant="contained"
+          color="primary"
+        >
+          Submit
+        </Button>
+      );
+    }
+    return (
+      <Button
+        className={classes.button}
+        onClick={() => {
+          showAccountDialog("login");
+        }}
+        variant="contained"
+        color="primary"
+      >
+        Log in
+      </Button>
+    );
+  };
+
   return (
     <Fragment>
       {error && <ErrorAlert error={error} />}
@@ -148,14 +189,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
           isEmpty={setContentEmpty}
         />
         <FormHelperText error>{contentErrorMessage}</FormHelperText>
-        <Button
-          className={classes.button}
-          onClick={handleSubmitClick}
-          variant="contained"
-          color="primary"
-        >
-          Submit
-        </Button>
+        {renderSubmitOrLoginButton()}
         <Button
           className={classes.button}
           variant="contained"
