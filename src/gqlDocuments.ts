@@ -276,3 +276,9 @@ export const GET_SORT_LATEST_FIRST = gql`
     sortLatestFirst @client
   }
 `;
+
+export const GET_ACCOUNT_DIALOG_TYPE = gql`
+  query getAccountDialogType {
+    accountDialogType @client
+  }
+`;

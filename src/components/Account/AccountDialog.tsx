@@ -3,6 +3,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import { Dialog, DialogContent, Slide, makeStyles } from "@material-ui/core";
 
 import { Login, Signup } from "@components";
+import { accountDialogTypeVar } from "../../cache";
 
 const useStyles = makeStyles(theme => ({
   dialogContent: {
@@ -22,43 +23,35 @@ const Transition = React.forwardRef(function Transition(
 
 type AccountActionType = "login" | "signup";
 
-type AccountDialogProps = {
-  open: boolean;
-  type: AccountActionType;
-  onClose: () => void;
-  onTypeChange: (type: AccountActionType) => void;
+const setAccountDialogType = (type: AccountActionType | "") => () => {
+  accountDialogTypeVar(type);
 };
 
-const AccountDialog: React.FC<AccountDialogProps> = ({
-  open,
-  type,
-  onClose,
-  onTypeChange
-}) => {
+type AccountDialogProps = {
+  type: AccountActionType;
+};
+
+const AccountDialog: React.FC<AccountDialogProps> = ({ type }) => {
   const classes = useStyles();
 
-  const renderLoginOrSignup = (type: "login" | "signup") => {
+  const onClose = setAccountDialogType("");
+  const goToLogin = setAccountDialogType("login");
+  const goToSignup = setAccountDialogType("signup");
+
+  const renderLoginOrSignup = (type: AccountActionType) => {
     if (type === "login") {
       return (
-        <Login
-          onCancel={onClose}
-          onSuccess={onClose}
-          goToSignup={() => onTypeChange("signup")}
-        />
+        <Login onCancel={onClose} onSuccess={onClose} goToSignup={goToSignup} />
       );
     }
     return (
-      <Signup
-        onCancel={onClose}
-        onSuccess={onClose}
-        goToLogin={() => onTypeChange("login")}
-      />
+      <Signup onCancel={onClose} onSuccess={onClose} goToLogin={goToLogin} />
     );
   };
 
   return (
     <Dialog
-      open={open}
+      open={true}
       onClose={onClose}
       TransitionComponent={Transition}
       aria-labelledby="form-dialog-title"

@@ -11,8 +11,18 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { useQuery } from "@apollo/client";
-import { Header, Main, InstallAlert, SearchOverlay } from "@components";
-import { GET_IS_DARK_MODE, GET_SHOW_SEARCH_OVERLAY } from "../gqlDocuments";
+import {
+  Header,
+  Main,
+  InstallAlert,
+  SearchOverlay,
+  AccountDialog
+} from "@components";
+import {
+  GET_IS_DARK_MODE,
+  GET_SHOW_SEARCH_OVERLAY,
+  GET_ACCOUNT_DIALOG_TYPE
+} from "../gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   "@global": {
@@ -53,11 +63,13 @@ const App: React.FC = () => {
 
   const { data: getDarkModeData } = useQuery(GET_IS_DARK_MODE);
   const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_SEARCH_OVERLAY);
+  const { data: getShowAccountDialogData } = useQuery(GET_ACCOUNT_DIALOG_TYPE);
 
   const classes = useStyles();
 
   const userDarkModeSetting = getDarkModeData.isDarkMode;
   const showSearchOverlay = getShowSearchOverlayData.showSearchOverlay;
+  const accountDialogType = getShowAccountDialogData.accountDialogType;
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
@@ -185,6 +197,7 @@ const App: React.FC = () => {
       <div className={classes.root}>
         <Route component={Header} />
         {showSearchOverlay && <SearchOverlay />}
+        {!!accountDialogType && <AccountDialog type={accountDialogType} />}
         <Main />
         <Snackbar
           anchorOrigin={{

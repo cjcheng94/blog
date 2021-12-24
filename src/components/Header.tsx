@@ -6,7 +6,8 @@ import {
   searchOverlayVar,
   drawerVar,
   loadingVar,
-  sortLatestFirstVar
+  sortLatestFirstVar,
+  accountDialogTypeVar
 } from "../cache";
 import {
   Tooltip,
@@ -37,12 +38,7 @@ import {
   Sort,
   Menu as MenuIcon
 } from "@material-ui/icons";
-import {
-  CustomDialog,
-  EditTagDialog,
-  ErrorAlert,
-  AccountDialog
-} from "@components";
+import { CustomDialog, EditTagDialog, ErrorAlert } from "@components";
 import checkIfExpired from "../middlewares/checkTokenExpired";
 import {
   GET_ALL_TAGS,
@@ -157,6 +153,10 @@ const setShowDrawer = (state: boolean) => () => {
   drawerVar(state);
 };
 
+const showAccountDialog = (type: "login" | "signup") => {
+  accountDialogTypeVar(type);
+};
+
 type UserLogout = (callback: () => void) => void;
 const userLogout: UserLogout = callback => {
   localStorage.removeItem("currentUserToken");
@@ -184,10 +184,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-  const [showAccountDialog, setShowAccountDialog] = useState(false);
-  const [accountDialogType, setAccountDialogType] = useState<
-    "login" | "signup"
-  >("login");
+
   const [selectedTagIds, setSelectedTagIds] =
     useState<string[]>(getInitialTagIds);
   const classes = useStyles();
@@ -244,8 +241,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   };
 
   const openAccountDialog = (type: "login" | "signup") => () => {
-    setShowAccountDialog(true);
-    setAccountDialogType(type);
+    showAccountDialog(type);
     hideMenu();
   };
 
@@ -458,13 +454,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
         <Divider />
         <List>{renderTags()}</List>
       </Drawer>
-      <AccountDialog
-        open={showAccountDialog}
-        type={accountDialogType}
-        onClose={() => setShowAccountDialog(false)}
-        onTypeChange={type => setAccountDialogType(type)}
-      />
-      {/* material-ui's Alert Component */}
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
