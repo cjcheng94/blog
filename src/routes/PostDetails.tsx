@@ -13,7 +13,6 @@ import {
   Snackbar,
   Typography,
   Divider,
-  Tooltip,
   Button,
   makeStyles
 } from "@material-ui/core";
@@ -147,7 +146,6 @@ const PostDetails: React.FC<Props> = props => {
   const isAuthenticated = !checkIfExpired();
   const { title, authorInfo, content, date, tags } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
-  const writeButtonPath = isAuthenticated ? "/posts/new" : "/user/signup";
 
   const handleDelete = () => {
     setClickedConfirm(true);
@@ -209,10 +207,7 @@ const PostDetails: React.FC<Props> = props => {
           </Fragment>
         ) : null}
 
-        {/* Direct user to sign up page or if already signed in, write new page */}
-        <Tooltip title="Write a story">
-          <NewPostButton destination={writeButtonPath} />
-        </Tooltip>
+        <NewPostButton />
 
         <CustomDialog
           dialogTitle="Delete this Article?"

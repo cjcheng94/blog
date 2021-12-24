@@ -6,7 +6,8 @@ import {
   searchOverlayVar,
   drawerVar,
   loadingVar,
-  sortLatestFirstVar
+  sortLatestFirstVar,
+  accountDialogTypeVar
 } from "../cache";
 import {
   Tooltip,
@@ -46,7 +47,6 @@ import {
   GET_SORT_LATEST_FIRST
 } from "../gqlDocuments";
 import { Tag } from "PostTypes";
-
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
   const drawerWidth = 240;
@@ -153,6 +153,10 @@ const setShowDrawer = (state: boolean) => () => {
   drawerVar(state);
 };
 
+const showAccountDialog = (type: "login" | "signup") => {
+  accountDialogTypeVar(type);
+};
+
 type UserLogout = (callback: () => void) => void;
 const userLogout: UserLogout = callback => {
   localStorage.removeItem("currentUserToken");
@@ -179,9 +183,10 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+
   const [selectedTagIds, setSelectedTagIds] =
     useState<string[]>(getInitialTagIds);
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const classes = useStyles();
 
   const { data: getIsLoadingData } = useQuery(GET_IS_LOADING);
@@ -233,6 +238,11 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
 
   const hideMenu = () => {
     setAnchorEl(null);
+  };
+
+  const openAccountDialog = (type: "login" | "signup") => () => {
+    showAccountDialog(type);
+    hideMenu();
   };
 
   const handleLogoutClick = (e: React.MouseEvent) => {
@@ -376,11 +386,18 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
                 {isAuthenticated ? (
                   <MenuList>
                     <MenuItem button={false}>{currentUsername}</MenuItem>
-                    <MenuItem component={Link} to={getUserPath()}>
+                    <MenuItem
+                      component={Link}
+                      to={getUserPath()}
+                      onClick={hideMenu}
+                    >
                       My Posts
                     </MenuItem>
                     <MenuItem
-                      onClick={() => setShowCustomDialog(true)}
+                      onClick={() => {
+                        setShowCustomDialog(true);
+                        hideMenu();
+                      }}
                       color="inherit"
                     >
                       Log Out
@@ -388,10 +405,10 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
                   </MenuList>
                 ) : (
                   <MenuList>
-                    <MenuItem component={Link} to={"/user/login"}>
+                    <MenuItem onClick={openAccountDialog("login")}>
                       Log In
                     </MenuItem>
-                    <MenuItem component={Link} to={"/user/signup"}>
+                    <MenuItem onClick={openAccountDialog("signup")}>
                       Sign Up
                     </MenuItem>
                   </MenuList>
@@ -437,7 +454,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
         <Divider />
         <List>{renderTags()}</List>
       </Drawer>
-      {/* material-ui's Alert Component */}
       <Snackbar
         anchorOrigin={{
           vertical: "bottom",
