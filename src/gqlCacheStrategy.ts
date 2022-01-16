@@ -30,11 +30,7 @@ const getCache = async (request: Request) => {
     const data = await get(id, store);
     // This request is not cached
     if (!data) {
-      const init = {
-        status: 204,
-        statusText: "No content"
-      };
-      return new Response(null, init);
+      return null;
     }
     // Check cache max age.
     let cacheControl = request.headers.get("Cache-Control");
@@ -42,23 +38,14 @@ const getCache = async (request: Request) => {
     // Cache expired
     if (Date.now() - data.timestamp > maxAge * 1000) {
       console.log("Cache expired. Load from API endpoint.");
-      const init = {
-        status: 404,
-        statusText: "Cache expired"
-      };
-      return new Response(null, init);
+      return null;
     }
     // Successfully loaded data from indexdDB
     console.log("Loaded cached response");
     return new Response(JSON.stringify(data.response.body), data.response);
   } catch (err) {
-    // Send 500 response for any error
-    console.log(err);
-    const init = {
-      status: 500,
-      statusText: "Internal server error"
-    };
-    return new Response(new Blob(), init);
+    console.log("couldn't find in cache");
+    return null;
   }
 };
 
@@ -91,21 +78,27 @@ const setCache = async (request: Request, response: Response) => {
   console.log("cached " + operationName);
 };
 
-const networkFirst = async (request: Request) => {
-  try {
-    // Get network response
-    const networkResponse = await fetch(request.clone());
-    // Cache newly fetched response
-    setCache(request.clone(), networkResponse.clone());
-    return networkResponse;
-  } catch (err) {
-    // Network fetch failed, load chached response instead
-    console.log({ err });
-    // Get cached response
-    const cachedResponse = await getCache(request.clone());
-    // Network response is prioritised
-    return Promise.resolve(cachedResponse);
-  }
+// If there's a cached version available, use it, but fetch an update for next time.
+const staleWhileRevalidate = async (request: Request) => {
+  // Try to get response from cache
+  const cachedResponse = await getCache(request.clone());
+
+  // Get network response
+  const networkResponse = fetch(request.clone())
+    .then(response => {
+      // Cache newly fetched response
+      setCache(request.clone(), response.clone());
+      return response;
+    })
+    .catch(err => {
+      console.log(err);
+    });
+
+  // If the response is cached, return cached response,
+  // otherwise return network response
+  return cachedResponse
+    ? Promise.resolve(cachedResponse)
+    : (networkResponse as Promise<Response>);
 };
 
-export default networkFirst;
+export default staleWhileRevalidate;
