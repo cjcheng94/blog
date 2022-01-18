@@ -25,7 +25,7 @@
     "html-webpack-plugin": "^4.5.2",
     "idb-keyval": "^5.1.3",
     "jest": "20.0.4",
-    "jsonwebtoken": "^8.5.1",
+    "jwt-decode": "^3.1.2",
     "lodash": "^4.17.15",
     "mini-css-extract-plugin": "^1.5.0",
     "moment": "^2.24.0",
@@ -61,7 +61,10 @@
     "test": "node scripts/test.js --env=jsdom",
     "serve": "serve -s build",
     "start-server": "npm run build && npm run serve",
-    "analyze": "source-map-explorer 'build/static/js/*.js'"
+    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "build-with-stats": "node scripts/build.js --stats",
+    "analyze-bundle": "webpack-bundle-analyzer build/bundle-stats.json",
+    "build-and-analyze": "npm run build-with-stats && npm run analyze-bundle"
   },
   "devDependencies": {
     "@types/draft-js": "^0.10.45",
@@ -70,6 +73,7 @@
     "@types/react-dom": "^16.9.6",
     "@types/react-router-dom": "^5.1.4",
     "babel-plugin-transform-decorators-legacy": "^1.3.5",
+    "bfj": "^7.0.2",
     "source-map-explorer": "^2.5.2",
     "terser-webpack-plugin": "^4.2.3",
     "typescript": "^3.8.3"
