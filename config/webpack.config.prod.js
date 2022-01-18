@@ -14,6 +14,8 @@ const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const TerserPlugin = require("terser-webpack-plugin");
 const WorkboxWebpackPlugin = require("workbox-webpack-plugin");
+const BundleAnalyzerPlugin =
+  require("webpack-bundle-analyzer").BundleAnalyzerPlugin;
 
 // Webpack uses `publicPath` to determine where the app is being served from.
 // It requires a trailing slash, or the file assets will get an incorrect path.
@@ -75,7 +77,27 @@ module.exports = {
       new TerserPlugin({
         parallel: true
       })
-    ]
+    ],
+    splitChunks: {
+      chunks: "all",
+      maxInitialRequests: Infinity,
+      minSize: 0,
+      cacheGroups: {
+        vendor: {
+          test: /[\\/]node_modules[\\/]/,
+          name(module) {
+            // get the name. E.g. node_modules/packageName/not/this/part.js
+            // or node_modules/packageName
+            const packageName = module.context.match(
+              /[\\/]node_modules[\\/](.*?)([\\/]|$)/
+            )[1];
+
+            // npm package names are URL-safe, but some servers don't like @ symbols
+            return `npm.${packageName.replace("@", "")}`;
+          }
+        }
+      }
+    }
   },
   resolve: {
     // This allows you to set a fallback for where Webpack should look for modules.
@@ -259,6 +281,9 @@ module.exports = {
     new MiniCssExtractPlugin({
       filename: "[name].css",
       chunkFilename: "[id].css"
+    }),
+    new BundleAnalyzerPlugin({
+      generateStatsFile: true
     }),
     // Generate a service worker script that will precache, and keep up to date,
     // the HTML & assets that are part of the webpack build.
