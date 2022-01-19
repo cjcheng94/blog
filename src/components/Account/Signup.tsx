@@ -7,8 +7,8 @@ import {
   Typography,
   TextField
 } from "@material-ui/core";
-import { USER_SIGNUP } from "../../gqlDocuments";
-import { loadingVar } from "../../cache";
+import { USER_SIGNUP } from "../../api/gqlDocuments";
+import { loadingVar } from "../../api/cache";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {

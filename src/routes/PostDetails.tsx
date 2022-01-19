@@ -8,7 +8,7 @@ import {
   DELETE_POST,
   GET_ALL_POSTS,
   GET_CACHED_POST_FRAGMENT
-} from "../gqlDocuments";
+} from "../api/gqlDocuments";
 import {
   Snackbar,
   Typography,
@@ -24,7 +24,7 @@ import {
   RichTextEditor,
   DisplayTag
 } from "@components";
-import { loadingVar } from "../cache";
+import { loadingVar } from "../api/cache";
 import { Post, GetPostVars, DeletePostVars } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
