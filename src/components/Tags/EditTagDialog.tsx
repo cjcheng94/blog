@@ -13,7 +13,7 @@ import {
 import { Label, Delete } from "@material-ui/icons";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { useQuery, useMutation } from "@apollo/client";
-import { GET_ALL_TAGS, DELETE_TAG, CREATE_TAG } from "../../gqlDocuments";
+import { GET_ALL_TAGS, DELETE_TAG, CREATE_TAG } from "../../api/gqlDocuments";
 import { ErrorAlert, NewTagInput } from "@components";
 import { Tag } from "PostTypes";
 

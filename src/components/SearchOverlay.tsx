@@ -12,8 +12,8 @@ import {
 import { Search, Close } from "@material-ui/icons";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { searchOverlayVar } from "../cache";
-import { GET_ALL_TAGS, GET_SHOW_DRAWER } from "../gqlDocuments";
+import { searchOverlayVar } from "../api/cache";
+import { GET_ALL_TAGS, GET_SHOW_DRAWER } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
 
 const drawerWidth = 240;

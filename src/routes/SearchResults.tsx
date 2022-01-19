@@ -4,8 +4,8 @@ import { Typography, makeStyles } from "@material-ui/core";
 import { useQuery, useLazyQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
-import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../gqlDocuments";
-import { loadingVar } from "../cache";
+import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
+import { loadingVar } from "../api/cache";
 import { Tag, SearchResult, PostsList } from "PostTypes";
 
 type TParams = { searchTerm: string };

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
+import { useQuery, useMutation } from "@apollo/client";
 import {
   makeStyles,
   Snackbar,
@@ -8,9 +9,12 @@ import {
   Typography
 } from "@material-ui/core";
 import { CustomDialog, ErrorAlert, RichTextEditor, TagBar } from "@components";
-import { GET_CURRENT_POST, UPDATE_POST, GET_ALL_POSTS } from "../gqlDocuments";
-import { useQuery, useMutation } from "@apollo/client";
-import { loadingVar } from "../cache";
+import { loadingVar } from "../api/cache";
+import {
+  GET_CURRENT_POST,
+  UPDATE_POST,
+  GET_ALL_POSTS
+} from "../api/gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {

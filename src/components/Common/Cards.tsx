@@ -13,7 +13,7 @@ import {
   Theme
 } from "@material-ui/core";
 import { useQuery } from "@apollo/client";
-import { GET_SORT_LATEST_FIRST } from "../gqlDocuments";
+import { GET_SORT_LATEST_FIRST } from "../../api/gqlDocuments";
 
 const useStyles = makeStyles((theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
