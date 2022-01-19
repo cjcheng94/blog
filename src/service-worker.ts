@@ -11,7 +11,7 @@
 import { clientsClaim } from "workbox-core";
 import { precacheAndRoute, createHandlerBoundToURL } from "workbox-precaching";
 import { registerRoute } from "workbox-routing";
-import staleWhileRevalidate from "./gqlCacheStrategy";
+import networkFirst from "./gqlCacheStrategy";
 
 declare const self: ServiceWorkerGlobalScope;
 
@@ -57,7 +57,7 @@ registerRoute(
   ({ url }) => {
     return url.origin === "https://blog-gql.herokuapp.com";
   },
-  async ({ request }) => staleWhileRevalidate(request),
+  async ({ request }) => networkFirst(request),
   "POST"
 );
 
