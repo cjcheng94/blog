@@ -3,7 +3,7 @@ import { Route, Switch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 import { LoadingOverlay } from "@components";
 import { useQuery } from "@apollo/client";
-import { GET_SHOW_DRAWER } from "../gqlDocuments";
+import { GET_SHOW_DRAWER } from "../api/gqlDocuments";
 
 const PostIndex = React.lazy(() => import("../routes/PostIndex"));
 const PostNew = React.lazy(() => import("../routes/PostNew"));

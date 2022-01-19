@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Route, withRouter } from "react-router-dom";
 import * as registerServiceWorker from "../registerServiceWorker";
-import { darkModeVar } from "../cache";
+import { darkModeVar } from "../api/cache";
 import {
   CssBaseline,
   Snackbar,
@@ -22,7 +22,7 @@ import {
   GET_IS_DARK_MODE,
   GET_SHOW_SEARCH_OVERLAY,
   GET_ACCOUNT_DIALOG_TYPE
-} from "../gqlDocuments";
+} from "../api/gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   "@global": {

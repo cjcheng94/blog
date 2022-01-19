@@ -3,8 +3,8 @@ import { RouteComponentProps } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton } from "@components";
-import { GET_POSTS_BY_TAGS } from "../gqlDocuments";
-import { loadingVar } from "../cache";
+import { GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
+import { loadingVar } from "../api/cache";
 import { PostsList } from "PostTypes";
 
 const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);

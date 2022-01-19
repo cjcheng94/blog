@@ -3,7 +3,7 @@ import { TransitionProps } from "@material-ui/core/transitions";
 import { Dialog, DialogContent, Slide, makeStyles } from "@material-ui/core";
 
 import { Login, Signup } from "@components";
-import { accountDialogTypeVar } from "../../cache";
+import { accountDialogTypeVar } from "../../api/cache";
 
 const useStyles = makeStyles(theme => ({
   dialogContent: {

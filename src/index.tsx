@@ -16,7 +16,7 @@ import {
   drawerVar,
   sortLatestFirstVar,
   accountDialogTypeVar
-} from "./cache";
+} from "./api/cache";
 
 const httpLink = createHttpLink({
   uri: "https://blog-gql.herokuapp.com"

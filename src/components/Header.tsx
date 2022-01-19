@@ -8,7 +8,7 @@ import {
   loadingVar,
   sortLatestFirstVar,
   accountDialogTypeVar
-} from "../cache";
+} from "../api/cache";
 import {
   Tooltip,
   AppBar,
@@ -45,7 +45,7 @@ import {
   GET_IS_LOADING,
   GET_SHOW_DRAWER,
   GET_SORT_LATEST_FIRST
-} from "../gqlDocuments";
+} from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";

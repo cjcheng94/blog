@@ -10,9 +10,9 @@ import {
   FormHelperText
 } from "@material-ui/core";
 import { ErrorAlert, CustomDialog, RichTextEditor, TagBar } from "@components";
-import { CREATE_NEW_POST, GET_ALL_POSTS } from "../gqlDocuments";
+import { CREATE_NEW_POST, GET_ALL_POSTS } from "../api/gqlDocuments";
+import { loadingVar, accountDialogTypeVar } from "../api/cache";
 import checkIfExpired from "../middlewares/checkTokenExpired";
-import { loadingVar, accountDialogTypeVar } from "../cache";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
