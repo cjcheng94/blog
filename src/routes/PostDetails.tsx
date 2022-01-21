@@ -47,12 +47,6 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(1),
     marginBottom: theme.spacing(2)
   },
-  content: {
-    fontSize: 18,
-    whiteSpace: "pre-wrap",
-    lineHeight: 1.58,
-    letterSpacing: -"0.003em"
-  },
   author: {
     "&:visited": {
       color: "blue"
