@@ -23,6 +23,12 @@ type ErrorAlertProps = {
 
 const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
   const [isOpen, setIsOpen] = useState(true);
+
+  const isOnline = navigator.onLine;
+  const offlineMessage =
+    "Oops, you're in offline mode, please try again when you have an Internet connection";
+  const errorMessage = isOnline ? error?.message : offlineMessage;
+
   return (
     <div>
       <Dialog
@@ -33,7 +39,7 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
         aria-describedby="alert-dialog-slide-description"
       >
         <DialogTitle>Oops, Something went wrong...</DialogTitle>
-        <DialogContent>{error?.message}</DialogContent>
+        <DialogContent>{errorMessage}</DialogContent>
         <DialogActions>
           <Button component={Link} to="/" color="secondary">
             Home

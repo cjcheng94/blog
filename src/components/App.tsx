@@ -60,6 +60,7 @@ const App: React.FC = () => {
   const [deferredPrompt, setDeferredPrompt] = useState<
     BeforeInstallPromptEvent | undefined
   >(undefined);
+  const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
   const { data: getDarkModeData } = useQuery(GET_IS_DARK_MODE);
   const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_SEARCH_OVERLAY);
@@ -137,12 +138,25 @@ const App: React.FC = () => {
       console.log("beforeinstallprompt event was fired");
     };
 
+    const updateIsOnline = () => {
+      setIsOnline(true);
+    };
+    const updateOffline = () => {
+      setIsOnline(false);
+    };
+
     window.addEventListener("appinstalled", onAppInstalled);
     window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+
+    // Show an offline alert
+    window.addEventListener("online", updateIsOnline);
+    window.addEventListener("offline", updateOffline);
 
     return () => {
       window.removeEventListener("appinstalled", onAppInstalled);
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+      window.removeEventListener("online", updateIsOnline);
+      window.removeEventListener("offline", updateOffline);
     };
   }, []);
 
@@ -214,6 +228,14 @@ const App: React.FC = () => {
             "aria-describedby": "message-id"
           }}
           message={<span id="message-id">{alertMessage}</span>}
+        />
+        <Snackbar
+          anchorOrigin={{
+            vertical: "bottom",
+            horizontal: "left"
+          }}
+          open={!isOnline}
+          message="Offline"
         />
         <InstallAlert
           open={showInstallSnackbar}
