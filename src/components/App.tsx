@@ -24,23 +24,18 @@ import {
   GET_ACCOUNT_DIALOG_TYPE
 } from "../api/gqlDocuments";
 
-const useStyles = makeStyles(theme => ({
-  "@global": {
-    ".richEditorBlockQuote": {
-      color: "red",
-      fontFamily: "Georgia, serif",
-      fontStyle: "italic",
-      textAlign: "center",
-      fontSize: "2em"
+const useStyles = makeStyles(theme => {
+  return {
+    "@global": {
+      ".MuiChip-colorPrimary": {
+        border: "1px solid rgba(0,0,0,0)"
+      }
     },
-    ".MuiChip-colorPrimary": {
-      border: "1px solid rgba(0,0,0,0)"
+    root: {
+      fontFamily: "Roboto, sans-serif"
     }
-  },
-  root: {
-    fontFamily: "Roboto, sans-serif"
-  }
-}));
+  };
+});
 
 type AlertItem = {
   type: "generic" | "install";

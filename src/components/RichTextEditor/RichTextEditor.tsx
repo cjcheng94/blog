@@ -1,6 +1,5 @@
 "use strict";
 import React, { useState, useEffect, useCallback, useMemo } from "react";
-import { makeStyles } from "@material-ui/core";
 import {
   Editor,
   EditorState,
@@ -14,20 +13,12 @@ import {
   CompositeDecorator
 } from "draft-js";
 import { MediaComponent, LinkComponent, RichTextControls } from "@components";
-
-const useStyles = makeStyles(theme => ({
-  fileInput: {
-    display: "none"
-  },
-  editor: {
-    minHeight: 500
-  }
-}));
+import useStyles from "./RichStyles";
 
 const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {
     case "blockquote":
-      return "richEditorBlockQuote";
+      return "RichEditor-blockquote";
     default:
       return "";
   }
