@@ -3,14 +3,14 @@ import {
   Card,
   CardActionArea,
   CardContent,
-  withStyles,
-  createStyles,
-  Theme,
-  WithStyles
+  makeStyles,
+  Theme
 } from "@material-ui/core";
 
-const styles = (theme: Theme) =>
-  createStyles({
+const useStyles = makeStyles((theme: Theme) => {
+  const isDarkTheme = theme.palette.type === "dark";
+  const textColor = isDarkTheme ? "#616161" : "#F0F0F0";
+  return {
     cardsContainer: {
       display: "grid",
       gap: 24,
@@ -30,26 +30,25 @@ const styles = (theme: Theme) =>
     title: {
       height: 28,
       width: 150,
-      backgroundColor: "hsl(230, 100%, 94%)"
+      backgroundColor: isDarkTheme ? "hsl(230,0%,20%)" : "hsl(230,100%,94%);"
     },
     author: {
       margin: "1em 0",
       height: 16,
       width: "6em",
-      backgroundColor: "#F0F0F0"
+      backgroundColor: textColor
     },
     article: {
       marginBottom: 6,
       height: 16,
       width: "100%",
-      backgroundColor: "#F0F0F0"
+      backgroundColor: textColor
     }
-  });
+  };
+});
 
-interface Props extends WithStyles<typeof styles> {}
-
-const CardPlaceholder: React.FC<Props> = props => {
-  const { classes } = props;
+const CardPlaceholder: React.FC = props => {
+  const classes = useStyles();
   //Render 12 "empty" cards:
   //Create an ITERABLE array with a length of 12, and then .map()
   return (
@@ -64,6 +63,7 @@ const CardPlaceholder: React.FC<Props> = props => {
                 <div className={classes.article} />
                 <div className={classes.article} />
                 <div className={classes.article} />
+                <div className={classes.article} />
               </CardContent>
             </CardActionArea>
           </Card>
@@ -72,4 +72,4 @@ const CardPlaceholder: React.FC<Props> = props => {
     </div>
   );
 };
-export default withStyles(styles)(CardPlaceholder);
+export default CardPlaceholder;

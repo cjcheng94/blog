@@ -53,8 +53,7 @@ const useStyles = makeStyles(theme => {
 
   return {
     toolBar: {
-      justifyContent: "space-between",
-      backgroundColor: isDarkTheme ? "#333" : theme.palette.primary.main
+      justifyContent: "space-between"
     },
     brand: {
       fontFamily: "Notable, sans-serif",
@@ -92,6 +91,8 @@ const useStyles = makeStyles(theme => {
       justifyContent: "flex-end"
     },
     appBar: {
+      color: "#fff",
+      backgroundColor: isDarkTheme ? "#333" : theme.palette.primary.main,
       transition: theme.transitions.create(["margin", "width"], {
         easing: theme.transitions.easing.sharp,
         duration: theme.transitions.duration.leavingScreen
@@ -346,7 +347,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
               {logo}
             </Typography>
           </div>
-
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
             <IconButton
