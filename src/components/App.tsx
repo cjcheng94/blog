@@ -24,6 +24,8 @@ import {
   GET_ACCOUNT_DIALOG_TYPE
 } from "../api/gqlDocuments";
 
+import { indigo, pink } from "@material-ui/core/colors";
+
 const useStyles = makeStyles(theme => {
   return {
     "@global": {
@@ -41,6 +43,7 @@ type AlertItem = {
   type: "generic" | "install";
   message: string;
 };
+type ThemeType = "light" | "dark";
 
 const App: React.FC = () => {
   const [showAlert, setShowAlert] = useState<boolean>(false);
@@ -69,13 +72,40 @@ const App: React.FC = () => {
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 
-  const theme = React.useMemo(
-    () =>
-      createTheme({
-        palette: {
-          type: userDarkModeSetting ? "dark" : "light"
-        }
-      }),
+  const getDefaultTheme = (mode: ThemeType) =>
+    createTheme({
+      palette: {
+        type: mode
+      }
+    });
+
+  // Temporary solution to dark mode palette
+  const getCustomTheme = (mode: ThemeType) => {
+    const defaultTheme = getDefaultTheme(mode);
+    return {
+      ...defaultTheme,
+      palette: {
+        ...(mode === "light"
+          ? {
+              // palette values for light mode
+              ...defaultTheme.palette,
+              type: mode,
+              primary: { main: indigo[500] },
+              secondary: { main: pink["A400"] }
+            }
+          : {
+              // palette values for dark mode
+              ...defaultTheme.palette,
+              type: mode,
+              primary: { main: indigo[200] },
+              secondary: { main: pink["A100"] }
+            })
+      }
+    };
+  };
+
+  const customTheme = React.useMemo(
+    () => createTheme(getCustomTheme(userDarkModeSetting ? "dark" : "light")),
     [userDarkModeSetting]
   );
 
@@ -201,7 +231,7 @@ const App: React.FC = () => {
   };
 
   return (
-    <MuiThemeProvider theme={theme}>
+    <MuiThemeProvider theme={customTheme}>
       <CssBaseline />
       <div className={classes.root}>
         <Route component={Header} />
