@@ -48,9 +48,7 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(2)
   },
   author: {
-    "&:visited": {
-      color: "blue"
-    }
+    color: theme.palette.primary.main
   },
   button: {
     marginTop: theme.spacing(2),

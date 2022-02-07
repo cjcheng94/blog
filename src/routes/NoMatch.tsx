@@ -1,13 +1,8 @@
 import React from "react";
 import { RouteComponentProps } from "react-router-dom";
-import {
-  withStyles,
-  createStyles,
-  WithStyles,
-  Typography
-} from "@material-ui/core";
+import { makeStyles, Typography } from "@material-ui/core";
 
-const styles = createStyles({
+const useStyles = makeStyles({
   url: {
     backgroundColor: "#DCDCDC",
     fontFamily: "monospace",
@@ -15,10 +10,11 @@ const styles = createStyles({
   }
 });
 
-type Props = RouteComponentProps<{}> & WithStyles<typeof styles>;
+type Props = RouteComponentProps<{}>;
 
 const NoMatch: React.FC<Props> = props => {
-  const { location, classes } = props;
+  const { location } = props;
+  const classes = useStyles();
   return (
     <div>
       <Typography variant="h5" color="error">
@@ -32,4 +28,4 @@ const NoMatch: React.FC<Props> = props => {
   );
 };
 
-export default withStyles(styles)(NoMatch);
+export default NoMatch;

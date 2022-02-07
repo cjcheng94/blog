@@ -49,7 +49,7 @@ const useStyles = makeStyles((theme: Theme) => {
       paddingLeft: 2,
       paddingRight: 4,
       fontWeight: 700,
-      backgroundColor: isDarkTheme ? "#3949ab" : "#e0e5ff"
+      backgroundColor: isDarkTheme ? "hsl(230,0%,20%)" : "hsl(230,100%,94%);"
     },
     author: {
       margin: "8px 0",
