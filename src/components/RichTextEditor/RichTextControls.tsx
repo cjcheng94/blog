@@ -48,6 +48,10 @@ const useStyles = makeStyles(theme => ({
       border: "none",
       margin: "4px"
     },
+    "& .MuiToggleButton-root.Mui-selected + .MuiToggleButton-root.Mui-selected":
+      {
+        margin: "4px"
+      },
     [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
       top: "56px"
     },
