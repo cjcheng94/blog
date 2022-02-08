@@ -144,6 +144,9 @@ const SearchOverlay: React.FC<RouteComponentProps> = ({ history }) => {
   };
 
   const handleSearch = () => {
+    if (!searchTerm && !tagList.length) {
+      return;
+    }
     // Construct search params
     const searchParams = new URLSearchParams({ searchTerm });
     tagList.forEach(tagId => {
