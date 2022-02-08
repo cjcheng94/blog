@@ -24,7 +24,7 @@ import {
   GET_ACCOUNT_DIALOG_TYPE
 } from "../api/gqlDocuments";
 
-import { indigo, pink } from "@material-ui/core/colors";
+import { indigo, pink, red } from "@material-ui/core/colors";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -91,14 +91,16 @@ const App: React.FC = () => {
               ...defaultTheme.palette,
               type: mode,
               primary: { main: indigo[500] },
-              secondary: { main: pink["A400"] }
+              secondary: { main: pink["A400"] },
+              error: { main: red[500] }
             }
           : {
               // palette values for dark mode
               ...defaultTheme.palette,
               type: mode,
               primary: { main: indigo[200] },
-              secondary: { main: pink["A100"] }
+              secondary: { main: pink["A100"] },
+              error: { main: red[300] }
             })
       }
     };
