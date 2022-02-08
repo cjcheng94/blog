@@ -8,18 +8,23 @@ type Props = {
   onInstallClick: () => void;
 };
 
-const useStyles = makeStyles(theme => ({
-  root: {
-    "& .MuiSnackbarContent-root": {
-      background: `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.primary.light} 90%)`,
-      boxShadow: "0 3px 5px 2px rgba(33, 203, 243, .3)"
+const useStyles = makeStyles(theme => {
+  const isDarkTheme = theme.palette.type === "dark";
+  const gradient = `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.primary.light} 90%)`;
+  const background = isDarkTheme ? "#fff" : gradient;
+  return {
+    root: {
+      "& .MuiSnackbarContent-root": {
+        color: theme.palette.background.default,
+        background
+      }
+    },
+    installBtn: {
+      color: theme.palette.warning.light,
+      fontWeight: "bold"
     }
-  },
-  installBtn: {
-    color: theme.palette.warning.light,
-    fontWeight: "bold"
-  }
-}));
+  };
+});
 
 const InstallAlert: React.FC<Props> = ({ open, onHide, onInstallClick }) => {
   const classes = useStyles();
