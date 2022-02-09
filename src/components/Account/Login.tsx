@@ -24,8 +24,7 @@ const useStyles = makeStyles(theme => ({
     }
   },
   bottomMessage: {
-    margin: "8px 0px",
-    height: "1em"
+    margin: "8px 0px"
   },
   errorMessage: {
     color: theme.palette.error.main
@@ -101,6 +100,17 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
     }
   };
 
+  const getErrorMessage = () => {
+    const isOnline = navigator.onLine;
+    if (isOnline && error) {
+      return error?.message;
+    }
+    if (!isOnline) {
+      return "Oops, you're in offline mode, please try again when you have an Internet connection";
+    }
+    return "";
+  };
+
   return (
     <div>
       <div className={classes.wrapper}>
@@ -135,9 +145,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
           />
 
           <div className={classes.bottomMessage}>
-            <span className={classes.errorMessage}>
-              {error ? error?.message : ""}
-            </span>
+            <div className={classes.errorMessage}>{getErrorMessage()}</div>
           </div>
 
           <div className={classes.bottomMessage}>
