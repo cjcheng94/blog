@@ -39,7 +39,7 @@ import {
   Menu as MenuIcon
 } from "@material-ui/icons";
 import { CustomDialog, EditTagDialog, ErrorAlert } from "@components";
-import checkIfExpired from "../middlewares/checkTokenExpired";
+import checkIfExpired from "../utils/checkTokenExpired";
 import {
   GET_ALL_TAGS,
   GET_IS_LOADING,
