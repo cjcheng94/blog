@@ -323,7 +323,7 @@ export const UPDATE_DRAFT = gql`
 `;
 
 export const DELETE_DRAFT = gql`
-  mutation deleteDraft($_id: String) {
+  mutation deleteDraft($_id: String!) {
     deleteDraft(_id: $_id) {
       _id
       title
