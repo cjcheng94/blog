@@ -6,7 +6,7 @@ import { useQuery, useLazyQuery } from "@apollo/client";
 import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
 import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
-import { Tag, SearchResult, PostsList } from "PostTypes";
+import { Tag, SearchResult, Post } from "PostTypes";
 
 type TParams = { searchTerm: string };
 type Props = RouteComponentProps<TParams>;
@@ -61,7 +61,7 @@ const SearchResults: React.FC<Props> = props => {
       error: getPostsByTagsError,
       data: getPostsByTagsData
     }
-  ] = useLazyQuery<{ getPostsByTags: PostsList }>(GET_POSTS_BY_TAGS);
+  ] = useLazyQuery<{ getPostsByTags: Post[] }>(GET_POSTS_BY_TAGS);
 
   // Execute query on url query change
   useEffect(() => {
