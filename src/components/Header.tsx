@@ -393,6 +393,9 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
                     >
                       My Posts
                     </MenuItem>
+                    <MenuItem component={Link} to="/drafts" onClick={hideMenu}>
+                      Drafts
+                    </MenuItem>
                     <MenuItem
                       onClick={() => {
                         setShowCustomDialog(true);
