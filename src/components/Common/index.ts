@@ -5,5 +5,6 @@ export { default as ErrorAlert } from "./ErrorAlert";
 export { default as AsyncComponent } from "./AsyncComponent";
 export { default as CardPlaceholder } from "./CardPlaceholder";
 export { default as Cards } from "./Cards";
+export { default as ArticleCard } from "./ArticleCard";
 export { default as CustomDialog } from "./CustomDialog";
 export { default as DisqusComment } from "./DisqusComment";
