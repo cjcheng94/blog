@@ -1,4 +1,10 @@
-import React, { useState, useEffect, Fragment, FormEvent } from "react";
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  Fragment,
+  FormEvent
+} from "react";
 import { useMutation } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import {
@@ -9,10 +15,18 @@ import {
   Typography,
   FormHelperText
 } from "@material-ui/core";
+import throttle from "lodash/throttle";
+
 import { ErrorAlert, CustomDialog, RichTextEditor, TagBar } from "@components";
-import { CREATE_NEW_POST, GET_ALL_POSTS } from "../api/gqlDocuments";
+import {
+  CREATE_NEW_POST,
+  GET_ALL_POSTS,
+  CREATE_DRAFT,
+  UPDATE_DRAFT,
+  DELETE_DRAFT
+} from "../api/gqlDocuments";
 import { loadingVar, accountDialogTypeVar } from "../api/cache";
-import checkIfExpired from "../middlewares/checkTokenExpired";
+import checkIfExpired from "../utils/checkTokenExpired";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
@@ -39,17 +53,104 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
-  const [createNewPost, { loading, error, data, called }] = useMutation(
-    CREATE_NEW_POST,
+
+  const [
+    createNewPost,
     {
-      refetchQueries: [{ query: GET_ALL_POSTS }]
+      loading: createNewPostLoading,
+      error: createNewPostError,
+      data: createNewPostData,
+      called: createNewPostCalled
     }
-  );
+  ] = useMutation(CREATE_NEW_POST, {
+    refetchQueries: [{ query: GET_ALL_POSTS }]
+  });
+
+  const [
+    createDraft,
+    {
+      loading: createDraftLoading,
+      error: createDraftError,
+      data: createDraftData,
+      called: createDraftCalled
+    }
+  ] = useMutation(CREATE_DRAFT);
+
+  const [
+    updateDraft,
+    {
+      loading: updateDraftLoading,
+      error: updateDraftError,
+      data: updateDraftData
+    }
+  ] = useMutation(UPDATE_DRAFT);
+
+  const [
+    deleteDraft,
+    {
+      loading: deleteDraftLoading,
+      error: deleteDraftError,
+      data: deleteDraftData
+    }
+  ] = useMutation(DELETE_DRAFT);
 
   const classes = useStyles();
   const isAuthenticated = !checkIfExpired();
 
+  type DraftVariables = {
+    _id: string;
+    title: string;
+    content: string;
+    contentText: string;
+    tagIds: string[];
+  };
+  const updateDraftHandler = (draftVariables: DraftVariables) => {
+    updateDraft({
+      variables: draftVariables
+    });
+  };
+
+  // Throttled update draft mutation
+  const throttledUpdateDraft = useCallback(
+    throttle(updateDraftHandler, 1000 * 5),
+    []
+  );
+
+  // If user changed content, call throttled updateHandler to update draft
   useEffect(() => {
+    // Use the id from newly created draft to update it
+    const createdDraftId = createDraftData?.createDraft?._id;
+
+    // Prevent update errors
+    if (!createDraftCalled || !createdDraftId) {
+      return;
+    }
+
+    // Update draft
+    if (title || plainText) {
+      throttledUpdateDraft({
+        _id: createdDraftId,
+        title,
+        content: richData,
+        contentText: plainText,
+        tagIds: selectedTagIds
+      });
+    }
+  }, [title, plainText, richData, selectedTagIds]);
+
+  useEffect(() => {
+    // Create a draft immediately, which will be updated periodically
+    // We delete it when user post this article
+    createDraft({
+      variables: {
+        title,
+        content: richData,
+        contentText: plainText,
+        tagIds: selectedTagIds
+      }
+    });
+
+    // Promp user to login if they aren't already
     if (!isAuthenticated) {
       showAccountDialog("login");
     }
@@ -67,15 +168,21 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
   useEffect(() => {
     // Called Api and successfully got token
-    if (called && data) {
+    if (createNewPostCalled && createNewPostData) {
+      // Delete draft after user posts
+      if (createDraftData?.createDraft?._id) {
+        deleteDraft({ variables: { _id: createDraftData?.createDraft?._id } });
+      }
+
+      // Show success message and redirect to homepage
       setShowAlert(true);
       setTimeout(() => props.history.push("/"), 1000);
     }
-  }, [called, data]);
+  }, [createNewPostCalled, createNewPostData]);
 
   useEffect(() => {
-    loadingVar(loading);
-  }, [loading]);
+    loadingVar(createNewPostLoading);
+  }, [createNewPostLoading]);
 
   // Check if title or content field is empty
   const validate = () => {
@@ -159,7 +266,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
   return (
     <Fragment>
-      {error && <ErrorAlert error={error} />}
+      {createNewPostError && <ErrorAlert error={createNewPostError} />}
 
       <Typography variant="h4" gutterBottom align="center">
         Write Your Story

@@ -5,7 +5,7 @@ import { useQuery } from "@apollo/client";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 import { GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
-import { PostsList } from "PostTypes";
+import { Post } from "PostTypes";
 
 const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
 
@@ -14,7 +14,7 @@ const PostsByTags: React.FC<RouteComponentProps> = props => {
   const tagIds = urlQuery.getAll("tagIds");
 
   // Get posts by tags
-  const { loading, error, data } = useQuery<{ getPostsByTags: PostsList }>(
+  const { loading, error, data } = useQuery<{ getPostsByTags: Post[] }>(
     GET_POSTS_BY_TAGS,
     {
       variables: { tagIds }
