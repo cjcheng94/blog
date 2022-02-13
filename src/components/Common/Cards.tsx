@@ -49,7 +49,11 @@ const Cards: React.FC<Props> = props => {
 
     const authorInfo = "authorInfo" in article ? article.authorInfo : undefined;
 
-    const url = `/posts/detail/${_id}`;
+    let url = `/posts/detail/${_id}`;
+
+    if (type === "draft") {
+      url = `/posts/edit/${_id}?isDraft`;
+    }
 
     return (
       <ArticleCard

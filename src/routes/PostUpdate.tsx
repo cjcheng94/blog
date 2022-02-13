@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { useQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation } from "@apollo/client";
 import {
   makeStyles,
   Snackbar,
@@ -13,7 +13,8 @@ import { loadingVar } from "../api/cache";
 import {
   GET_CURRENT_POST,
   UPDATE_POST,
-  GET_ALL_POSTS
+  GET_ALL_POSTS,
+  GET_DRAFT_BY_ID
 } from "../api/gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
@@ -26,6 +27,8 @@ const useStyles = makeStyles(theme => ({
     marginRight: 20
   }
 }));
+
+const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
 
 type TParams = {
   _id: string;
@@ -44,14 +47,35 @@ const PostUpdate: React.FC<Props> = props => {
   const classes = useStyles();
 
   const { _id } = props.match.params;
-  const {
-    loading: getPostLoading,
-    error: getPostError,
-    data: getPostData,
-    called: getPostCalled
-  } = useQuery(GET_CURRENT_POST, {
+
+  // Get "isDraft" param from url query string
+  const urlQuery = getUrlQuery(props.location.search);
+  const isDraft = urlQuery.has("isDraft");
+
+  const [
+    getCurrentPost,
+    {
+      loading: getPostLoading,
+      error: getPostError,
+      data: getPostData,
+      called: getPostCalled
+    }
+  ] = useLazyQuery(GET_CURRENT_POST, {
     variables: { _id }
   });
+
+  const [
+    getDraftById,
+    {
+      loading: getDraftLoading,
+      error: getDraftError,
+      data: getDraftData,
+      called: getDraftCalled
+    }
+  ] = useLazyQuery(GET_DRAFT_BY_ID, {
+    variables: { _id }
+  });
+
   const [
     updatePost,
     {
@@ -64,7 +88,16 @@ const PostUpdate: React.FC<Props> = props => {
     refetchQueries: [{ query: GET_ALL_POSTS }]
   });
 
-  // After get post actions
+  // Query for post or draft depending on isDraft
+  useEffect(() => {
+    if (isDraft) {
+      getDraftById();
+    } else {
+      getCurrentPost();
+    }
+  }, []);
+
+  // Use post data to initialize our form
   useEffect(() => {
     if (getPostCalled && getPostData) {
       const { title, content, tagIds } = getPostData.getPostById;
@@ -73,6 +106,16 @@ const PostUpdate: React.FC<Props> = props => {
       setSelectedTagIds(tagIds);
     }
   }, [getPostCalled, getPostData]);
+
+  // Use draft data to initialize our form
+  useEffect(() => {
+    if (getDraftCalled && getDraftData) {
+      const { title, content, tagIds } = getDraftData.getDraftById;
+      setTitle(title);
+      setContent(content);
+      setSelectedTagIds(tagIds);
+    }
+  }, [getDraftCalled, getDraftData]);
 
   // After update actions
   useEffect(() => {
@@ -91,9 +134,10 @@ const PostUpdate: React.FC<Props> = props => {
     }
   }, [title, contentEmpty]);
 
+  const isLoading = getPostLoading || getDraftLoading || updatePostLoading;
   useEffect(() => {
-    loadingVar(updatePostLoading || updatePostLoading);
-  }, [getPostLoading, updatePostLoading]);
+    loadingVar(isLoading);
+  }, [isLoading]);
 
   // Check if title or content field is empty
   const validate = () => {
@@ -163,6 +207,7 @@ const PostUpdate: React.FC<Props> = props => {
   return (
     <Fragment>
       {getPostError && <ErrorAlert error={getPostError} />}
+      {getDraftError && <ErrorAlert error={getDraftError} />}
       {updatePostError && <ErrorAlert error={updatePostError} />}
       <form
         id="update-form"
