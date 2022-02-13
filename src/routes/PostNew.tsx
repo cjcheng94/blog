@@ -112,7 +112,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
   // Throttled update draft mutation
   const throttledUpdateDraft = useCallback(
-    throttle(updateDraftHandler, 1000 * 30),
+    throttle(updateDraftHandler, 1000 * 5),
     []
   );
 
