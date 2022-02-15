@@ -1,6 +1,7 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { useLazyQuery, useMutation } from "@apollo/client";
+import throttle from "lodash/throttle";
 import {
   makeStyles,
   Snackbar,
@@ -9,7 +10,7 @@ import {
   Typography
 } from "@material-ui/core";
 import { CustomDialog, ErrorAlert, RichTextEditor, TagBar } from "@components";
-import { loadingVar } from "../api/cache";
+import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
 import {
   GET_ALL_POSTS,
   GET_CURRENT_POST,
@@ -127,6 +128,43 @@ const PostUpdate: React.FC<Props> = props => {
     refetchQueries: [{ query: GET_USER_DRAFTS }]
   });
 
+  type DraftVariables = {
+    _id: string;
+    title: string;
+    content: string;
+    contentText: string;
+    tagIds: string[];
+  };
+  const updateDraftHandler = (draftVariables: DraftVariables) => {
+    updateDraft({
+      variables: draftVariables
+    });
+  };
+
+  // Throttled update draft mutation
+  const throttledUpdateDraft = useCallback(
+    throttle(updateDraftHandler, 1000 * 5),
+    []
+  );
+
+  // If user changed content, call throttled updateHandler to update draft
+  useEffect(() => {
+    // Update post mode, don't update nonexistent draft
+    if (!isDraft) {
+      return;
+    }
+    // Update draft
+    if (title || plainText) {
+      throttledUpdateDraft({
+        _id,
+        title,
+        content,
+        contentText: plainText,
+        tagIds: selectedTagIds
+      });
+    }
+  }, [title, plainText, content, selectedTagIds]);
+
   // Query for post or draft depending on isDraft
   useEffect(() => {
     if (isDraft) {
@@ -205,6 +243,14 @@ const PostUpdate: React.FC<Props> = props => {
   useEffect(() => {
     loadingVar(isLoading);
   }, [isLoading]);
+
+  useEffect(() => {
+    draftUpdatingVar(updateDraftLoading);
+  }, [updateDraftLoading]);
+
+  useEffect(() => {
+    draftErrorVar(!!updateDraftError);
+  }, [updateDraftError]);
 
   // Check if title or content field is empty
   const validate = () => {

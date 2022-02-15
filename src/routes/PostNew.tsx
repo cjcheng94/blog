@@ -25,7 +25,12 @@ import {
   UPDATE_DRAFT,
   DELETE_DRAFT
 } from "../api/gqlDocuments";
-import { loadingVar, accountDialogTypeVar } from "../api/cache";
+import {
+  loadingVar,
+  accountDialogTypeVar,
+  draftUpdatingVar,
+  draftErrorVar
+} from "../api/cache";
 import checkIfExpired from "../utils/checkTokenExpired";
 
 const useStyles = makeStyles(theme => ({
@@ -183,6 +188,14 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   useEffect(() => {
     loadingVar(createNewPostLoading);
   }, [createNewPostLoading]);
+
+  useEffect(() => {
+    draftUpdatingVar(updateDraftLoading);
+  }, [updateDraftLoading]);
+
+  useEffect(() => {
+    draftErrorVar(!!updateDraftError);
+  }, [updateDraftError]);
 
   // Check if title or content field is empty
   const validate = () => {

@@ -6,3 +6,5 @@ export const searchOverlayVar = makeVar(false);
 export const drawerVar = makeVar(false);
 export const sortLatestFirstVar = makeVar(false);
 export const accountDialogTypeVar = makeVar<"" | "login" | "signup">("");
+export const draftUpdatingVar = makeVar(false);
+export const draftErrorVar = makeVar(false);
