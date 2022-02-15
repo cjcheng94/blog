@@ -38,7 +38,12 @@ import {
   Sort,
   Menu as MenuIcon
 } from "@material-ui/icons";
-import { CustomDialog, EditTagDialog, ErrorAlert } from "@components";
+import {
+  CustomDialog,
+  EditTagDialog,
+  ErrorAlert,
+  AutosaveSpinner
+} from "@components";
 import checkIfExpired from "../utils/checkTokenExpired";
 import {
   GET_ALL_TAGS,
@@ -349,6 +354,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
           </div>
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
+            <AutosaveSpinner />
             <IconButton
               title="Search"
               aria-haspopup="true"

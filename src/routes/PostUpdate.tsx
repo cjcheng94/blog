@@ -10,7 +10,7 @@ import {
   Typography
 } from "@material-ui/core";
 import { CustomDialog, ErrorAlert, RichTextEditor, TagBar } from "@components";
-import { loadingVar } from "../api/cache";
+import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
 import {
   GET_ALL_POSTS,
   GET_CURRENT_POST,
@@ -243,6 +243,14 @@ const PostUpdate: React.FC<Props> = props => {
   useEffect(() => {
     loadingVar(isLoading);
   }, [isLoading]);
+
+  useEffect(() => {
+    draftUpdatingVar(updateDraftLoading);
+  }, [updateDraftLoading]);
+
+  useEffect(() => {
+    draftErrorVar(!!updateDraftError);
+  }, [updateDraftError]);
 
   // Check if title or content field is empty
   const validate = () => {

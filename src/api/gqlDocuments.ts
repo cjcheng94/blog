@@ -393,3 +393,15 @@ export const GET_ACCOUNT_DIALOG_TYPE = gql`
     accountDialogType @client
   }
 `;
+
+export const GET_DRAFT_UPDATING = gql`
+  query getDraftUpdating {
+    draftUpdating @client
+  }
+`;
+
+export const GET_DRAFT_ERROR = gql`
+  query getDraftError {
+    draftError @client
+  }
+`;
