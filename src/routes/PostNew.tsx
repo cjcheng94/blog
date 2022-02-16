@@ -124,15 +124,27 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     []
   );
 
-  // If user changed content, call throttled updateHandler to update draft
   useEffect(() => {
-    // Prevent update errors
-    if (!createDraftCalled || !createdDraftId) {
-      return;
-    }
-
-    // Use the id from newly created draft to update it
+    // We can create/update draft if either title or plainText is present
     if (title || plainText) {
+      // Create a draft if we haven't already
+      if (!createDraftCalled || !createdDraftId) {
+        // Prevent multiple createDraft call
+        if (!createDraftLoading) {
+          createDraft({
+            variables: {
+              title,
+              content: richData,
+              contentText: plainText,
+              tagIds: selectedTagIds
+            }
+          });
+        }
+        return;
+      }
+
+      // User changed content and we've already created a draft,
+      // call throttled updateHandler w/ the id from newly created draft to update it
       throttledUpdateDraft({
         _id: createdDraftId,
         title,
@@ -154,17 +166,6 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   );
 
   useEffect(() => {
-    // Create a draft immediately, which will be updated periodically
-    // We delete it when user post this article
-    createDraft({
-      variables: {
-        title,
-        content: richData,
-        contentText: plainText,
-        tagIds: selectedTagIds
-      }
-    });
-
     // Promp user to login if they aren't already
     if (!isAuthenticated) {
       showAccountDialog("login");
