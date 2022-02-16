@@ -32,6 +32,7 @@ import {
   draftErrorVar
 } from "../api/cache";
 import checkIfExpired from "../utils/checkTokenExpired";
+import useCleanup from "../utils/useCleanup";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
@@ -101,6 +102,8 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
   const classes = useStyles();
   const isAuthenticated = !checkIfExpired();
+  // Id of newly created draft
+  const createdDraftId = createDraftData?.createDraft?._id;
 
   type DraftVariables = {
     _id: string;
@@ -123,15 +126,12 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
   // If user changed content, call throttled updateHandler to update draft
   useEffect(() => {
-    // Use the id from newly created draft to update it
-    const createdDraftId = createDraftData?.createDraft?._id;
-
     // Prevent update errors
     if (!createDraftCalled || !createdDraftId) {
       return;
     }
 
-    // Update draft
+    // Use the id from newly created draft to update it
     if (title || plainText) {
       throttledUpdateDraft({
         _id: createdDraftId,
@@ -142,6 +142,16 @@ const PostNew: React.FC<RouteComponentProps> = props => {
       });
     }
   }, [title, plainText, richData, selectedTagIds]);
+
+  // Use custom hook to delete empty draft when user leaves this route
+  useCleanup(
+    ({ title, plainText, createdDraftId }) => {
+      if (!title && !plainText && createdDraftId) {
+        deleteDraft({ variables: { _id: createdDraftId } });
+      }
+    },
+    { title, plainText, createdDraftId }
+  );
 
   useEffect(() => {
     // Create a draft immediately, which will be updated periodically
@@ -175,8 +185,8 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     // Called Api and successfully got token
     if (createNewPostCalled && createNewPostData) {
       // Delete draft after user posts
-      if (createDraftData?.createDraft?._id) {
-        deleteDraft({ variables: { _id: createDraftData?.createDraft?._id } });
+      if (createdDraftId) {
+        deleteDraft({ variables: { _id: createdDraftId } });
       }
 
       // Show success message and redirect to homepage
