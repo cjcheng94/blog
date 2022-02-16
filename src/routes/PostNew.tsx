@@ -32,6 +32,7 @@ import {
   draftErrorVar
 } from "../api/cache";
 import checkIfExpired from "../utils/checkTokenExpired";
+import useCleanup from "../utils/useCleanup";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
@@ -101,6 +102,8 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
   const classes = useStyles();
   const isAuthenticated = !checkIfExpired();
+  // Id of newly created draft
+  const createdDraftId = createDraftData?.createDraft?._id;
 
   type DraftVariables = {
     _id: string;
@@ -121,18 +124,27 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     []
   );
 
-  // If user changed content, call throttled updateHandler to update draft
   useEffect(() => {
-    // Use the id from newly created draft to update it
-    const createdDraftId = createDraftData?.createDraft?._id;
-
-    // Prevent update errors
-    if (!createDraftCalled || !createdDraftId) {
-      return;
-    }
-
-    // Update draft
+    // We can create/update draft if either title or plainText is present
     if (title || plainText) {
+      // Create a draft if we haven't already
+      if (!createDraftCalled || !createdDraftId) {
+        // Prevent multiple createDraft call
+        if (!createDraftLoading) {
+          createDraft({
+            variables: {
+              title,
+              content: richData,
+              contentText: plainText,
+              tagIds: selectedTagIds
+            }
+          });
+        }
+        return;
+      }
+
+      // User changed content and we've already created a draft,
+      // call throttled updateHandler w/ the id from newly created draft to update it
       throttledUpdateDraft({
         _id: createdDraftId,
         title,
@@ -143,18 +155,17 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     }
   }, [title, plainText, richData, selectedTagIds]);
 
-  useEffect(() => {
-    // Create a draft immediately, which will be updated periodically
-    // We delete it when user post this article
-    createDraft({
-      variables: {
-        title,
-        content: richData,
-        contentText: plainText,
-        tagIds: selectedTagIds
+  // Use custom hook to delete empty draft when user leaves this route
+  useCleanup(
+    ({ title, plainText, createdDraftId }) => {
+      if (!title && !plainText && createdDraftId) {
+        deleteDraft({ variables: { _id: createdDraftId } });
       }
-    });
+    },
+    { title, plainText, createdDraftId }
+  );
 
+  useEffect(() => {
     // Promp user to login if they aren't already
     if (!isAuthenticated) {
       showAccountDialog("login");
@@ -175,8 +186,8 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     // Called Api and successfully got token
     if (createNewPostCalled && createNewPostData) {
       // Delete draft after user posts
-      if (createDraftData?.createDraft?._id) {
-        deleteDraft({ variables: { _id: createDraftData?.createDraft?._id } });
+      if (createdDraftId) {
+        deleteDraft({ variables: { _id: createdDraftId } });
       }
 
       // Show success message and redirect to homepage
