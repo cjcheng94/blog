@@ -27,12 +27,18 @@ declare module "PostTypes" {
       username: string;
     };
   }
-
+  export interface Draft {
+    _id: string;
+    content: string;
+    date: string;
+    title: string;
+    tagIds: string[];
+    tags: Tag[];
+    author: string;
+  }
   export interface SearchResult extends Post {
     highlights: [Highlight];
   }
-
-  export interface PostsList extends Array<Post> {}
 
   export interface PostsHub {
     [_id: string]: Post;

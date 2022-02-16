@@ -15,7 +15,9 @@ import {
   searchOverlayVar,
   drawerVar,
   sortLatestFirstVar,
-  accountDialogTypeVar
+  accountDialogTypeVar,
+  draftUpdatingVar,
+  draftErrorVar
 } from "./api/cache";
 
 const httpLink = createHttpLink({
@@ -68,6 +70,16 @@ const client = new ApolloClient({
           accountDialogType: {
             read() {
               return accountDialogTypeVar();
+            }
+          },
+          draftUpdating: {
+            read() {
+              return draftUpdatingVar();
+            }
+          },
+          draftError: {
+            read() {
+              return draftErrorVar();
             }
           }
         }

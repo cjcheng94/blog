@@ -38,8 +38,13 @@ import {
   Sort,
   Menu as MenuIcon
 } from "@material-ui/icons";
-import { CustomDialog, EditTagDialog, ErrorAlert } from "@components";
-import checkIfExpired from "../middlewares/checkTokenExpired";
+import {
+  CustomDialog,
+  EditTagDialog,
+  ErrorAlert,
+  AutosaveSpinner
+} from "@components";
+import checkIfExpired from "../utils/checkTokenExpired";
 import {
   GET_ALL_TAGS,
   GET_IS_LOADING,
@@ -349,6 +354,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
           </div>
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
+            <AutosaveSpinner />
             <IconButton
               title="Search"
               aria-haspopup="true"
@@ -392,6 +398,9 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
                       onClick={hideMenu}
                     >
                       My Posts
+                    </MenuItem>
+                    <MenuItem component={Link} to="/drafts" onClick={hideMenu}>
+                      Drafts
                     </MenuItem>
                     <MenuItem
                       onClick={() => {

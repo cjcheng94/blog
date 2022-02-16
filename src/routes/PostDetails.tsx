@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import checkIfExpired from "../middlewares/checkTokenExpired";
+import checkIfExpired from "../utils/checkTokenExpired";
 import {
   GET_CURRENT_POST,
   DELETE_POST,

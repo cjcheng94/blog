@@ -228,6 +228,117 @@ export const DELETE_TAG = gql`
     }
   }
 `;
+
+// Draft Documents
+export const GET_DRAFT_BY_ID = gql`
+  query getDraftById($_id: String!) {
+    getDraftById(_id: $_id) {
+      _id
+      title
+      author
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const GET_USER_DRAFTS = gql`
+  query getUserDrafts {
+    getUserDrafts {
+      _id
+      title
+      author
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const CREATE_DRAFT = gql`
+  mutation createDraft(
+    $title: String!
+    $content: String!
+    $contentText: String!
+    $tagIds: [ID]!
+  ) {
+    createDraft(
+      title: $title
+      content: $content
+      contentText: $contentText
+      tagIds: $tagIds
+    ) {
+      _id
+      title
+      author
+      content
+      contentText
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const UPDATE_DRAFT = gql`
+  mutation updateDraft(
+    $_id: String!
+    $title: String!
+    $content: String!
+    $contentText: String!
+    $tagIds: [ID]!
+  ) {
+    updateDraft(
+      _id: $_id
+      title: $title
+      content: $content
+      contentText: $contentText
+      tagIds: $tagIds
+    ) {
+      _id
+      title
+      author
+      content
+      contentText
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
+    }
+  }
+`;
+
+export const DELETE_DRAFT = gql`
+  mutation deleteDraft($_id: String!) {
+    deleteDraft(_id: $_id) {
+      _id
+      title
+      author
+      content
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
+    }
+  }
+`;
+
 // Local Documents
 export const GET_CACHED_POST_FRAGMENT = gql`
   fragment MyPost on Post {
@@ -280,5 +391,17 @@ export const GET_SORT_LATEST_FIRST = gql`
 export const GET_ACCOUNT_DIALOG_TYPE = gql`
   query getAccountDialogType {
     accountDialogType @client
+  }
+`;
+
+export const GET_DRAFT_UPDATING = gql`
+  query getDraftUpdating {
+    draftUpdating @client
+  }
+`;
+
+export const GET_DRAFT_ERROR = gql`
+  query getDraftError {
+    draftError @client
   }
 `;

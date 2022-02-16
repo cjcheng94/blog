@@ -6,3 +6,4 @@ export { default as PostUpdate } from "./PostUpdate";
 export { default as UserProfile } from "./UserProfile";
 export { default as SearchResults } from "./SearchResults";
 export { default as PostsByTags } from "./PostsByTags";
+export { default as Drafts } from "./Drafts";
