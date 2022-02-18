@@ -212,9 +212,8 @@ const PostUpdate: React.FC<Props> = props => {
 
   useEffect(() => {
     // Offline, use cached draft data
-    if (!isOnline && cachedDraftData) {
-      console.log("Loaded from cache");
-
+    if (!isOnline && cachedDraftData && isDraft) {
+      console.log("Loaded draft from cache");
       const { title, content, tagIds } = cachedDraftData;
       setTitle(title);
       setContent(content);
