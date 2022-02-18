@@ -358,6 +358,21 @@ export const GET_CACHED_POST_FRAGMENT = gql`
   }
 `;
 
+export const GET_CACHED_DRAFT_FRAGMENT = gql`
+  fragment MyDraft on Draft {
+    _id
+    title
+    author
+    content
+    date
+    tagIds
+    tags {
+      _id
+      name
+    }
+  }
+`;
+
 export const GET_IS_DARK_MODE = gql`
   query getIsDarkMode {
     isDarkMode @client
