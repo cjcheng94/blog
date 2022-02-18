@@ -72,7 +72,9 @@ const setCache = async (request: Request, response: Response) => {
     "getPostsByTags",
     "search",
     "getAllTags",
-    "getTagsById"
+    "getTagsById",
+    "getDraftById",
+    "getUserDrafts"
   ];
   const isCacheable = cacheableOperations.includes(operationName);
   if (!isCacheable) {
