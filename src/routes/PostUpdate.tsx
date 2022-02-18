@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import throttle from "lodash/throttle";
 import {
   makeStyles,
@@ -19,8 +19,10 @@ import {
   GET_USER_DRAFTS,
   GET_DRAFT_BY_ID,
   UPDATE_DRAFT,
-  DELETE_DRAFT
+  DELETE_DRAFT,
+  GET_CACHED_DRAFT_FRAGMENT
 } from "../api/gqlDocuments";
+import { Draft } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {
@@ -54,6 +56,7 @@ const PostUpdate: React.FC<Props> = props => {
   const classes = useStyles();
 
   const { _id } = props.match.params;
+  const isOnline = navigator.onLine;
 
   // Get "isDraft" param from url query string
   const urlQuery = getUrlQuery(props.location.search);
@@ -128,6 +131,19 @@ const PostUpdate: React.FC<Props> = props => {
     refetchQueries: [{ query: GET_USER_DRAFTS }]
   });
 
+  // Get draft from cache
+  let cachedDraftData: Draft | null = null;
+  if (isDraft) {
+    const client = useApolloClient();
+    // Apollo client only caches *queries*, so we have to use readFragment.
+    // This allows us to read cached draft data
+    // even when user never called GET_DRAFT_BY_ID.
+    cachedDraftData = client.readFragment({
+      id: `Draft:${_id}`,
+      fragment: GET_CACHED_DRAFT_FRAGMENT
+    });
+  }
+
   type DraftVariables = {
     _id: string;
     title: string;
@@ -192,7 +208,19 @@ const PostUpdate: React.FC<Props> = props => {
       setContent(content);
       setSelectedTagIds(tagIds);
     }
-  }, [getDraftCalled, getDraftData]);
+  }, [getDraftCalled, getDraftData, cachedDraftData]);
+
+  useEffect(() => {
+    // Offline, use cached draft data
+    if (!isOnline && cachedDraftData) {
+      console.log("Loaded from cache");
+
+      const { title, content, tagIds } = cachedDraftData;
+      setTitle(title);
+      setContent(content);
+      setSelectedTagIds(tagIds);
+    }
+  }, [cachedDraftData]);
 
   const alertAndRedirect = (alertMessage: string, destination: string) => {
     setAlertMessage(alertMessage);
@@ -349,9 +377,9 @@ const PostUpdate: React.FC<Props> = props => {
 
   return (
     <Fragment>
-      {getPostError && <ErrorAlert error={getPostError} />}
-      {getDraftError && <ErrorAlert error={getDraftError} />}
-      {updatePostError && <ErrorAlert error={updatePostError} />}
+      {getPostError && isOnline && <ErrorAlert error={getPostError} />}
+      {getDraftError && isOnline && <ErrorAlert error={getDraftError} />}
+      {updatePostError && isOnline && <ErrorAlert error={updatePostError} />}
       <form
         id="update-form"
         className={classes.formEdit}
