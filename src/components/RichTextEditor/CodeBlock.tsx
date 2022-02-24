@@ -14,7 +14,8 @@ const useStyles = makeStyles(theme => {
     container: {},
     prismContainer: {
       borderRadius: 4,
-      padding: 8
+      padding: 8,
+      overflow: "auto"
     },
     editor: {
       width: "100%"

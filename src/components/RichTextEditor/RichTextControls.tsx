@@ -46,6 +46,7 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%",
     border: `1px solid ${theme.palette.divider}`,
     borderRadius: "4px",
+    zIndex: 1,
     "& button": {
       border: "none",
       margin: "4px"
