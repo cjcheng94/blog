@@ -20,7 +20,8 @@ import {
   InsertLink as InsertLinkIcon,
   LinkOff as LinkOffIcon,
   FormatSize as FormatSizeIcon,
-  Check as CheckIcon
+  Check as CheckIcon,
+  Code as CodeIcon
 } from "@material-ui/icons";
 
 interface RichTextControlsProps {
@@ -28,6 +29,7 @@ interface RichTextControlsProps {
   onToggle: (type: "inline" | "block") => (v: string) => void;
   insertLink: (url: string) => void;
   removeLink: () => void;
+  insertCodeBlock: () => void;
 }
 
 const preventDefault = (e: React.MouseEvent) => {
@@ -90,7 +92,8 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
   editorState,
   onToggle,
   insertLink,
-  removeLink
+  removeLink,
+  insertCodeBlock
 }) => {
   const [showLinkEditor, setShowLinkEditor] = useState<boolean>(false);
   const [anchorURL, setAnchorURL] = useState<string>("");
@@ -146,6 +149,11 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
 
     if (formatType === "removeLink") {
       removeLink();
+      return;
+    }
+
+    if (formatType === "code-block") {
+      insertCodeBlock();
       return;
     }
 
@@ -262,6 +270,16 @@ const RichTextControls: React.FC<RichTextControlsProps> = ({
         selected={blockType === "image"}
       >
         <ImageIcon />
+      </ToggleButton>
+      <ToggleButton
+        size="small"
+        value="code-block"
+        aria-label="code-block"
+        onMouseDown={preventDefault}
+        onClick={handleBlockStyleToggle}
+        selected={blockType === "code-block"}
+      >
+        <CodeIcon />
       </ToggleButton>
       <ToggleButton
         size="small"
