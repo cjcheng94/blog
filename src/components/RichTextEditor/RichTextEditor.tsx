@@ -12,7 +12,13 @@ import {
   convertFromRaw,
   CompositeDecorator
 } from "draft-js";
-import { MediaComponent, LinkComponent, RichTextControls } from "@components";
+import { Map } from "immutable";
+import {
+  MediaComponent,
+  LinkComponent,
+  CodeBlock,
+  RichTextControls
+} from "@components";
 import useStyles from "./RichStyles";
 
 const getBlockStyle = (block: ContentBlock) => {
@@ -79,6 +85,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   const [editorState, setEditorState] = useState<EditorState>(
     initailEditorState()
   );
+  const [liveCodeBlockEdit, setLiveCodeBlockEdit] = useState(Map());
 
   const memoizedRichData = useMemo(
     () => JSON.stringify(convertToRaw(editorState.getCurrentContent())),
@@ -114,7 +121,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   };
 
   const mapKeyToEditorCommand = (e: React.KeyboardEvent) => {
-    if (e.keyCode === 9 /* TAB */) {
+    if (e.key === "Tab" /* TAB */) {
       const newEditorState = RichUtils.onTab(e, editorState, 4 /* maxDepth */);
       if (newEditorState !== editorState) {
         setEditorState(newEditorState);
@@ -135,7 +142,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     };
   };
 
-  // handle images
+  // Handle images
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
     const handleImag = () => {
@@ -159,7 +166,24 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     }
   };
 
-  // create links
+  // Insert custom code block
+  const insertCodeBlock = () => {
+    const contentState = editorState.getCurrentContent();
+    const contentStateWithEntity = contentState.createEntity(
+      "CODE_BLOCK",
+      "IMMUTABLE",
+      { foo: "bar" }
+    );
+    const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
+    const newEditorState = EditorState.set(editorState, {
+      currentContent: contentStateWithEntity
+    });
+    setEditorState(
+      AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " ")
+    );
+  };
+
+  // Create links
   const insertLink = (url: string) => {
     const contentState = editorState.getCurrentContent();
     const contentStateWithEntity = contentState.createEntity(
@@ -190,18 +214,38 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   // Render image with custom MediaComponent
   const renderBlock = (contentBlock: ContentBlock) => {
     const blockType = contentBlock.getType();
-    // render custom image component
     if (blockType === "atomic") {
       const entityKey = contentBlock.getEntityAt(0);
-      const entityData = editorState
-        .getCurrentContent()
-        .getEntity(entityKey)
-        .getData();
-      return {
-        component: MediaComponent,
-        editable: false,
-        props: { src: { file: entityData.src } }
-      };
+      const entity = editorState.getCurrentContent().getEntity(entityKey);
+      const entityData = entity.getData();
+      const entityType = entity.getType();
+
+      // render custom image component
+      if (entityType === "IMAGE") {
+        return {
+          component: MediaComponent,
+          editable: false,
+          props: { src: { file: entityData.src } }
+        };
+      }
+
+      // render custom code block
+      if (entityType === "CODE_BLOCK") {
+        return {
+          component: CodeBlock,
+          editable: false,
+          props: {
+            readOnly,
+            onStartEdit: (blockKey: any) => {
+              setLiveCodeBlockEdit(liveCodeBlockEdit.set(blockKey, true));
+            },
+            onFinishEdit: (blockKey: any, newContentState: any) => {
+              setLiveCodeBlockEdit(liveCodeBlockEdit.remove(blockKey));
+              setEditorState(EditorState.createWithContent(newContentState));
+            }
+          }
+        };
+      }
     }
     return;
   };
@@ -214,6 +258,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
           onToggle={toggleStyle}
           insertLink={insertLink}
           removeLink={removeLink}
+          insertCodeBlock={insertCodeBlock}
         />
       )}
       <div className={classes.editor} onClick={focusEditor}>
@@ -226,7 +271,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
           onChange={setEditorState}
           placeholder="Tell a story..."
           ref={editor}
-          readOnly={readOnly}
+          readOnly={readOnly || !!liveCodeBlockEdit.count()}
           spellCheck={true}
         />
       </div>
