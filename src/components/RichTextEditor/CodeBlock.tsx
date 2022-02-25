@@ -41,9 +41,8 @@ const CodeBlock = (props: any) => {
   }, []);
 
   // Get initial value provided by parent
-  const getValue = () => {
-    return contentState.getEntity(block.getEntityAt(0)).getData()["content"];
-  };
+  const getValue = (field: string) =>
+    contentState.getEntity(block.getEntityAt(0)).getData()[field];
 
   const handleTextChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     const value = e.target.value;
@@ -56,18 +55,24 @@ const CodeBlock = (props: any) => {
   };
 
   const startEdit = () => {
-    if (editMode || blockProps.readOnly) {
+    if (blockProps.readOnly) {
+      setLanguage(getValue("language") || "javascript");
+      return;
+    }
+    if (editMode) {
       return;
     }
     setEditMode(true);
-    setTextValue(getValue());
+    setTextValue(getValue("content"));
+    setLanguage(getValue("language") || "javascript");
     blockProps.onStartEdit(block.getKey());
   };
 
   const finishEdit = () => {
     const entityKey = block.getEntityAt(0);
     const newContentState = contentState.mergeEntityData(entityKey, {
-      content: textValue
+      content: textValue,
+      language
     });
     setEditMode(false);
     blockProps.onFinishEdit(block.getKey(), newContentState);
@@ -77,7 +82,7 @@ const CodeBlock = (props: any) => {
   if (editMode) {
     textContent = textValue;
   } else {
-    textContent = getValue();
+    textContent = getValue("content");
   }
 
   const PrismBlock = ({ code }: { code: string }) => {
