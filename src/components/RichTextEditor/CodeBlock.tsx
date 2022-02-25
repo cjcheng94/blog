@@ -6,19 +6,34 @@ import {
   TextField,
   Select,
   MenuItem,
+  ClickAwayListener,
   makeStyles
 } from "@material-ui/core";
 
 const useStyles = makeStyles(theme => {
   return {
-    container: {},
+    container: {
+      borderRadius: 4,
+      boxShadow:
+        "0px 2px 1px -1px rgb(0 0 0 / 20%), 0px 1px 1px 0px rgb(0 0 0 / 14%), 0px 1px 3px 0px rgb(0 0 0 / 12%)"
+    },
     prismContainer: {
       borderRadius: 4,
       padding: 8,
       overflow: "auto"
     },
-    editor: {
-      width: "100%"
+    textFieldContainer: {
+      width: "100%",
+      padding: 8
+    },
+    textField: {
+      "& textarea": {
+        width: "calc(100% + 8px)",
+        marginRight: -8
+      }
+    },
+    actions: {
+      padding: 8
     },
     select: {
       marginRight: 8
@@ -26,7 +41,7 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-type Language = "javascript" | "typescript" | "jsx" | "tsx";
+type Language = "javascript" | "typescript" | "jsx" | "tsx" | "json" | "css";
 
 const CodeBlock = (props: any) => {
   const [textValue, setTextValue] = useState("");
@@ -69,6 +84,9 @@ const CodeBlock = (props: any) => {
   };
 
   const finishEdit = () => {
+    if (!editMode) {
+      return;
+    }
     const entityKey = block.getEntityAt(0);
     const newContentState = contentState.mergeEntityData(entityKey, {
       content: textValue,
@@ -111,43 +129,76 @@ const CodeBlock = (props: any) => {
     );
   };
 
+  const languages: {
+    name: string;
+    value: Language;
+  }[] = [
+    {
+      name: "JavaScript",
+      value: "javascript"
+    },
+    {
+      name: "TypeScript",
+      value: "typescript"
+    },
+    {
+      name: "JSX",
+      value: "jsx"
+    },
+    {
+      name: "TSX",
+      value: "tsx"
+    },
+    {
+      name: "JSON",
+      value: "json"
+    },
+    {
+      name: "CSS",
+      value: "css"
+    }
+  ];
+
   return (
-    <div className={classes.container}>
-      <div onClick={startEdit}>
-        <PrismBlock code={textContent || ""} />
+    <ClickAwayListener onClickAway={finishEdit}>
+      <div className={classes.container}>
+        <div onClick={startEdit}>
+          <PrismBlock code={textContent || ""} />
+        </div>
+        {editMode && (
+          <>
+            <div className={classes.textFieldContainer}>
+              <TextField
+                fullWidth
+                multiline
+                rows={8}
+                label="Enter code here"
+                onChange={handleTextChange}
+                value={textContent}
+                onFocus={startEdit}
+                classes={{ root: classes.textField }}
+              />
+            </div>
+            <div className={classes.actions}>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={language}
+                onChange={changeLanguage}
+                className={classes.select}
+                MenuProps={{ disablePortal: true }}
+              >
+                {languages.map(({ name, value }) => (
+                  <MenuItem key={name} value={value}>
+                    {name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </div>
+          </>
+        )}
       </div>
-      {editMode && (
-        <>
-          <TextField
-            label="Enter code here"
-            multiline
-            //autoFocus
-            rows={4}
-            className={classes.editor}
-            onChange={handleTextChange}
-            value={textContent}
-            onFocus={startEdit}
-          />
-          <div>
-            <Select
-              labelId="demo-simple-select-label"
-              id="demo-simple-select"
-              value={language}
-              onChange={changeLanguage}
-              className={classes.select}
-            >
-              <MenuItem value="javascript">javascript</MenuItem>
-              <MenuItem value="typescript">typescript</MenuItem>
-              <MenuItem value="jsx">jsx</MenuItem>
-              <MenuItem value="tsx">tsx</MenuItem>
-            </Select>
-            <Button color="primary" onClick={finishEdit}>
-              Done
-            </Button>
-          </div>
-        </>
-      )}
-    </div>
+    </ClickAwayListener>
   );
 };
 
