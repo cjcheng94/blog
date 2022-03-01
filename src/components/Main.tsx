@@ -2,8 +2,8 @@ import React, { Suspense } from "react";
 import { Route, Switch } from "react-router-dom";
 import { makeStyles } from "@material-ui/core";
 import { LoadingOverlay } from "@components";
-import { useQuery } from "@apollo/client";
-import { GET_SHOW_DRAWER } from "../api/gqlDocuments";
+import { useReactiveVar } from "@apollo/client";
+import { drawerVar } from "../api/cache";
 
 const PostIndex = React.lazy(() => import("../routes/PostIndex"));
 const PostNew = React.lazy(() => import("../routes/PostNew"));
@@ -80,8 +80,7 @@ const routes = [
 ];
 
 const Main: React.FC = props => {
-  const { data } = useQuery(GET_SHOW_DRAWER);
-  const { showDrawer } = data;
+  const showDrawer = useReactiveVar(drawerVar);
   const classes = useStyles();
 
   const pageContentClass = showDrawer

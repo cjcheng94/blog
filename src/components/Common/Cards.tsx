@@ -4,8 +4,8 @@ import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Post, Draft } from "PostTypes";
 import { ArticleCard } from "@components";
 import { makeStyles } from "@material-ui/core";
-import { useQuery } from "@apollo/client";
-import { GET_SORT_LATEST_FIRST } from "../../api/gqlDocuments";
+import { useReactiveVar } from "@apollo/client";
+import { sortLatestFirstVar } from "../../api/cache";
 
 const useStyles = makeStyles(() => ({
   cardsContainer: {
@@ -23,9 +23,8 @@ type Props = {
 
 const Cards: React.FC<Props> = props => {
   const classes = useStyles();
-  const { data } = useQuery(GET_SORT_LATEST_FIRST);
+  const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
 
-  const { sortLatestFirst } = data;
   const { history, type, posts, drafts } = props;
 
   if (!posts && !drafts) {

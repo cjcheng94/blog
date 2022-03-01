@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Route, withRouter } from "react-router-dom";
-import * as registerServiceWorker from "../registerServiceWorker";
-import { darkModeVar } from "../api/cache";
+import { indigo, pink, red } from "@material-ui/core/colors";
+import { useReactiveVar } from "@apollo/client";
 import {
   CssBaseline,
   Snackbar,
@@ -10,7 +10,7 @@ import {
   createTheme,
   makeStyles
 } from "@material-ui/core";
-import { useQuery } from "@apollo/client";
+import * as registerServiceWorker from "../registerServiceWorker";
 import {
   Header,
   Main,
@@ -19,12 +19,10 @@ import {
   AccountDialog
 } from "@components";
 import {
-  GET_IS_DARK_MODE,
-  GET_SHOW_SEARCH_OVERLAY,
-  GET_ACCOUNT_DIALOG_TYPE
-} from "../api/gqlDocuments";
-
-import { indigo, pink, red } from "@material-ui/core/colors";
+  darkModeVar,
+  searchOverlayVar,
+  accountDialogTypeVar
+} from "../api/cache";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -60,15 +58,11 @@ const App: React.FC = () => {
   >(undefined);
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
 
-  const { data: getDarkModeData } = useQuery(GET_IS_DARK_MODE);
-  const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_SEARCH_OVERLAY);
-  const { data: getShowAccountDialogData } = useQuery(GET_ACCOUNT_DIALOG_TYPE);
+  const userDarkModeSetting = useReactiveVar(darkModeVar);
+  const showSearchOverlay = useReactiveVar(searchOverlayVar);
+  const accountDialogType = useReactiveVar(accountDialogTypeVar);
 
   const classes = useStyles();
-
-  const userDarkModeSetting = getDarkModeData.isDarkMode;
-  const showSearchOverlay = getShowSearchOverlayData.showSearchOverlay;
-  const accountDialogType = getShowAccountDialogData.accountDialogType;
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
 

@@ -11,9 +11,9 @@ import {
 } from "@material-ui/core";
 import { Search, Close } from "@material-ui/icons";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { searchOverlayVar } from "../api/cache";
-import { GET_ALL_TAGS, GET_SHOW_DRAWER } from "../api/gqlDocuments";
+import { useQuery, useReactiveVar } from "@apollo/client";
+import { searchOverlayVar, drawerVar } from "../api/cache";
+import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
 
 const drawerWidth = 240;
@@ -116,12 +116,10 @@ const SearchOverlay: React.FC<RouteComponentProps> = ({ history }) => {
   const [tagList, setTagList] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [mounted, setMounted] = useState<boolean>(false);
+
+  const showDrawer = useReactiveVar(drawerVar);
   const classes = useStyles();
-
   const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
-
-  const { data: getShowDrawer } = useQuery(GET_SHOW_DRAWER);
-  const { showDrawer } = getShowDrawer;
 
   useEffect(() => {
     setMounted(true);
