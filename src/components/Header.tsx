@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { useQuery } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import {
   darkModeVar,
   searchOverlayVar,
@@ -45,13 +45,9 @@ import {
   AutosaveSpinner
 } from "@components";
 import checkIfExpired from "../utils/checkTokenExpired";
-import {
-  GET_ALL_TAGS,
-  GET_IS_LOADING,
-  GET_SHOW_DRAWER,
-  GET_SORT_LATEST_FIRST
-} from "../api/gqlDocuments";
+import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
+
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
   const drawerWidth = 240;
@@ -190,14 +186,13 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
-
   const [selectedTagIds, setSelectedTagIds] =
     useState<string[]>(getInitialTagIds);
-  const classes = useStyles();
 
-  const { data: getIsLoadingData } = useQuery(GET_IS_LOADING);
-  const { data: getShowSearchOverlayData } = useQuery(GET_SHOW_DRAWER);
-  const { data: getSortData } = useQuery(GET_SORT_LATEST_FIRST);
+  const classes = useStyles();
+  const isLoading = useReactiveVar(loadingVar);
+  const showDrawer = useReactiveVar(drawerVar);
+  const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
 
   // Get all tags to render searched tags
   const {
@@ -225,10 +220,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
       history.push("/");
     }
   }, [selectedTagIds]);
-
-  const { isLoading } = getIsLoadingData;
-  const { showDrawer } = getShowSearchOverlayData;
-  const { sortLatestFirst } = getSortData;
 
   const isAuthenticated = !checkIfExpired();
   const currentUsername = localStorage.getItem("currentUsername");

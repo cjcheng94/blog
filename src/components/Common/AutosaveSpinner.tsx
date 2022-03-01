@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import { CloudDone, Sync, SyncProblem } from "@material-ui/icons";
 import { IconButton, Tooltip, makeStyles } from "@material-ui/core";
 import { RouteComponentProps, withRouter } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { GET_DRAFT_UPDATING, GET_DRAFT_ERROR } from "../../api/gqlDocuments";
+import { useReactiveVar } from "@apollo/client";
+import { draftUpdatingVar, draftErrorVar } from "../../api/cache";
 
 const useStyles = makeStyles(() => ({
   "@keyframes spin": {
@@ -27,12 +27,8 @@ const AutosaveSpinner: React.FC<RouteComponentProps> = ({ location }) => {
 
   const classes = useStyles();
 
-  // Get pending and error state
-  const { data: getDraftUpdatingData } = useQuery(GET_DRAFT_UPDATING);
-  const { data: getDraftErrorData } = useQuery(GET_DRAFT_ERROR);
-
-  const { draftUpdating } = getDraftUpdatingData;
-  const { draftError } = getDraftErrorData;
+  const draftUpdating = useReactiveVar(draftUpdatingVar);
+  const draftError = useReactiveVar(draftErrorVar);
 
   useEffect(() => {
     // Draft routes
