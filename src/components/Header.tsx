@@ -214,10 +214,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   }, [location.pathname]);
 
   useEffect(() => {
-    loadingVar(getTagsLoading);
-  }, [getTagsLoading]);
-
-  useEffect(() => {
     // There are selected tags, go to postsByTags page
     if (selectedTagIds.length > 0) {
       handleSearch();
