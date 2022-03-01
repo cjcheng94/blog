@@ -36,7 +36,10 @@ import {
   AccountCircle,
   ChevronLeft,
   Sort,
-  Menu as MenuIcon
+  ExitToApp,
+  LibraryBooks,
+  Menu as MenuIcon,
+  Drafts as DraftIcon
 } from "@material-ui/icons";
 import {
   CustomDialog,
@@ -132,6 +135,9 @@ const useStyles = makeStyles(theme => {
       overflow: "hidden",
       textOverflow: "ellipsis",
       whiteSpace: "nowrap"
+    },
+    menuIcon: {
+      marginRight: 8
     }
   };
 });
@@ -342,23 +348,24 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
             <AutosaveSpinner />
-            <IconButton
-              title="Search"
-              aria-haspopup="true"
-              color="inherit"
-              onClick={toggleSearchOverlay}
-            >
-              <Search />
-            </IconButton>
-            <IconButton
-              title="Toggle darkmode"
-              aria-haspopup="true"
-              color="inherit"
-              onClick={toggleDarkMode}
-            >
-              <Brightness4 />
-            </IconButton>
-
+            <Tooltip title="Search">
+              <IconButton
+                aria-haspopup="true"
+                color="inherit"
+                onClick={toggleSearchOverlay}
+              >
+                <Search />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Toggle darkmode">
+              <IconButton
+                aria-haspopup="true"
+                color="inherit"
+                onClick={toggleDarkMode}
+              >
+                <Brightness4 />
+              </IconButton>
+            </Tooltip>
             <Fragment>
               <Tooltip title="My Account">
                 <IconButton
@@ -378,15 +385,20 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
               >
                 {isAuthenticated ? (
                   <MenuList>
-                    <MenuItem button={false}>{currentUsername}</MenuItem>
+                    <MenuItem button={false}>
+                      <AccountCircle className={classes.menuIcon} />
+                      <span>{currentUsername}</span>
+                    </MenuItem>
                     <MenuItem
                       component={Link}
                       to={getUserPath()}
                       onClick={hideMenu}
                     >
+                      <LibraryBooks className={classes.menuIcon} />
                       My Posts
                     </MenuItem>
                     <MenuItem component={Link} to="/drafts" onClick={hideMenu}>
+                      <DraftIcon className={classes.menuIcon} />
                       Drafts
                     </MenuItem>
                     <MenuItem
@@ -396,6 +408,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
                       }}
                       color="inherit"
                     >
+                      <ExitToApp className={classes.menuIcon} />
                       Log Out
                     </MenuItem>
                   </MenuList>
