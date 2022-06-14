@@ -1,6 +1,6 @@
 import React from "react";
 import { Tag } from "PostTypes";
-import { RichTextEditor, DisplayTag } from "@components";
+import { DisplayTag } from "@components";
 import {
   Card,
   CardActionArea,
@@ -64,14 +64,14 @@ const useStyles = makeStyles((theme: Theme) => {
 type Props = {
   _id: string;
   title: string;
-  content: string;
+  contentText: string;
   tags: Tag[];
   authorInfo?: any;
   onClick: () => void;
 };
 
 const ArticleCard: React.FC<Props> = props => {
-  const { _id, title, content, tags, authorInfo, onClick } = props;
+  const { _id, title, contentText, tags, authorInfo, onClick } = props;
   const classes = useStyles();
 
   // TODO: apply ellipses to overflowed tags
@@ -96,7 +96,7 @@ const ArticleCard: React.FC<Props> = props => {
               By {authorInfo.username}
             </Typography>
           )}
-          <RichTextEditor readOnly={true} rawContent={content} />
+          {contentText}
         </CardContent>
         <div className={classes.tagsContainer}>{renderTags(tags)}</div>
       </CardActionArea>

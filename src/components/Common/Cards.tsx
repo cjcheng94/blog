@@ -44,7 +44,7 @@ const Cards: React.FC<Props> = props => {
   const ordered = orderBy(articles, ["date"], [order]);
 
   const cards = ordered.map(article => {
-    const { _id, title, content, tags } = article;
+    const { _id, title, contentText, tags } = article;
 
     const authorInfo = "authorInfo" in article ? article.authorInfo : undefined;
 
@@ -59,7 +59,7 @@ const Cards: React.FC<Props> = props => {
         _id={_id}
         key={_id}
         title={title}
-        content={content}
+        contentText={contentText}
         tags={tags}
         authorInfo={authorInfo}
         onClick={() => {
