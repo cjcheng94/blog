@@ -27,6 +27,7 @@ export const GET_ALL_POSTS = gql`
       _id
       title
       content
+      contentText
       date
       tagIds
       tags {
@@ -47,6 +48,7 @@ export const GET_CURRENT_POST = gql`
       _id
       title
       content
+      contentText
       date
       tagIds
       tags {
@@ -67,6 +69,7 @@ export const GET_USER_POSTS = gql`
       _id
       title
       content
+      contentText
       date
       tagIds
       tags {
@@ -87,6 +90,7 @@ export const GET_POSTS_BY_TAGS = gql`
       _id
       title
       content
+      contentText
       date
       tagIds
       tags {
@@ -117,6 +121,7 @@ export const CREATE_NEW_POST = gql`
       _id
       title
       content
+      contentText
       date
       tagIds
       tags {
@@ -149,6 +154,7 @@ export const UPDATE_POST = gql`
       _id
       title
       content
+      contentText
       date
       tagIds
       tags {
@@ -178,6 +184,7 @@ export const SEARCH = gql`
       _id
       title
       content
+      contentText
       date
       tagIds
       tags {
@@ -237,6 +244,7 @@ export const GET_DRAFT_BY_ID = gql`
       title
       author
       content
+      contentText
       date
       tagIds
       tags {
@@ -254,6 +262,7 @@ export const GET_USER_DRAFTS = gql`
       title
       author
       content
+      contentText
       date
       tagIds
       tags {
@@ -329,6 +338,7 @@ export const DELETE_DRAFT = gql`
       title
       author
       content
+      contentText
       date
       tagIds
       tags {
@@ -345,6 +355,7 @@ export const GET_CACHED_POST_FRAGMENT = gql`
     _id
     title
     content
+    contentText
     date
     tagIds
     tags {
@@ -364,6 +375,7 @@ export const GET_CACHED_DRAFT_FRAGMENT = gql`
     title
     author
     content
+    contentText
     date
     tagIds
     tags {

@@ -18,6 +18,7 @@ declare module "PostTypes" {
   export interface Post {
     _id: string;
     content: string;
+    contentText: string;
     date: string;
     title: string;
     tagIds: string[];
@@ -30,6 +31,7 @@ declare module "PostTypes" {
   export interface Draft {
     _id: string;
     content: string;
+    contentText: string;
     date: string;
     title: string;
     tagIds: string[];
