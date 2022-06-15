@@ -30,9 +30,6 @@ const useStyles = makeStyles((theme: Theme) => {
       padding: 0,
       overflow: "hidden",
       marginBottom: theme.spacing(2)
-      // display: "-webkit-box",
-      // "-webkit-line-clamp": 6,
-      // "-webkit-box-orient": "vertical",
     },
     title: {
       display: "inline",
@@ -44,6 +41,11 @@ const useStyles = makeStyles((theme: Theme) => {
     author: {
       margin: "8px 0",
       fontSize: "0.8em"
+    },
+    content: {
+      display: "-webkit-box",
+      "-webkit-line-clamp": 3,
+      "-webkit-box-orient": "vertical"
     },
     tagsContainer: {
       display: "flex",
@@ -70,6 +72,29 @@ type Props = {
   onClick: () => void;
 };
 
+const getTruncatedTitle = (title: string, limit: number) => {
+  if (title.length <= limit) {
+    return title;
+  }
+
+  const wordsArr = title.split(" ");
+
+  let truncatedTitle = wordsArr.reduce((title, curWord, i) => {
+    if (title.length > limit) {
+      return title;
+    }
+    return title + curWord + " ";
+  }, "");
+
+  truncatedTitle = truncatedTitle.trimEnd();
+
+  if (truncatedTitle.length < title.length) {
+    truncatedTitle += "...";
+  }
+
+  return truncatedTitle;
+};
+
 const ArticleCard: React.FC<Props> = props => {
   const { _id, title, contentText, tags, authorInfo, onClick } = props;
   const classes = useStyles();
@@ -88,15 +113,15 @@ const ArticleCard: React.FC<Props> = props => {
     <Card className={classes.card}>
       <CardActionArea className={classes.cardButton} onClick={onClick}>
         <CardContent className={classes.cardContent}>
-          <Typography variant="h5" className={classes.title}>
-            {title}
+          <Typography variant="h5" className={classes.title} title={title}>
+            {getTruncatedTitle(title, 28)}
           </Typography>
           {authorInfo && (
             <Typography className={classes.author}>
               By {authorInfo.username}
             </Typography>
           )}
-          {contentText}
+          <Typography className={classes.content}>{contentText}</Typography>
         </CardContent>
         <div className={classes.tagsContainer}>{renderTags(tags)}</div>
       </CardActionArea>
