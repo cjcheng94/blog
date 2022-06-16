@@ -364,6 +364,7 @@ const PostUpdate: React.FC<Props> = props => {
           <Button
             className={classes.button}
             onClick={deleteOldDraft(true)}
+            disabled={deleteDraftLoading}
             variant="contained"
             color="secondary"
           >

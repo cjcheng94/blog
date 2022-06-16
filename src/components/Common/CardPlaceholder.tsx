@@ -14,7 +14,10 @@ const useStyles = makeStyles((theme: Theme) => {
     cardsContainer: {
       display: "grid",
       gap: 24,
-      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+      gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+      [theme.breakpoints.down("sm")]: {
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+      }
     },
     card: {
       width: "100%",
