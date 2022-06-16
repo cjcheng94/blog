@@ -114,7 +114,7 @@ const ArticleCard: React.FC<Props> = props => {
       <CardActionArea className={classes.cardButton} onClick={onClick}>
         <CardContent className={classes.cardContent}>
           <Typography variant="h5" className={classes.title} title={title}>
-            {getTruncatedTitle(title, 28)}
+            {getTruncatedTitle(title, 32)}
           </Typography>
           {authorInfo && (
             <Typography className={classes.author}>

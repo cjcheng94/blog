@@ -7,11 +7,14 @@ import { makeStyles } from "@material-ui/core";
 import { useReactiveVar } from "@apollo/client";
 import { sortLatestFirstVar } from "../../api/cache";
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles(theme => ({
   cardsContainer: {
     display: "grid",
     gap: 24,
-    gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+    gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+    [theme.breakpoints.down("sm")]: {
+      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+    }
   }
 }));
 
