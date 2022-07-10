@@ -9,3 +9,4 @@ export { default as ArticleCard } from "./ArticleCard";
 export { default as CustomDialog } from "./CustomDialog";
 export { default as DisqusComment } from "./DisqusComment";
 export { default as AutosaveSpinner } from "./AutosaveSpinner";
+export { default as PaginationLink } from "./PaginationLink";

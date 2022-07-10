@@ -2,7 +2,7 @@ import React from "react";
 import orderBy from "lodash/orderBy";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Post, Draft } from "PostTypes";
-import { ArticleCard } from "@components";
+import { ArticleCard, PaginationLink } from "@components";
 import { makeStyles } from "@material-ui/core";
 import { useReactiveVar } from "@apollo/client";
 import { sortLatestFirstVar } from "../../api/cache";
@@ -44,9 +44,27 @@ const Cards: React.FC<Props> = props => {
 
   //Sort posts by time based on props.latestFirst
   const order = sortLatestFirst ? "desc" : "asc";
-  const ordered = orderBy(articles, ["date"], [order]);
+  const orderedArticles = orderBy(articles, ["date"], [order]);
 
-  const cards = ordered.map(article => {
+  // Get the current page number form url query
+  const searchParams = new URLSearchParams(location.search);
+  const currentPage = parseInt(searchParams.get("page") || "1", 10);
+
+  // TODO: Dynamically calculate the appropriate limit based on window size
+  // Number of items for each page
+  const paginationLimit = 20;
+
+  // Current items to show
+  const paginatedArticles = orderedArticles.slice(
+    (currentPage - 1) * paginationLimit,
+    (currentPage - 1) * paginationLimit + paginationLimit
+  );
+
+  // Show pagination when number of items exceeds the limit
+  const pageCount = Math.ceil(articles.length / paginationLimit);
+  const showPagination = pageCount > 1;
+
+  const cards = paginatedArticles.map(article => {
     const { _id, title, contentText, tags } = article;
 
     const authorInfo = "authorInfo" in article ? article.authorInfo : undefined;
@@ -72,7 +90,12 @@ const Cards: React.FC<Props> = props => {
     );
   });
 
-  return <div className={classes.cardsContainer}>{cards}</div>;
+  return (
+    <div>
+      <div className={classes.cardsContainer}>{cards}</div>
+      {showPagination && <PaginationLink pageCount={pageCount} />}
+    </div>
+  );
 };
 
 export default withRouter(Cards);
