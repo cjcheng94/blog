@@ -13,6 +13,7 @@ import {
   CompositeDecorator
 } from "draft-js";
 import { Map } from "immutable";
+import { v4 as uuidv4 } from "uuid";
 import {
   MediaComponent,
   LinkComponent,
@@ -20,6 +21,7 @@ import {
   RichTextControls
 } from "@components";
 import useStyles from "./RichStyles";
+import { uploadImage } from "../../api/aws";
 
 const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {
@@ -145,12 +147,25 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   // Handle images
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
-    const handleImag = () => {
+
+    // Upload image to S3 bucket with a random ID,
+    // and save this ID to an image entity
+    // so we can use it to get the image later
+    const handleImage = () => {
+      const randomFileId = uuidv4();
+
+      // TODO: Return image in upload response,
+      // so we can display the image immediately
+      uploadImage({
+        fileId: randomFileId,
+        file: reader.result as ArrayBuffer
+      });
+
       const contentState = editorState.getCurrentContent();
       const contentStateWithEntity = contentState.createEntity(
         "IMAGE",
         "IMMUTABLE",
-        { src: reader.result }
+        { id: randomFileId }
       );
       const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
       const newEditorState = EditorState.set(editorState, {
@@ -160,9 +175,11 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " ")
       );
     };
-    reader.addEventListener("load", handleImag);
+
+    reader.addEventListener("load", handleImage);
+
     if (event.target.files) {
-      reader.readAsDataURL(Array.from(event.target.files)[0]);
+      reader.readAsArrayBuffer(Array.from(event.target.files)[0]);
     }
   };
 
@@ -225,7 +242,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         return {
           component: MediaComponent,
           editable: false,
-          props: { src: { file: entityData.src } }
+          props: { id: entityData.id }
         };
       }
 
