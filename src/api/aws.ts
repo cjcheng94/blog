@@ -12,6 +12,12 @@ export const getImage = async (fileId: string) => {
       "Content-Type": "image/jpeg"
     }
   });
+
+  // return empty string if we can't find such image
+  if (res.status !== 200) {
+    return "";
+  }
+
   const dataBlob = await res.blob();
   const imgURL = URL.createObjectURL(dataBlob);
   return imgURL;

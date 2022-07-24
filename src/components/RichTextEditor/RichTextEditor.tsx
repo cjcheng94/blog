@@ -154,18 +154,21 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     const handleImage = () => {
       const randomFileId = uuidv4();
 
-      // TODO: Return image in upload response,
-      // so we can display the image immediately
       uploadImage({
         fileId: randomFileId,
         file: reader.result as ArrayBuffer
       });
 
+      // Generate a local url for the image so we can display it in the editor immediately
+      const arrayBufferView = new Uint8Array(reader.result as ArrayBuffer);
+      const blob = new Blob([arrayBufferView]);
+      const localImageUrl = URL.createObjectURL(blob);
+
       const contentState = editorState.getCurrentContent();
       const contentStateWithEntity = contentState.createEntity(
         "IMAGE",
         "IMMUTABLE",
-        { id: randomFileId }
+        { id: randomFileId, localImageUrl }
       );
       const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
       const newEditorState = EditorState.set(editorState, {
@@ -242,7 +245,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         return {
           component: MediaComponent,
           editable: false,
-          props: { id: entityData.id }
+          props: { id: entityData.id, localImageUrl: entityData.localImageUrl }
         };
       }
 
