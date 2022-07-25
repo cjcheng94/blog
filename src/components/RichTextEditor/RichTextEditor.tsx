@@ -20,8 +20,8 @@ import {
   CodeBlock,
   RichTextControls
 } from "@components";
+import { imageMapVar } from "../../api/cache";
 import useStyles from "./RichStyles";
-import { uploadImage } from "../../api/aws";
 
 const getBlockStyle = (block: ContentBlock) => {
   switch (block.getType()) {
@@ -152,23 +152,23 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     // and save this ID to an image entity
     // so we can use it to get the image later
     const handleImage = () => {
+      if (!(reader.result instanceof ArrayBuffer)) {
+        return;
+      }
+
       const randomFileId = uuidv4();
-
-      uploadImage({
-        fileId: randomFileId,
-        file: reader.result as ArrayBuffer
+      // Save the file info in imageMapVar global state in { id: arraybuffer } format
+      const previmageMap = imageMapVar();
+      imageMapVar({
+        ...previmageMap,
+        [randomFileId]: reader.result
       });
-
-      // Generate a local url for the image so we can display it in the editor immediately
-      const arrayBufferView = new Uint8Array(reader.result as ArrayBuffer);
-      const blob = new Blob([arrayBufferView]);
-      const localImageUrl = URL.createObjectURL(blob);
 
       const contentState = editorState.getCurrentContent();
       const contentStateWithEntity = contentState.createEntity(
         "IMAGE",
         "IMMUTABLE",
-        { id: randomFileId, localImageUrl }
+        { id: randomFileId }
       );
       const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
       const newEditorState = EditorState.set(editorState, {
@@ -245,7 +245,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         return {
           component: MediaComponent,
           editable: false,
-          props: { id: entityData.id, localImageUrl: entityData.localImageUrl }
+          props: { id: entityData.id }
         };
       }
 

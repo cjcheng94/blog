@@ -17,7 +17,8 @@ import {
   sortLatestFirstVar,
   accountDialogTypeVar,
   draftUpdatingVar,
-  draftErrorVar
+  draftErrorVar,
+  imageMapVar
 } from "./api/cache";
 
 const httpLink = createHttpLink({
@@ -80,6 +81,11 @@ const client = new ApolloClient({
           draftError: {
             read() {
               return draftErrorVar();
+            }
+          },
+          imageMap: {
+            read() {
+              return imageMapVar();
             }
           }
         }

@@ -1,37 +1,70 @@
 import React, { useState, useEffect } from "react";
-import { getImage } from "../../api/aws";
+import useGetImageUrl from "../../utils/useGetImageUrl";
+import { imageMapVar } from "../../api/cache";
+
+const imgStyle = {
+  display: "block",
+  marginLeft: "auto",
+  marginRight: "auto",
+  width: "80%"
+};
+
+const getUrlFromArrayBuffer = (arrayBuffer: ArrayBuffer) => {
+  const arrayBufferView = new Uint8Array(arrayBuffer);
+  const blob = new Blob([arrayBufferView]);
+  return URL.createObjectURL(blob);
+};
 
 const MediaComponent: React.FC = ({ blockProps }: any) => {
-  const { id, localImageUrl } = blockProps;
-  const [imgUrl, seImageUrl] = useState("");
+  const [isLocalImage, setIsLocalImage] = useState(true);
+  const [imageUrl, setImageUrl] = useState("");
 
-  // Get image from S3 bucket by file ID
+  const { id } = blockProps;
+
+  // Get image from S3 bucket by file ID via custom hook
+  const { loading, failed, data } = useGetImageUrl(id);
+
   useEffect(() => {
-    const loadImage = async () => {
-      const imgUrl = await getImage(id);
-      seImageUrl(imgUrl);
-    };
-    loadImage();
+    const imgMap = imageMapVar();
+    // There is such an ID in the imgMap object, which means this image was
+    // just added by the user, and dosen't yet exist on the backend
+    const isLocal = Object.keys(imgMap).includes(id);
+    setIsLocalImage(isLocal);
+
+    // Local image, we generate an object url to display it locally
+    if (isLocal) {
+      const url = getUrlFromArrayBuffer(imgMap[id]);
+      setImageUrl(url);
+    }
 
     return () => {
       // Revoke img url on unmount
-      URL.revokeObjectURL(imgUrl);
+      URL.revokeObjectURL(imageUrl);
     };
   }, []);
 
-  const imgStyle = {
-    display: "block",
-    marginLeft: "auto",
-    marginRight: "auto",
-    width: "80%"
-  };
+  // Not local image, use the url from the backend
+  useEffect(() => {
+    if (isLocalImage) {
+      return;
+    }
+    if (data) {
+      setImageUrl(data);
+    }
+  }, [data]);
 
-  // Use localImageUrl to display the image when we're editing the post;
-  // use imgUrl generated from network request when we're viewing the post later,
-  // i.e.: the image exists on the backend
-  if (imgUrl || localImageUrl) {
-    return <img src={imgUrl || localImageUrl} style={imgStyle} />;
+  if (!isLocalImage && loading) {
+    return <div>Loading image...</div>;
   }
+
+  if (!isLocalImage && failed) {
+    return <div>Failed to get image</div>;
+  }
+
+  if (imageUrl) {
+    return <img src={imageUrl} style={imgStyle} />;
+  }
+
   return null;
 };
 
