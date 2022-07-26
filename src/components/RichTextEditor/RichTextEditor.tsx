@@ -12,13 +12,17 @@ import {
   convertFromRaw,
   CompositeDecorator
 } from "draft-js";
+import { Snackbar } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import { Map } from "immutable";
+import { v4 as uuidv4 } from "uuid";
 import {
   MediaComponent,
   LinkComponent,
   CodeBlock,
   RichTextControls
 } from "@components";
+import { imageMapVar } from "../../api/cache";
 import useStyles from "./RichStyles";
 
 const getBlockStyle = (block: ContentBlock) => {
@@ -52,6 +56,7 @@ type RichTextEditorProps = {
 };
 
 const RichTextEditor: React.FC<RichTextEditorProps> = props => {
+  const [showFileSizeAlert, setShowFileSizeAlert] = useState(false);
   const { onChange, readOnly, rawContent, isEmpty } = props;
   const editor = React.useRef<Editor>(null);
   const classes = useStyles();
@@ -145,12 +150,28 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
   // Handle images
   const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
     const reader = new FileReader();
-    const handleImag = () => {
+
+    // Upload image to S3 bucket with a random ID,
+    // and save this ID to an image entity
+    // so we can use it to get the image later
+    const handleImage = () => {
+      if (!(reader.result instanceof ArrayBuffer)) {
+        return;
+      }
+
+      const randomFileId = uuidv4();
+      // Save the file info in imageMapVar global state in { id: arraybuffer } format
+      const previmageMap = imageMapVar();
+      imageMapVar({
+        ...previmageMap,
+        [randomFileId]: reader.result
+      });
+
       const contentState = editorState.getCurrentContent();
       const contentStateWithEntity = contentState.createEntity(
         "IMAGE",
         "IMMUTABLE",
-        { src: reader.result }
+        { id: randomFileId }
       );
       const entityKey = contentStateWithEntity.getLastCreatedEntityKey();
       const newEditorState = EditorState.set(editorState, {
@@ -160,9 +181,18 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         AtomicBlockUtils.insertAtomicBlock(newEditorState, entityKey, " ")
       );
     };
-    reader.addEventListener("load", handleImag);
+
+    reader.addEventListener("load", handleImage);
+
     if (event.target.files) {
-      reader.readAsDataURL(Array.from(event.target.files)[0]);
+      const file = event.target.files[0];
+
+      // File size limit of 5 MB
+      if (file.size > 5 * 1024 * 1024) {
+        setShowFileSizeAlert(true);
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
     }
   };
 
@@ -225,7 +255,7 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         return {
           component: MediaComponent,
           editable: false,
-          props: { src: { file: entityData.src } }
+          props: { id: entityData.id }
         };
       }
 
@@ -248,6 +278,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
       }
     }
     return;
+  };
+
+  const handleAlertClose = () => {
+    setShowFileSizeAlert(false);
   };
 
   return (
@@ -279,9 +313,19 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         id="imageInput"
         className={classes.fileInput}
         type="file"
-        accept="image/png,image/jpeg,image/jpg,image/gif"
+        accept="image/*"
         onChange={handleImageUpload}
       />
+      <Snackbar
+        open={showFileSizeAlert}
+        autoHideDuration={5000}
+        onClose={handleAlertClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="error" variant="filled" onClose={handleAlertClose}>
+          File exceeded 5 MB size limit
+        </Alert>
+      </Snackbar>
     </div>
   );
 };

@@ -33,3 +33,12 @@ declare interface BeforeInstallPromptEvent extends Event {
    */
   prompt(): Promise<void>;
 }
+
+declare namespace NodeJS {
+  interface ProcessEnv {
+    REACT_APP_AWS_ACCESS_KEY: string;
+    REACT_APP_AWS_SECRET_ACCESS_KEY: string;
+    REACT_APP_AWS_URL: string;
+    REACT_APP_AWS_X_API_KEY: string;
+  }
+}
