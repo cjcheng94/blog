@@ -26,3 +26,4 @@ posts.json
 src/styles
 editor.js
 temp
+.env
