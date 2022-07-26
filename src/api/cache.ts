@@ -8,4 +8,4 @@ export const sortLatestFirstVar = makeVar(false);
 export const accountDialogTypeVar = makeVar<"" | "login" | "signup">("");
 export const draftUpdatingVar = makeVar(false);
 export const draftErrorVar = makeVar(false);
-export const imageMapVar = makeVar({});
+export const imageMapVar = makeVar<{ [id: string]: ArrayBuffer }>({});
