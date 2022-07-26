@@ -1,9 +1,18 @@
 import React, { useState, useEffect } from "react";
+import {
+  LinearProgress,
+  Snackbar,
+  Card,
+  CardContent,
+  Typography,
+  makeStyles
+} from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
+import Skeleton from "@material-ui/lab/Skeleton";
+import { Image as ImageIcon } from "@material-ui/icons";
 import useGetImageUrl from "../../utils/useGetImageUrl";
 import useUploadImage from "../../utils/useUploadImage";
 import { imageMapVar } from "../../api/cache";
-import { LinearProgress, Snackbar, makeStyles } from "@material-ui/core";
-import Alert from "@material-ui/lab/Alert";
 
 const useStyles = makeStyles(theme => ({
   centeredBlock: {
@@ -17,8 +26,45 @@ const useStyles = makeStyles(theme => ({
   },
   errorMessage: {
     color: theme.palette.error.main
+  },
+  placeholder: {
+    height: 250
+  },
+  imageErrorContainer: {
+    marginLeft: "auto",
+    marginRight: "auto",
+    width: 250
+  },
+  cardContent: {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    "&:last-child": {
+      paddingBottom: theme.spacing(2)
+    }
+  },
+  imageIcon: {
+    fontSize: 60,
+    marginBottom: theme.spacing(1)
   }
 }));
+
+const ImageError: React.FC = () => {
+  const classes = useStyles();
+  return (
+    <Card className={classes.imageErrorContainer}>
+      <CardContent className={classes.cardContent}>
+        <Typography variant="h6" component="h6" gutterBottom>
+          Cannot Load Image
+        </Typography>
+        <ImageIcon className={classes.imageIcon} />
+        <Typography color="textSecondary" variant="caption">
+          There was an error loading this image
+        </Typography>
+      </CardContent>
+    </Card>
+  );
+};
 
 const getUrlFromArrayBuffer = (arrayBuffer: ArrayBuffer) => {
   const arrayBufferView = new Uint8Array(arrayBuffer);
@@ -94,6 +140,7 @@ const LocalImage: React.FC = ({ blockProps }: any) => {
 
 const RemoteImage: React.FC = ({ blockProps }: any) => {
   const classes = useStyles();
+  const placeholderClass = `${classes.centeredBlock} ${classes.placeholder}`;
 
   const { id } = blockProps;
   // // Get image from S3 bucket by file ID via custom hook
@@ -107,11 +154,11 @@ const RemoteImage: React.FC = ({ blockProps }: any) => {
   }, []);
 
   if (loading) {
-    return <div>Loading image...</div>;
+    return <Skeleton variant="rect" className={placeholderClass} />;
   }
 
   if (failed) {
-    return <div>Failed to get image</div>;
+    return <ImageError />;
   }
 
   if (imgUrl) {
