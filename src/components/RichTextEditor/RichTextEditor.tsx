@@ -12,6 +12,8 @@ import {
   convertFromRaw,
   CompositeDecorator
 } from "draft-js";
+import { Snackbar } from "@material-ui/core";
+import Alert from "@material-ui/lab/Alert";
 import { Map } from "immutable";
 import { v4 as uuidv4 } from "uuid";
 import {
@@ -54,6 +56,7 @@ type RichTextEditorProps = {
 };
 
 const RichTextEditor: React.FC<RichTextEditorProps> = props => {
+  const [showFileSizeAlert, setShowFileSizeAlert] = useState(false);
   const { onChange, readOnly, rawContent, isEmpty } = props;
   const editor = React.useRef<Editor>(null);
   const classes = useStyles();
@@ -182,7 +185,14 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     reader.addEventListener("load", handleImage);
 
     if (event.target.files) {
-      reader.readAsArrayBuffer(Array.from(event.target.files)[0]);
+      const file = event.target.files[0];
+
+      // File size limit of 5 MB
+      if (file.size > 5 * 1024 * 1024) {
+        setShowFileSizeAlert(true);
+      } else {
+        reader.readAsArrayBuffer(file);
+      }
     }
   };
 
@@ -270,6 +280,10 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
     return;
   };
 
+  const handleAlertClose = () => {
+    setShowFileSizeAlert(false);
+  };
+
   return (
     <div>
       {!readOnly && (
@@ -299,9 +313,19 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
         id="imageInput"
         className={classes.fileInput}
         type="file"
-        accept="image/png,image/jpeg,image/jpg,image/gif"
+        accept="image/*"
         onChange={handleImageUpload}
       />
+      <Snackbar
+        open={showFileSizeAlert}
+        autoHideDuration={5000}
+        onClose={handleAlertClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="error" variant="filled" onClose={handleAlertClose}>
+          File exceeded 5 MB size limit
+        </Alert>
+      </Snackbar>
     </div>
   );
 };
