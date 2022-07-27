@@ -29,6 +29,9 @@ const useStyles = makeStyles(theme => {
     "@global": {
       ".MuiChip-colorPrimary": {
         border: "1px solid rgba(0,0,0,0)"
+      },
+      figure: {
+        margin: 0
       }
     },
     root: {
