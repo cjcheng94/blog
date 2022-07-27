@@ -19,7 +19,7 @@ const useStyles = makeStyles(theme => ({
     display: "block",
     marginLeft: "auto",
     marginRight: "auto",
-    width: "80%"
+    width: "100%"
   },
   localChildren: {
     width: "100%"
