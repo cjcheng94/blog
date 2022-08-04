@@ -349,6 +349,43 @@ export const DELETE_DRAFT = gql`
   }
 `;
 
+// Image Document
+export const GET_IMAGE = gql`
+  query getImage($_id: ID!) {
+    image(_id: $_id) {
+      _id
+      caption
+    }
+  }
+`;
+
+export const CREATE_IMAGE = gql`
+  mutation createImage($caption: String!) {
+    createImage(caption: $caption) {
+      _id
+      caption
+    }
+  }
+`;
+
+export const UPDATE_IMAGE = gql`
+  mutation updateImage($_id: ID!, $caption: String!) {
+    updateImage(_id: $_id, caption: $caption) {
+      _id
+      caption
+    }
+  }
+`;
+
+export const DELETE_IMAGE = gql`
+  mutation deleteImage($_id: ID!) {
+    deleteImage(_id: $_id) {
+      _id
+      caption
+    }
+  }
+`;
+
 // Local Documents
 export const GET_CACHED_POST_FRAGMENT = gql`
   fragment MyPost on Post {

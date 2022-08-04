@@ -10,9 +10,11 @@ import {
 import Alert from "@material-ui/lab/Alert";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { Image as ImageIcon } from "@material-ui/icons";
+import { useQuery } from "@apollo/client";
 import useGetImageUrl from "../../utils/useGetImageUrl";
 import useUploadImage from "../../utils/useUploadImage";
 import { imageMapVar } from "../../api/cache";
+import { GET_IMAGE } from "../../api/gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   centeredBlock: {
@@ -46,6 +48,9 @@ const useStyles = makeStyles(theme => ({
   imageIcon: {
     fontSize: 60,
     marginBottom: theme.spacing(1)
+  },
+  captionContainer: {
+    cursor: "pointer"
   }
 }));
 
@@ -76,7 +81,8 @@ const LocalImage: React.FC = ({ blockProps }: any) => {
   const [showUploadSuccessAlert, setShowUploadSuccessAlert] = useState(false);
   const classes = useStyles();
 
-  const id = blockProps.id as string;
+  const { id, showCaptionDialog } = blockProps;
+
   const imgMap = imageMapVar();
   const imgArrayBuffer = imgMap[id];
 
@@ -88,6 +94,14 @@ const LocalImage: React.FC = ({ blockProps }: any) => {
     fileId: id,
     file: imgArrayBuffer
   });
+
+  // Get image caption from Apollo server
+  const {
+    loading: getImageCaptionLoading,
+    error: getImageCaptionError,
+    data: getImageCaptionData,
+    called: getImageCaptionCalled
+  } = useQuery(GET_IMAGE, { variables: { _id: id } });
 
   useEffect(() => {
     return () => {
@@ -111,6 +125,24 @@ const LocalImage: React.FC = ({ blockProps }: any) => {
     setShowUploadSuccessAlert(false);
   };
 
+  const renderCaption = () => {
+    const caption = getImageCaptionData?.image?.caption;
+    return (
+      <div
+        style={{
+          cursor: "pointer"
+        }}
+        onClick={() => {
+          showCaptionDialog(id);
+        }}
+      >
+        <Typography color="textSecondary" variant="caption">
+          {caption || "Add a caption"}
+        </Typography>
+      </div>
+    );
+  };
+
   if (imgUrl) {
     return (
       <div className={classes.centeredBlock}>
@@ -121,6 +153,7 @@ const LocalImage: React.FC = ({ blockProps }: any) => {
             Image upload failed, please try again
           </div>
         )}
+        {renderCaption()}
         <Snackbar
           open={showUploadSuccessAlert}
           autoHideDuration={5000}
@@ -141,10 +174,18 @@ const LocalImage: React.FC = ({ blockProps }: any) => {
 const RemoteImage: React.FC = ({ blockProps }: any) => {
   const classes = useStyles();
   const placeholderClass = `${classes.centeredBlock} ${classes.placeholder}`;
+  const { id, readOnly, showCaptionDialog } = blockProps;
 
-  const { id } = blockProps;
-  // // Get image from S3 bucket by file ID via custom hook
+  // Get image from S3 bucket by file ID via custom hook
   const { loading, failed, data: imgUrl } = useGetImageUrl(id);
+
+  // Get image caption from Apollo server
+  const {
+    loading: getImageCaptionLoading,
+    error: getImageCaptionError,
+    data: getImageCaptionData,
+    called: getImageCaptionCalled
+  } = useQuery(GET_IMAGE, { variables: { _id: id } });
 
   useEffect(() => {
     return () => {
@@ -152,6 +193,25 @@ const RemoteImage: React.FC = ({ blockProps }: any) => {
       URL.revokeObjectURL(imgUrl);
     };
   }, []);
+
+  const renderCaption = () => {
+    const caption = getImageCaptionData?.image?.caption;
+    return (
+      <div
+        style={{
+          cursor: readOnly ? "" : "pointer"
+        }}
+        onClick={() => {
+          if (readOnly) return;
+          showCaptionDialog(id);
+        }}
+      >
+        <Typography color="textSecondary" variant="caption">
+          {caption || "Add a caption"}
+        </Typography>
+      </div>
+    );
+  };
 
   if (loading) {
     return <Skeleton variant="rect" className={placeholderClass} />;
@@ -162,7 +222,12 @@ const RemoteImage: React.FC = ({ blockProps }: any) => {
   }
 
   if (imgUrl) {
-    return <img src={imgUrl} className={classes.centeredBlock} />;
+    return (
+      <>
+        <img src={imgUrl} className={classes.centeredBlock} />
+        {renderCaption()}
+      </>
+    );
   }
 
   return null;
