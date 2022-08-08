@@ -196,6 +196,7 @@ const RemoteImage: React.FC = ({ blockProps }: any) => {
 
   const renderCaption = () => {
     const caption = getImageCaptionData?.image?.caption;
+
     return (
       <div
         style={{
@@ -207,7 +208,7 @@ const RemoteImage: React.FC = ({ blockProps }: any) => {
         }}
       >
         <Typography color="textSecondary" variant="caption">
-          {caption || "Add a caption"}
+          {readOnly ? caption || "" : caption || "Add a caption"}
         </Typography>
       </div>
     );
