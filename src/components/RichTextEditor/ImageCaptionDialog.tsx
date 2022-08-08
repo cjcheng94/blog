@@ -30,10 +30,7 @@ type Props = {
 const ImageCaptionDialog: React.FC<Props> = props => {
   const [value, setValue] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
-
   const classes = useStyles();
-
-  const [updateImage, { loading, error, data }] = useMutation(UPDATE_IMAGE);
 
   const { onClose, imageId } = props;
 
@@ -67,6 +64,12 @@ const ImageCaptionDialog: React.FC<Props> = props => {
     });
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handleUpdate();
+    }
+  };
+
   return (
     <Dialog open={true} onClose={handleClose}>
       <DialogTitle>Edit Caption</DialogTitle>
@@ -78,6 +81,7 @@ const ImageCaptionDialog: React.FC<Props> = props => {
           onChange={e => {
             setValue(e.target.value);
           }}
+          onKeyDown={handleKeyDown}
         />
         {errorMessage && (
           <div className={classes.errorMessage}>{errorMessage}</div>
