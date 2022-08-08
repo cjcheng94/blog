@@ -9,7 +9,7 @@ import {
   makeStyles
 } from "@material-ui/core";
 import { useMutation } from "@apollo/client";
-import { UPDATE_IMAGE } from "../../api/gqlDocuments";
+import { UPDATE_IMAGE, GET_IMAGE } from "../../api/gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   input: {
@@ -36,6 +36,10 @@ const ImageCaptionDialog: React.FC<Props> = props => {
   const [updateImage, { loading, error, data }] = useMutation(UPDATE_IMAGE);
 
   const { onClose, imageId } = props;
+
+  const [updateImage, { loading, error, data }] = useMutation(UPDATE_IMAGE, {
+    refetchQueries: [{ query: GET_IMAGE, variables: { _id: imageId } }]
+  });
 
   const handleClose = () => {
     setValue("");
