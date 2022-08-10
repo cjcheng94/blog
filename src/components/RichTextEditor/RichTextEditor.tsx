@@ -68,35 +68,33 @@ const RichTextEditor: React.FC<RichTextEditorProps> = props => {
 
   const [createImage] = useMutation(CREATE_IMAGE);
 
-  const initailEditorState = () => {
-    const compositeDecorator = new CompositeDecorator([
-      {
-        strategy: findLinkEntities,
-        component: LinkComponent
-      }
-    ]);
+  const compositeDecorator = new CompositeDecorator([
+    {
+      strategy: findLinkEntities,
+      component: LinkComponent
+    }
+  ]);
+
+  const [editorState, setEditorState] = useState<EditorState>(
+    EditorState.createEmpty(compositeDecorator)
+  );
+
+  useEffect(() => {
+    // edit and preview existing content
     if (rawContent) {
       // If rawContent is not compatible json format, catch the error
       // and create empty state
       try {
-        // edit and preview existing content
         const contentStateFromRaw = convertFromRaw(JSON.parse(rawContent));
         const editorStateFromRaw = EditorState.createWithContent(
           contentStateFromRaw,
           compositeDecorator
         );
-        return editorStateFromRaw;
-      } catch (err) {
-        return EditorState.createEmpty(compositeDecorator);
-      }
+        setEditorState(editorStateFromRaw);
+      } catch (err) {}
     }
-    // create new content
-    return EditorState.createEmpty(compositeDecorator);
-  };
+  }, []);
 
-  const [editorState, setEditorState] = useState<EditorState>(
-    initailEditorState()
-  );
   const [liveCodeBlockEdit, setLiveCodeBlockEdit] = useState(Map());
 
   const memoizedRichData = useMemo(
