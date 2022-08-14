@@ -33,7 +33,6 @@
 
 h1 {
   font-size: 24px;
-  color: #333;
 }
 
 .ltr {
@@ -215,15 +214,6 @@ h1 {
 
 .editor-paragraph:last-child {
   margin-bottom: 0;
-}
-
-.editor-heading-h1 {
-  font-size: 24px;
-  color: rgb(5, 5, 5);
-  font-weight: 400;
-  margin: 0;
-  margin-bottom: 12px;
-  padding: 0;
 }
 
 .editor-heading-h2 {
