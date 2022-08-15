@@ -6,7 +6,13 @@ import {
   $getNodeByKey,
   $getSelection,
   $isRangeSelection,
-  FORMAT_TEXT_COMMAND
+  FORMAT_TEXT_COMMAND,
+  SELECTION_CHANGE_COMMAND,
+  CAN_REDO_COMMAND,
+  CAN_UNDO_COMMAND,
+  REDO_COMMAND,
+  UNDO_COMMAND,
+  COMMAND_PRIORITY_CRITICAL
 } from "lexical";
 import { $wrapLeafNodesInElements } from "@lexical/selection";
 import {
@@ -41,7 +47,9 @@ import {
   Check as CheckIcon,
   Code as CodeIcon,
   Subject as SubjectIcon,
-  Title as TitleIcon
+  Title as TitleIcon,
+  Undo as UndoIcon,
+  Redo as RedoIcon
 } from "@material-ui/icons";
 import {
   makeStyles,
@@ -72,7 +80,8 @@ const useStyles = makeStyles(theme => ({
     marginBottom: theme.spacing(1),
     "& button": {
       border: "none",
-      margin: "4px"
+      margin: "4px",
+      color: theme.palette.text.secondary
     },
     "& .MuiToggleButton-root.Mui-selected + .MuiToggleButton-root.Mui-selected":
       {
@@ -99,6 +108,7 @@ const useStyles = makeStyles(theme => ({
   languageSelect: {
     margin: "0 8px",
     ...theme.typography.button,
+    color: theme.palette.text.secondary,
     textTransform: "none"
   }
 }));
@@ -106,6 +116,12 @@ const useStyles = makeStyles(theme => ({
 const preventDefault = (e: React.MouseEvent) => {
   e.preventDefault();
 };
+
+const StyledListItemIcon = withStyles({
+  root: {
+    minWidth: 32
+  }
+})(ListItemIcon);
 
 const blockTypeMap = {
   paragraph: { name: "Normal", icon: <SubjectIcon /> },
@@ -220,12 +236,6 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
     }
     handleClose();
   };
-
-  const StyledListItemIcon = withStyles({
-    root: {
-      minWidth: 32
-    }
-  })(ListItemIcon);
 
   return (
     <div>
@@ -350,31 +360,31 @@ const ToolbarPlugin = () => {
         editorState.read(() => {
           updateToolbar();
         });
-      })
-      // editor.registerCommand(
-      //   SELECTION_CHANGE_COMMAND,
-      //   (_payload, newEditor) => {
-      //     updateToolbar();
-      //     return false;
-      //   },
-      //   LowPriority
-      // ),
-      // editor.registerCommand(
-      //   CAN_UNDO_COMMAND,
-      //   payload => {
-      //     setCanUndo(payload);
-      //     return false;
-      //   },
-      //   LowPriority
-      // ),
-      // editor.registerCommand(
-      //   CAN_REDO_COMMAND,
-      //   payload => {
-      //     setCanRedo(payload);
-      //     return false;
-      //   },
-      //   LowPriority
-      // )
+      }),
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        (_payload, newEditor) => {
+          updateToolbar();
+          return false;
+        },
+        COMMAND_PRIORITY_CRITICAL
+      ),
+      editor.registerCommand<boolean>(
+        CAN_UNDO_COMMAND,
+        payload => {
+          setCanUndo(payload);
+          return false;
+        },
+        COMMAND_PRIORITY_CRITICAL
+      ),
+      editor.registerCommand<boolean>(
+        CAN_REDO_COMMAND,
+        payload => {
+          setCanRedo(payload);
+          return false;
+        },
+        COMMAND_PRIORITY_CRITICAL
+      )
     );
   }, [editor, updateToolbar]);
 
@@ -398,10 +408,42 @@ const ToolbarPlugin = () => {
     editor.dispatchCommand(FORMAT_TEXT_COMMAND, formatType);
   };
 
+  const handleUndo = () => {
+    editor.dispatchCommand(UNDO_COMMAND, undefined);
+  };
+  const handleRedo = () => {
+    editor.dispatchCommand(REDO_COMMAND, undefined);
+  };
+
   return (
     <Paper className={classes.controls}>
-      <BlockOptionsMenu editor={editor} blockType={blockType} />
+      <ToggleButton
+        size="small"
+        value="undo"
+        aria-label="Undo"
+        onMouseDown={preventDefault}
+        onClick={handleUndo}
+        disabled={!canUndo}
+      >
+        <UndoIcon />
+      </ToggleButton>
+      <ToggleButton
+        size="small"
+        value="redo"
+        aria-label="Redo"
+        onMouseDown={preventDefault}
+        onClick={handleRedo}
+        disabled={!canRedo}
+      >
+        <RedoIcon />
+      </ToggleButton>
+
       <Divider flexItem orientation="vertical" className={classes.divider} />
+
+      <BlockOptionsMenu editor={editor} blockType={blockType} />
+
+      <Divider flexItem orientation="vertical" className={classes.divider} />
+
       {blockType === "code" ? (
         <Select
           value={codeLanguage}
