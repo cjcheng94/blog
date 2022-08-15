@@ -2,19 +2,24 @@ import React, { useState, useEffect, useCallback, useMemo } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { mergeRegister, $getNearestNodeOfType } from "@lexical/utils";
 import {
-  $createParagraphNode,
-  $getNodeByKey,
-  $getSelection,
-  $isRangeSelection,
   FORMAT_TEXT_COMMAND,
   SELECTION_CHANGE_COMMAND,
   CAN_REDO_COMMAND,
   CAN_UNDO_COMMAND,
   REDO_COMMAND,
   UNDO_COMMAND,
-  COMMAND_PRIORITY_CRITICAL
+  COMMAND_PRIORITY_CRITICAL,
+  COMMAND_PRIORITY_LOW,
+  $createParagraphNode,
+  $getNodeByKey,
+  $getSelection,
+  $isRangeSelection,
+  RangeSelection,
+  LexicalEditor,
+  GridSelection,
+  NodeSelection
 } from "lexical";
-import { $wrapLeafNodesInElements } from "@lexical/selection";
+import { $wrapLeafNodesInElements, $isAtNodeEnd } from "@lexical/selection";
 import {
   $createHeadingNode,
   $createQuoteNode,
@@ -33,6 +38,7 @@ import {
   getDefaultCodeLanguage,
   getCodeLanguages
 } from "@lexical/code";
+import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
 import {
   FormatBold as FormatBoldIcon,
   FormatItalic as FormatItalicIcon,
@@ -61,7 +67,10 @@ import {
   MenuItem,
   ListItemIcon,
   ListItemText,
-  Select
+  Select,
+  TextField,
+  InputAdornment,
+  IconButton
 } from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 
@@ -302,18 +311,137 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
   );
 };
 
+const getSelectedNode = (selection: RangeSelection) => {
+  const anchor = selection.anchor;
+  const focus = selection.focus;
+  const anchorNode = selection.anchor.getNode();
+  const focusNode = selection.focus.getNode();
+  if (anchorNode === focusNode) {
+    return anchorNode;
+  }
+  const isBackward = selection.isBackward();
+  if (isBackward) {
+    return $isAtNodeEnd(focus) ? anchorNode : focusNode;
+  } else {
+    return $isAtNodeEnd(anchor) ? focusNode : anchorNode;
+  }
+};
+
+const LinkEditor = ({ editor }: { editor: LexicalEditor }) => {
+  const [linkUrl, setLinkUrl] = useState("");
+  const [isEditMode, setEditMode] = useState(true);
+  const [lastSelection, setLastSelection] = useState<
+    RangeSelection | GridSelection | NodeSelection | null
+  >(null);
+  const classes = useStyles();
+
+  const updateLinkEditor = useCallback(() => {
+    const selection = $getSelection();
+    if ($isRangeSelection(selection)) {
+      const node = getSelectedNode(selection);
+      const parent = node.getParent();
+      if ($isLinkNode(parent)) {
+        setLinkUrl(parent.getURL());
+      } else if ($isLinkNode(node)) {
+        setLinkUrl(node.getURL());
+      } else {
+        setLinkUrl("");
+      }
+    }
+    const activeElement = document.activeElement;
+    if (selection !== null) {
+      setLastSelection(selection);
+    } else if (!activeElement || activeElement.className !== "link-input") {
+      setLastSelection(null);
+      setLinkUrl("");
+      setEditMode(false);
+    }
+    return true;
+  }, [editor]);
+
+  useEffect(() => {
+    return mergeRegister(
+      editor.registerUpdateListener(({ editorState }) => {
+        editorState.read(() => {
+          updateLinkEditor();
+        });
+      }),
+
+      editor.registerCommand(
+        SELECTION_CHANGE_COMMAND,
+        () => {
+          updateLinkEditor();
+          return true;
+        },
+        COMMAND_PRIORITY_LOW
+      )
+    );
+  }, [editor, updateLinkEditor]);
+
+  useEffect(() => {
+    editor.getEditorState().read(() => {
+      updateLinkEditor();
+    });
+  }, [editor, updateLinkEditor]);
+
+  const insertLink = () => {
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, linkUrl);
+  };
+
+  const handleLinkKeyDown = (event: React.KeyboardEvent) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      if (lastSelection !== null) {
+        if (linkUrl !== "") {
+          insertLink();
+        }
+        setEditMode(false);
+      }
+    } else if (event.key === "Escape") {
+      event.preventDefault();
+      setEditMode(false);
+    }
+  };
+
+  return (
+    <div className="link-editor">
+      {isEditMode && (
+        <TextField
+          size="small"
+          variant="outlined"
+          value={linkUrl}
+          className={classes.linkEditor}
+          onChange={e => setLinkUrl(e.target.value)}
+          onKeyDown={handleLinkKeyDown}
+          placeholder="https://"
+          InputProps={{
+            endAdornment: (
+              <InputAdornment position="start">
+                <IconButton onClick={insertLink}>
+                  <CheckIcon />
+                </IconButton>
+              </InputAdornment>
+            )
+          }}
+        />
+      )}
+    </div>
+  );
+};
+
 const ToolbarPlugin = () => {
   const [editor] = useLexicalComposerContext();
   const [blockType, setBlockType] = useState<BlockType>("paragraph");
   const [selectedElementKey, setSelectedElementKey] = useState("");
   const [codeLanguage, setCodeLanguage] = useState("");
+  const [isLink, setIsLink] = useState(false);
   const [isBold, setIsBold] = useState(false);
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
-
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
+
   const classes = useStyles();
 
   const updateToolbar = useCallback(() => {
@@ -351,6 +479,15 @@ const ToolbarPlugin = () => {
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
       setIsStrikethrough(selection.hasFormat("strikethrough"));
+
+      // Update links
+      const node = getSelectedNode(selection);
+      const parent = node.getParent();
+      if ($isLinkNode(parent) || $isLinkNode(node)) {
+        setIsLink(true);
+      } else {
+        setIsLink(false);
+      }
     }
   }, [editor]);
 
@@ -414,6 +551,14 @@ const ToolbarPlugin = () => {
   const handleRedo = () => {
     editor.dispatchCommand(REDO_COMMAND, undefined);
   };
+
+  const insertLink = useCallback(() => {
+    if (!isLink) {
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+    } else {
+      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+    }
+  }, [editor, isLink]);
 
   return (
     <Paper className={classes.controls}>
@@ -502,6 +647,24 @@ const ToolbarPlugin = () => {
           >
             <StrikethroughSIcon />
           </ToggleButton>
+
+          <Divider
+            flexItem
+            orientation="vertical"
+            className={classes.divider}
+          />
+
+          <ToggleButton
+            size="small"
+            value="link"
+            aria-label="link"
+            onMouseDown={preventDefault}
+            onClick={insertLink}
+            selected={isLink}
+          >
+            <InsertLinkIcon />
+          </ToggleButton>
+          {isLink && <LinkEditor editor={editor} />}
         </>
       )}
     </Paper>
