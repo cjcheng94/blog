@@ -142,7 +142,7 @@ const blockTypeMap = {
   code: { name: "Code Block", icon: <CodeIcon /> }
 };
 
-type FormatType = "bold" | "italic" | "underline" | "strikethrough";
+type FormatType = "bold" | "italic" | "underline" | "strikethrough" | "code";
 type BlockType = "paragraph" | "h1" | "h2" | "ul" | "ol" | "quote" | "code";
 type EditorOptionsMenuProps = {
   editor: any;
@@ -439,6 +439,7 @@ const ToolbarPlugin = () => {
   const [isItalic, setIsItalic] = useState(false);
   const [isUnderline, setIsUnderline] = useState(false);
   const [isStrikethrough, setIsStrikethrough] = useState(false);
+  const [isCode, setIsCode] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
@@ -479,6 +480,7 @@ const ToolbarPlugin = () => {
       setIsItalic(selection.hasFormat("italic"));
       setIsUnderline(selection.hasFormat("underline"));
       setIsStrikethrough(selection.hasFormat("strikethrough"));
+      setIsCode(selection.hasFormat("code"));
 
       // Update links
       const node = getSelectedNode(selection);
@@ -646,6 +648,16 @@ const ToolbarPlugin = () => {
             selected={isStrikethrough}
           >
             <StrikethroughSIcon />
+          </ToggleButton>
+          <ToggleButton
+            size="small"
+            value="code"
+            aria-label="Code"
+            onMouseDown={preventDefault}
+            onClick={handleInlineStyleToggle}
+            selected={isCode}
+          >
+            <CodeIcon />
           </ToggleButton>
 
           <Divider

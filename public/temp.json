@@ -8,7 +8,35 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "I have done it again.   ",
+            "text": "I have ",
+            "type": "text",
+            "version": 1
+          },
+          {
+            "children": [
+              {
+                "detail": 0,
+                "format": 0,
+                "mode": "normal",
+                "style": "",
+                "text": "done",
+                "type": "text",
+                "version": 1
+              }
+            ],
+            "direction": "ltr",
+            "format": "",
+            "indent": 0,
+            "type": "link",
+            "version": 1,
+            "url": "https://www.wikipedia.org"
+          },
+          {
+            "detail": 0,
+            "format": 0,
+            "mode": "normal",
+            "style": "",
+            "text": " it again.",
             "type": "text",
             "version": 1
           },
@@ -21,7 +49,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "One year in every ten   ",
+            "text": "One year in every ten",
             "type": "text",
             "version": 1
           },
@@ -56,7 +84,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "A sort of walking miracle, my skin   ",
+            "text": "A sort of walking miracle, my skin",
             "type": "text",
             "version": 1
           },
@@ -69,7 +97,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "Bright as a Nazi lampshade,   ",
+            "text": "Bright as a Nazi lampshade,",
             "type": "text",
             "version": 1
           },
@@ -117,7 +145,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "My face a featureless, fine   ",
+            "text": "My face a featureless, fine",
             "type": "text",
             "version": 1
           },
@@ -152,7 +180,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "Peel off the napkin   ",
+            "text": "Peel off the napkin",
             "type": "text",
             "version": 1
           },
@@ -165,7 +193,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "O my enemy.   ",
+            "text": "O my enemy.",
             "type": "text",
             "version": 1
           },
@@ -200,7 +228,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "The nose, the eye pits, the full set of teeth?   ",
+            "text": "The nose, the eye pits, the full set of teeth?",
             "type": "text",
             "version": 1
           },
@@ -261,7 +289,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "The grave cave ate will be   ",
+            "text": "The grave cave ate will be",
             "type": "text",
             "version": 1
           },
@@ -296,7 +324,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "And I a smiling woman.   ",
+            "text": "And I a smiling woman.",
             "type": "text",
             "version": 1
           },
@@ -344,7 +372,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "This is Number Three.   ",
+            "text": "This is Number Three.",
             "type": "text",
             "version": 1
           },
@@ -392,7 +420,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "What a million filaments.   ",
+            "text": "What a million filaments.",
             "type": "text",
             "version": 1
           },
@@ -405,7 +433,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "The peanut-crunching crowd   ",
+            "text": "The peanut-crunching crowd",
             "type": "text",
             "version": 1
           },
@@ -453,7 +481,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "The big strip tease.   ",
+            "text": "The big strip tease.",
             "type": "text",
             "version": 1
           },
@@ -488,7 +516,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "These are my hands   ",
+            "text": "These are my hands",
             "type": "text",
             "version": 1
           },
@@ -536,7 +564,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "Nevertheless, I am the same, identical woman.   ",
+            "text": "Nevertheless, I am the same, identical woman.",
             "type": "text",
             "version": 1
           },
@@ -549,7 +577,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "The first time it happened I was ten.   ",
+            "text": "The first time it happened I was ten.",
             "type": "text",
             "version": 1
           },
@@ -597,7 +625,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "To last it out and not come back at all.   ",
+            "text": "To last it out and not come back at all.",
             "type": "text",
             "version": 1
           },
@@ -693,7 +721,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "Is an art, like everything else.   ",
+            "text": "Is an art, like everything else.",
             "type": "text",
             "version": 1
           },
@@ -728,7 +756,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "I do it so it feels like hell.   ",
+            "text": "I do it so it feels like hell.",
             "type": "text",
             "version": 1
           },
@@ -789,7 +817,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "It’s easy enough to do it and stay put.   ",
+            "text": "It’s easy enough to do it and stay put.",
             "type": "text",
             "version": 1
           },
@@ -837,7 +865,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "To the same place, the same face, the same brute   ",
+            "text": "To the same place, the same face, the same brute",
             "type": "text",
             "version": 1
           },
@@ -885,7 +913,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "That knocks me out.   ",
+            "text": "That knocks me out.",
             "type": "text",
             "version": 1
           },
@@ -920,7 +948,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "For the eyeing of my scars, there is a charge   ",
+            "text": "For the eyeing of my scars, there is a charge",
             "type": "text",
             "version": 1
           },
@@ -968,7 +996,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "And there is a charge, a very large charge   ",
+            "text": "And there is a charge, a very large charge",
             "type": "text",
             "version": 1
           },
@@ -981,7 +1009,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "For a word or a touch   ",
+            "text": "For a word or a touch",
             "type": "text",
             "version": 1
           },
@@ -1016,7 +1044,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "Or a piece of my hair or my clothes.   ",
+            "text": "Or a piece of my hair or my clothes.",
             "type": "text",
             "version": 1
           },
@@ -1029,7 +1057,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "So, so, Herr Doktor.   ",
+            "text": "So, so, Herr Doktor.",
             "type": "text",
             "version": 1
           },
@@ -1077,7 +1105,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "I am your valuable,   ",
+            "text": "I am your valuable,",
             "type": "text",
             "version": 1
           },
@@ -1112,7 +1140,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "That melts to a shriek.   ",
+            "text": "That melts to a shriek.",
             "type": "text",
             "version": 1
           },
@@ -1208,7 +1236,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "A cake of soap,   ",
+            "text": "A cake of soap,",
             "type": "text",
             "version": 1
           },
@@ -1221,7 +1249,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "A wedding ring,   ",
+            "text": "A wedding ring,",
             "type": "text",
             "version": 1
           },
@@ -1256,7 +1284,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "Herr God, Herr Lucifer   ",
+            "text": "Herr God, Herr Lucifer",
             "type": "text",
             "version": 1
           },
@@ -1317,7 +1345,7 @@
             "format": 0,
             "mode": "normal",
             "style": "",
-            "text": "I rise with my red hair   ",
+            "text": "I rise with my red hair",
             "type": "text",
             "version": 1
           },
