@@ -39,6 +39,10 @@ import {
   getCodeLanguages
 } from "@lexical/code";
 import { $isLinkNode, TOGGLE_LINK_COMMAND } from "@lexical/link";
+
+import { INSERT_IMAGE_COMMAND } from "./ImagePlugin";
+import type { InsertImagePayload } from "./ImagePlugin";
+
 import {
   FormatBold as FormatBoldIcon,
   FormatItalic as FormatItalicIcon,
@@ -119,6 +123,9 @@ const useStyles = makeStyles(theme => ({
     ...theme.typography.button,
     color: theme.palette.text.secondary,
     textTransform: "none"
+  },
+  invisibleInput: {
+    display: "none"
   }
 }));
 
@@ -562,6 +569,44 @@ const ToolbarPlugin = () => {
     }
   }, [editor, isLink]);
 
+  const uploadImage = () => {
+    document.getElementById("imageInput")!.click();
+  };
+
+  const insertImage = useCallback(
+    (payload: InsertImagePayload) => {
+      editor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
+    },
+    [editor]
+  );
+
+  const handleImageUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const reader = new FileReader();
+
+    const handleImage = () => {
+      if (typeof reader.result !== "string") {
+        return;
+      }
+      insertImage({
+        altText: "",
+        src: reader.result
+      });
+    };
+
+    reader.addEventListener("load", handleImage);
+
+    if (event.target.files) {
+      const file = event.target.files[0];
+
+      // File size limit of 5 MB
+      if (file.size > 5 * 1024 * 1024) {
+        console.log("File size exceeded 5MB limit");
+      } else {
+        reader.readAsDataURL(file);
+      }
+    }
+  };
+
   return (
     <Paper className={classes.controls}>
       <ToggleButton
@@ -668,6 +713,15 @@ const ToolbarPlugin = () => {
 
           <ToggleButton
             size="small"
+            value="image"
+            aria-label="Image"
+            onMouseDown={preventDefault}
+            onClick={uploadImage}
+          >
+            <ImageIcon />
+          </ToggleButton>
+          <ToggleButton
+            size="small"
             value="link"
             aria-label="link"
             onMouseDown={preventDefault}
@@ -677,6 +731,13 @@ const ToolbarPlugin = () => {
             <InsertLinkIcon />
           </ToggleButton>
           {isLink && <LinkEditor editor={editor} />}
+          <input
+            id="imageInput"
+            type="file"
+            accept="image/*"
+            className={classes.invisibleInput}
+            onChange={handleImageUpload}
+          />
         </>
       )}
     </Paper>

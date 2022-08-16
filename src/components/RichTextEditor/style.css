@@ -256,3 +256,7 @@ h1 {
 .editor-nested-listitem {
   list-style-type: none;
 }
+.editor-image img{
+  display: block;
+  margin: auto;
+}

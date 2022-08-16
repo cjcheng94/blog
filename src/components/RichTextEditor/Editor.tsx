@@ -1,6 +1,4 @@
-import React, { useState, useCallback, useMemo } from "react";
-import { $getRoot, $getSelection } from "lexical";
-import { useEffect } from "react";
+import React, { useCallback } from "react";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -8,6 +6,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import ImagesPlugin from "./plugins/ImagePlugin";
 
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { ListPlugin } from "@lexical/react/LexicalListPlugin";
@@ -15,7 +14,7 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
-
+import { ImageNode } from "./nodes/ImageNode";
 import {
   ToolbarPlugin,
   InitialStatePlugin,
@@ -54,7 +53,8 @@ const Editor: React.FC<EditorProps> = props => {
       CodeNode,
       CodeHighlightNode,
       AutoLinkNode,
-      LinkNode
+      LinkNode,
+      ImageNode
     ]
   };
 
@@ -73,6 +73,7 @@ const Editor: React.FC<EditorProps> = props => {
         <HistoryPlugin />
         <AutoFocusPlugin />
         <InitialStatePlugin />
+        <ImagesPlugin />
       </LexicalComposer>
     </div>
   );
