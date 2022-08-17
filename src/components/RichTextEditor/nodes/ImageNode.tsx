@@ -25,10 +25,7 @@ import type {
 import "./ImageNode.css";
 
 // import {useCollaborationContext} from '@lexical/react/LexicalCollaborationContext';
-import { CollaborationPlugin } from "@lexical/react/LexicalCollaborationPlugin";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { HashtagPlugin } from "@lexical/react/LexicalHashtagPlugin";
-import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -61,6 +58,9 @@ import ImagePlugin from "../plugins/ImagePlugin";
 // import ImageResizer from '../ui/ImageResizer';
 // import Placeholder from '../ui/Placeholder';
 
+import useGetImageUrl from "../../../utils/useGetImageUrl";
+import { imageMapVar } from "../../../api/cache";
+
 export interface ImagePayload {
   altText: string;
   caption?: LexicalEditor;
@@ -68,29 +68,14 @@ export interface ImagePayload {
   key?: NodeKey;
   maxWidth?: number | string;
   showCaption?: boolean;
-  src: string;
+  id: string;
   width?: number | string;
-}
-
-const imageCache = new Set();
-
-function useSuspenseImage(src: string) {
-  if (!imageCache.has(src)) {
-    throw new Promise(resolve => {
-      const img = new Image();
-      img.src = src;
-      img.onload = () => {
-        imageCache.add(src);
-        resolve(null);
-      };
-    });
-  }
 }
 
 function convertImageElement(domNode: Node): null | DOMConversionOutput {
   if (domNode instanceof HTMLImageElement) {
-    const { alt: altText, src } = domNode;
-    const node = $createImageNode({ altText, src });
+    const { alt: altText, id } = domNode;
+    const node = $createImageNode({ altText, id });
     return { node };
   }
   return null;
@@ -100,7 +85,7 @@ function LazyImage({
   altText,
   className,
   imageRef,
-  src,
+  id,
   width,
   height,
   maxWidth
@@ -110,28 +95,36 @@ function LazyImage({
   height: "inherit" | number;
   imageRef: { current: null | HTMLImageElement };
   maxWidth: number | string;
-  src: string;
+  id: string;
   width: "inherit" | number | string;
 }): JSX.Element {
-  useSuspenseImage(src);
-  return (
-    <img
-      className={className || undefined}
-      src={src}
-      alt={altText}
-      ref={imageRef}
-      style={{
-        height,
-        maxWidth,
-        width
-      }}
-      draggable="false"
-    />
-  );
+  const { loading, failed, data: imgUrl } = useGetImageUrl(id);
+
+  if (loading) return <div>LOADING</div>;
+
+  if (failed) return <div>ERROR</div>;
+
+  if (imgUrl) {
+    return (
+      <img
+        className={className || undefined}
+        src={imgUrl}
+        alt={altText}
+        ref={imageRef}
+        style={{
+          height,
+          maxWidth,
+          width
+        }}
+        draggable="false"
+      />
+    );
+  }
+  return <div></div>;
 }
 
 function ImageComponent({
-  src,
+  id,
   altText,
   nodeKey,
   width,
@@ -148,7 +141,7 @@ function ImageComponent({
   nodeKey: NodeKey;
   resizable: boolean;
   showCaption: boolean;
-  src: string;
+  id: string;
   width: "inherit" | number | string;
 }): JSX.Element {
   const ref = useRef(null);
@@ -253,63 +246,40 @@ function ImageComponent({
     setIsResizing(true);
   };
 
-  // const {historyState} = useSharedHistoryContext();
-  // const {
-  //   settings: {showNestedEditorTreeView},
-  // } = useSettings();
-
   const draggable = isSelected && $isNodeSelection(selection);
   const isFocused = $isNodeSelection(selection) && (isSelected || isResizing);
 
   return (
-    <Suspense fallback={null}>
-      <>
-        <div draggable={draggable}>
-          <LazyImage
-            className={isFocused ? "focused" : null}
-            src={src}
-            altText={altText}
-            imageRef={ref}
-            width={width}
-            height={height}
-            maxWidth={maxWidth}
-          />
+    <>
+      <div draggable={draggable}>
+        <LazyImage
+          className={isFocused ? "focused" : null}
+          id={id}
+          altText={altText}
+          imageRef={ref}
+          width={width}
+          height={height}
+          maxWidth={maxWidth}
+        />
+      </div>
+      {showCaption && (
+        <div className="image-caption-container">
+          <LexicalNestedComposer initialEditor={caption}>
+            <LinkPlugin />
+            <RichTextPlugin
+              contentEditable={<div className="ImageNode__contentEditable" />}
+              placeholder={
+                <span className="ImageNode__placeholder">
+                  Enter a caption...
+                </span>
+              }
+              // TODO Remove after it's inherited from the parent (LexicalComposer)
+              initialEditorState={null}
+            />
+          </LexicalNestedComposer>
         </div>
-        {showCaption && (
-          <div className="image-caption-container">
-            <LexicalNestedComposer initialEditor={caption}>
-              {/* <MentionsPlugin /> */}
-              <TablePlugin />
-              {/* <TableCellActionMenuPlugin /> */}
-              <ImagePlugin />
-              <LinkPlugin />
-              {/* <EmojisPlugin /> */}
-              <HashtagPlugin />
-              {/* <KeywordsPlugin /> */}
-              {/* {isCollabActive ? (
-                <CollaborationPlugin
-                  id={caption.getKey()}
-                  providerFactory={createWebsocketProvider}
-                  shouldBootstrap={true}
-                />
-              ) : (
-                <HistoryPlugin externalHistoryState={historyState} />
-              )} */}
-              <RichTextPlugin
-                contentEditable={<div className="ImageNode__contentEditable" />}
-                placeholder={
-                  <span className="ImageNode__placeholder">
-                    Enter a caption...
-                  </span>
-                }
-                // TODO Remove after it's inherited from the parent (LexicalComposer)
-                initialEditorState={null}
-              />
-            </LexicalNestedComposer>
-          </div>
-        )}
-      </>
-    </Suspense>
+      )}
+    </>
   );
 }
 
@@ -320,7 +290,7 @@ export type SerializedImageNode = Spread<
     height?: number;
     maxWidth: number | string;
     showCaption: boolean;
-    src: string;
+    id: string;
     width?: number | string;
     type: "image";
     version: 1;
@@ -329,7 +299,7 @@ export type SerializedImageNode = Spread<
 >;
 
 export class ImageNode extends DecoratorNode<JSX.Element> {
-  __src: string;
+  __id: string;
   __altText: string;
   __width: "inherit" | number | string;
   __height: "inherit" | number;
@@ -343,7 +313,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   static clone(node: ImageNode): ImageNode {
     return new ImageNode(
-      node.__src,
+      node.__id,
       node.__altText,
       node.__maxWidth,
       node.__width,
@@ -355,14 +325,14 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { altText, height, width, maxWidth, caption, src, showCaption } =
+    const { altText, height, width, maxWidth, caption, id, showCaption } =
       serializedNode;
     const node = $createImageNode({
       altText,
       height,
       maxWidth,
       showCaption,
-      src,
+      id,
       width
     });
     const nestedEditor = node.__caption;
@@ -375,7 +345,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement("img");
-    element.setAttribute("src", this.__src);
+    element.setAttribute("id", this.__id);
     element.setAttribute("alt", this.__altText);
     return { element };
   }
@@ -390,7 +360,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   constructor(
-    src: string,
+    id: string,
     altText: string,
     maxWidth: number | string,
     width?: "inherit" | number | string,
@@ -400,7 +370,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     key?: NodeKey
   ) {
     super(key);
-    this.__src = src;
+    this.__id = id;
     this.__altText = altText;
     this.__maxWidth = maxWidth;
     this.__width = width || "inherit" || "100%";
@@ -416,7 +386,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       height: this.__height === "inherit" ? 0 : this.__height,
       maxWidth: this.__maxWidth,
       showCaption: this.__showCaption,
-      src: this.getSrc(),
+      id: this.getId(),
       type: "image",
       version: 1,
       width: this.__width === "inherit" ? 0 : "100%"
@@ -453,8 +423,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return false;
   }
 
-  getSrc(): string {
-    return this.__src;
+  getId(): string {
+    return this.__id;
   }
 
   getAltText(): string {
@@ -464,7 +434,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   decorate(): JSX.Element {
     return (
       <ImageComponent
-        src={this.__src}
+        id={this.__id}
         altText={this.__altText}
         width={this.__width}
         height={this.__height}
@@ -482,14 +452,14 @@ export function $createImageNode({
   altText,
   height,
   maxWidth = "100%",
-  src,
+  id,
   width,
   showCaption,
   caption,
   key
 }: ImagePayload): ImageNode {
   return new ImageNode(
-    src,
+    id,
     altText,
     maxWidth,
     width,
