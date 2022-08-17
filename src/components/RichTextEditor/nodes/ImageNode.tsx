@@ -44,21 +44,10 @@ import {
   KEY_DELETE_COMMAND
 } from "lexical";
 import * as React from "react";
-import { Suspense, useCallback, useEffect, useRef, useState } from "react";
-
-// import {createWebsocketProvider} from '../collaboration';
-// import {useSettings} from '../context/SettingsContext';
-// import {useSharedHistoryContext} from '../context/SharedHistoryContext';
-import ImagePlugin from "../plugins/ImagePlugin";
-// import KeywordsPlugin from '../plugins/KeywordsPlugin';
-// import MentionsPlugin from '../plugins/MentionsPlugin';
-// import TableCellActionMenuPlugin from '../plugins/TableActionMenuPlugin';
-// import TreeViewPlugin from '../plugins/TreeViewPlugin';
-// import ContentEditable from '../ui/ContentEditable';
-// import ImageResizer from '../ui/ImageResizer';
-// import Placeholder from '../ui/Placeholder';
+import { useCallback, useEffect, useRef, useState } from "react";
 
 import useGetImageUrl from "../../../utils/useGetImageUrl";
+import useUploadImage from "../../../utils/useUploadImage";
 import { imageMapVar } from "../../../api/cache";
 
 export interface ImagePayload {
@@ -81,9 +70,8 @@ function convertImageElement(domNode: Node): null | DOMConversionOutput {
   return null;
 }
 
-function LazyImage({
+function RemoteImage({
   altText,
-  className,
   imageRef,
   id,
   width,
@@ -91,7 +79,6 @@ function LazyImage({
   maxWidth
 }: {
   altText: string;
-  className: string | null;
   height: "inherit" | number;
   imageRef: { current: null | HTMLImageElement };
   maxWidth: number | string;
@@ -107,7 +94,55 @@ function LazyImage({
   if (imgUrl) {
     return (
       <img
-        className={className || undefined}
+        src={imgUrl}
+        alt={altText}
+        ref={imageRef}
+        style={{
+          height,
+          maxWidth,
+          width
+        }}
+        draggable="false"
+      />
+    );
+  }
+  return <div></div>;
+}
+
+function LocalImage({
+  altText,
+  imageRef,
+  id,
+  width,
+  height,
+  maxWidth
+}: {
+  altText: string;
+  height: "inherit" | number;
+  imageRef: { current: null | HTMLImageElement };
+  maxWidth: number | string;
+  id: string;
+  width: "inherit" | number | string;
+}): JSX.Element {
+  const imgMap = imageMapVar();
+  const imgArrayBuffer = imgMap[id];
+
+  const {
+    loading,
+    failed,
+    data: imgUrl
+  } = useUploadImage({
+    fileId: id,
+    file: imgArrayBuffer
+  });
+
+  if (loading) return <div>UPLOADING</div>;
+
+  if (failed) return <div>ERROR</div>;
+
+  if (imgUrl) {
+    return (
+      <img
         src={imgUrl}
         alt={altText}
         ref={imageRef}
@@ -130,7 +165,6 @@ function ImageComponent({
   width,
   height,
   maxWidth,
-  resizable,
   showCaption,
   caption
 }: {
@@ -139,7 +173,6 @@ function ImageComponent({
   height: "inherit" | number;
   maxWidth: number | string;
   nodeKey: NodeKey;
-  resizable: boolean;
   showCaption: boolean;
   id: string;
   width: "inherit" | number | string;
@@ -225,42 +258,36 @@ function ImageComponent({
     });
   };
 
-  const onResizeEnd = (
-    nextWidth: "inherit" | number,
-    nextHeight: "inherit" | number
-  ) => {
-    // Delay hiding the resize bars for click case
-    setTimeout(() => {
-      setIsResizing(false);
-    }, 200);
-
-    editor.update(() => {
-      const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) {
-        node.setWidthAndHeight(nextWidth, nextHeight);
-      }
-    });
-  };
-
-  const onResizeStart = () => {
-    setIsResizing(true);
-  };
-
   const draggable = isSelected && $isNodeSelection(selection);
   const isFocused = $isNodeSelection(selection) && (isSelected || isResizing);
+
+  // There is such an ID in the imgMap object, which means this image was
+  // just added by the user, and dosen't yet exist on the backend
+  const imgMap = imageMapVar();
+  const isLocal = Object.keys(imgMap).includes(id);
 
   return (
     <>
       <div draggable={draggable}>
-        <LazyImage
-          className={isFocused ? "focused" : null}
-          id={id}
-          altText={altText}
-          imageRef={ref}
-          width={width}
-          height={height}
-          maxWidth={maxWidth}
-        />
+        {isLocal ? (
+          <LocalImage
+            id={id}
+            altText={altText}
+            imageRef={ref}
+            width={width}
+            height={height}
+            maxWidth={maxWidth}
+          />
+        ) : (
+          <RemoteImage
+            id={id}
+            altText={altText}
+            imageRef={ref}
+            width={width}
+            height={height}
+            maxWidth={maxWidth}
+          />
+        )}
       </div>
       {showCaption && (
         <div className="image-caption-container">
@@ -442,7 +469,6 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
         nodeKey={this.getKey()}
         showCaption={this.__showCaption}
         caption={this.__caption}
-        resizable={true}
       />
     );
   }

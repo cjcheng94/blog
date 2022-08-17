@@ -6,6 +6,12 @@ const aws = new AwsClient({
   secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
 });
 
+const getUrlFromArrayBuffer = (arrayBuffer: ArrayBuffer) => {
+  const arrayBufferView = new Uint8Array(arrayBuffer);
+  const blob = new Blob([arrayBufferView]);
+  return URL.createObjectURL(blob);
+};
+
 type useUploadImagePayload = {
   fileId: string;
   file: ArrayBuffer;
@@ -44,9 +50,11 @@ const useUploadImage = (payload: useUploadImagePayload) => {
       return;
     }
 
+    const objectUrl = getUrlFromArrayBuffer(file);
+
     setFailed(false);
     setLoading(false);
-    setData("success");
+    setData(objectUrl);
   };
 
   useEffect(() => {
