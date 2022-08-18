@@ -24,12 +24,10 @@ import type {
 
 import "./ImageNode.css";
 
-// import {useCollaborationContext} from '@lexical/react/LexicalCollaborationContext';
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
-import { TablePlugin } from "@lexical/react/LexicalTablePlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -180,12 +178,8 @@ function ImageComponent({
   const ref = useRef(null);
   const [isSelected, setSelected, clearSelection] =
     useLexicalNodeSelection(nodeKey);
-  const [isResizing, setIsResizing] = useState<boolean>(false);
-  // const {isCollabActive} = useCollaborationContext();
+
   const [editor] = useLexicalComposerContext();
-  const [selection, setSelection] = useState<
-    RangeSelection | NodeSelection | GridSelection | null
-  >(null);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -205,17 +199,10 @@ function ImageComponent({
 
   useEffect(() => {
     return mergeRegister(
-      editor.registerUpdateListener(({ editorState }) => {
-        setSelection(editorState.read(() => $getSelection()));
-      }),
       editor.registerCommand<MouseEvent>(
         CLICK_COMMAND,
         payload => {
           const event = payload;
-
-          if (isResizing) {
-            return true;
-          }
           if (event.target === ref.current) {
             if (!event.shiftKey) {
               clearSelection();
@@ -239,15 +226,7 @@ function ImageComponent({
         COMMAND_PRIORITY_LOW
       )
     );
-  }, [
-    clearSelection,
-    editor,
-    isResizing,
-    isSelected,
-    nodeKey,
-    onDelete,
-    setSelected
-  ]);
+  }, [clearSelection, editor, isSelected, nodeKey, onDelete, setSelected]);
 
   const setShowCaption = () => {
     editor.update(() => {
@@ -258,9 +237,6 @@ function ImageComponent({
     });
   };
 
-  const draggable = isSelected && $isNodeSelection(selection);
-  const isFocused = $isNodeSelection(selection) && (isSelected || isResizing);
-
   // There is such an ID in the imgMap object, which means this image was
   // just added by the user, and dosen't yet exist on the backend
   const imgMap = imageMapVar();
@@ -268,7 +244,7 @@ function ImageComponent({
 
   return (
     <>
-      <div draggable={draggable}>
+      <div>
         {isLocal ? (
           <LocalImage
             id={id}
