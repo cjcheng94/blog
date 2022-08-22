@@ -14,6 +14,7 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
+import { useSharedHistoryContext } from "./context/SharedHistoryContext";
 import { ImageNode } from "./nodes/ImageNode";
 import {
   ToolbarPlugin,
@@ -40,6 +41,7 @@ const Editor: React.FC<EditorProps> = props => {
   const onChange = useCallback((editorState: any) => {
     propOnChange(JSON.stringify(editorState));
   }, []);
+  const { historyState } = useSharedHistoryContext();
 
   const initialConfig = {
     namespace: "MyEditor",
@@ -70,7 +72,7 @@ const Editor: React.FC<EditorProps> = props => {
         <ListPlugin />
         <LinkPlugin />
         <OnChangePlugin onChange={onChange} ignoreSelectionChange={true} />
-        <HistoryPlugin />
+        <HistoryPlugin externalHistoryState={historyState} />
         <AutoFocusPlugin />
         <InitialStatePlugin />
         <ImagesPlugin />
