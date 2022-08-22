@@ -24,10 +24,12 @@ import type {
 
 import "./ImageNode.css";
 
+import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
 import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
+import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
 import { mergeRegister } from "@lexical/utils";
 import {
@@ -42,7 +44,9 @@ import {
   KEY_DELETE_COMMAND
 } from "lexical";
 import * as React from "react";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, Suspense } from "react";
+
+import { useSharedHistoryContext } from "../context/SharedHistoryContext";
 
 import useGetImageUrl from "../../../utils/useGetImageUrl";
 import useUploadImage from "../../../utils/useUploadImage";
@@ -55,109 +59,161 @@ export interface ImagePayload {
   key?: NodeKey;
   maxWidth?: number | string;
   showCaption?: boolean;
-  id: string;
+  src: string;
   width?: number | string;
 }
 
 function convertImageElement(domNode: Node): null | DOMConversionOutput {
   if (domNode instanceof HTMLImageElement) {
-    const { alt: altText, id } = domNode;
-    const node = $createImageNode({ altText, id });
+    const { alt: altText, src } = domNode;
+    const node = $createImageNode({ altText, src });
     return { node };
   }
   return null;
 }
 
-function RemoteImage({
-  altText,
-  imageRef,
-  id,
-  width,
-  height,
-  maxWidth
-}: {
-  altText: string;
-  height: "inherit" | number;
-  imageRef: { current: null | HTMLImageElement };
-  maxWidth: number | string;
-  id: string;
-  width: "inherit" | number | string;
-}): JSX.Element {
-  const { loading, failed, data: imgUrl } = useGetImageUrl(id);
+// // There is such an ID in the imgMap object, which means this image was
+// // just added by the user, and dosen't yet exist on the backend
+// const imgMap = imageMapVar();
+// const isLocal = Object.keys(imgMap).includes(id);
 
-  if (loading) return <div>LOADING</div>;
+// function RemoteImage({
+//   altText,
+//   imageRef,
+//   id,
+//   width,
+//   height,
+//   maxWidth
+// }: {
+//   altText: string;
+//   height: "inherit" | number;
+//   imageRef: { current: null | HTMLImageElement };
+//   maxWidth: number | string;
+//   id: string;
+//   width: "inherit" | number | string;
+// }): JSX.Element {
+//   const { loading, failed, data: imgUrl } = useGetImageUrl(id);
 
-  if (failed) return <div>ERROR</div>;
+//   if (loading) return <div>LOADING</div>;
 
-  if (imgUrl) {
-    return (
-      <img
-        src={imgUrl}
-        alt={altText}
-        ref={imageRef}
-        style={{
-          height,
-          maxWidth,
-          width
-        }}
-        draggable="false"
-      />
-    );
+//   if (failed) return <div>ERROR</div>;
+
+//   if (imgUrl) {
+//     return (
+//       <img
+//         src={imgUrl}
+//         alt={altText}
+//         ref={imageRef}
+//         style={{
+//           height,
+//           maxWidth,
+//           width
+//         }}
+//         draggable="false"
+//       />
+//     );
+//   }
+//   return <div></div>;
+// }
+
+// function LocalImage({
+//   altText,
+//   imageRef,
+//   id,
+//   width,
+//   height,
+//   maxWidth
+// }: {
+//   altText: string;
+//   height: "inherit" | number;
+//   imageRef: { current: null | HTMLImageElement };
+//   maxWidth: number | string;
+//   id: string;
+//   width: "inherit" | number | string;
+// }): JSX.Element {
+//   const imgMap = imageMapVar();
+//   const imgArrayBuffer = imgMap[id];
+
+//   const {
+//     loading,
+//     failed,
+//     data: imgUrl
+//   } = useUploadImage({
+//     fileId: id,
+//     file: imgArrayBuffer
+//   });
+
+//   if (loading) return <div>UPLOADING</div>;
+
+//   if (failed) return <div>ERROR</div>;
+
+//   if (imgUrl) {
+//     return (
+//       <img
+//         src={imgUrl}
+//         alt={altText}
+//         ref={imageRef}
+//         style={{
+//           height,
+//           maxWidth,
+//           width
+//         }}
+//         draggable="false"
+//       />
+//     );
+//   }
+//   return <div></div>;
+// }
+
+const imageCache = new Set();
+
+function useSuspenseImage(src: string) {
+  if (!imageCache.has(src)) {
+    throw new Promise(resolve => {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        imageCache.add(src);
+        resolve(null);
+      };
+    });
   }
-  return <div></div>;
 }
 
-function LocalImage({
+function LazyImage({
   altText,
   imageRef,
-  id,
+  src,
   width,
   height,
   maxWidth
 }: {
   altText: string;
+
   height: "inherit" | number;
   imageRef: { current: null | HTMLImageElement };
   maxWidth: number | string;
-  id: string;
+  src: string;
   width: "inherit" | number | string;
 }): JSX.Element {
-  const imgMap = imageMapVar();
-  const imgArrayBuffer = imgMap[id];
-
-  const {
-    loading,
-    failed,
-    data: imgUrl
-  } = useUploadImage({
-    fileId: id,
-    file: imgArrayBuffer
-  });
-
-  if (loading) return <div>UPLOADING</div>;
-
-  if (failed) return <div>ERROR</div>;
-
-  if (imgUrl) {
-    return (
-      <img
-        src={imgUrl}
-        alt={altText}
-        ref={imageRef}
-        style={{
-          height,
-          maxWidth,
-          width
-        }}
-        draggable="false"
-      />
-    );
-  }
-  return <div></div>;
+  useSuspenseImage(src);
+  return (
+    <img
+      src={src}
+      alt={altText}
+      ref={imageRef}
+      style={{
+        height,
+        maxWidth,
+        width
+      }}
+      draggable="false"
+    />
+  );
 }
 
 function ImageComponent({
-  id,
+  src,
   altText,
   nodeKey,
   width,
@@ -172,7 +228,7 @@ function ImageComponent({
   maxWidth: number | string;
   nodeKey: NodeKey;
   showCaption: boolean;
-  id: string;
+  src: string;
   width: "inherit" | number | string;
 }): JSX.Element {
   const ref = useRef(null);
@@ -237,14 +293,11 @@ function ImageComponent({
     });
   };
 
-  // There is such an ID in the imgMap object, which means this image was
-  // just added by the user, and dosen't yet exist on the backend
-  const imgMap = imageMapVar();
-  const isLocal = Object.keys(imgMap).includes(id);
+  const { historyState } = useSharedHistoryContext();
 
   return (
-    <>
-      <div>
+    <Suspense fallback={null}>
+      {/* <div>
         {isLocal ? (
           <LocalImage
             id={id}
@@ -264,13 +317,24 @@ function ImageComponent({
             maxWidth={maxWidth}
           />
         )}
-      </div>
+      </div> */}
+      <LazyImage
+        src={src}
+        altText={altText}
+        imageRef={ref}
+        width={width}
+        height={height}
+        maxWidth={maxWidth}
+      />
       {showCaption && (
-        <div className="image-caption-container">
+        <div onClick={setShowCaption}>
           <LexicalNestedComposer initialEditor={caption}>
             <LinkPlugin />
+            <HistoryPlugin externalHistoryState={historyState} />
             <RichTextPlugin
-              contentEditable={<div className="ImageNode__contentEditable" />}
+              contentEditable={
+                <ContentEditable className="ImageNode__contentEditable" />
+              }
               placeholder={
                 <span className="ImageNode__placeholder">
                   Enter a caption...
@@ -282,7 +346,7 @@ function ImageComponent({
           </LexicalNestedComposer>
         </div>
       )}
-    </>
+    </Suspense>
   );
 }
 
@@ -293,7 +357,7 @@ export type SerializedImageNode = Spread<
     height?: number;
     maxWidth: number | string;
     showCaption: boolean;
-    id: string;
+    src: string;
     width?: number | string;
     type: "image";
     version: 1;
@@ -302,7 +366,7 @@ export type SerializedImageNode = Spread<
 >;
 
 export class ImageNode extends DecoratorNode<JSX.Element> {
-  __id: string;
+  __src: string;
   __altText: string;
   __width: "inherit" | number | string;
   __height: "inherit" | number;
@@ -316,7 +380,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   static clone(node: ImageNode): ImageNode {
     return new ImageNode(
-      node.__id,
+      node.__src,
       node.__altText,
       node.__maxWidth,
       node.__width,
@@ -328,14 +392,14 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   static importJSON(serializedNode: SerializedImageNode): ImageNode {
-    const { altText, height, width, maxWidth, caption, id, showCaption } =
+    const { altText, height, width, maxWidth, caption, src, showCaption } =
       serializedNode;
     const node = $createImageNode({
       altText,
       height,
       maxWidth,
       showCaption,
-      id,
+      src,
       width
     });
     const nestedEditor = node.__caption;
@@ -348,7 +412,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
 
   exportDOM(): DOMExportOutput {
     const element = document.createElement("img");
-    element.setAttribute("id", this.__id);
+    element.setAttribute("src", this.__src);
     element.setAttribute("alt", this.__altText);
     return { element };
   }
@@ -363,7 +427,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   }
 
   constructor(
-    id: string,
+    src: string,
     altText: string,
     maxWidth: number | string,
     width?: "inherit" | number | string,
@@ -373,7 +437,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     key?: NodeKey
   ) {
     super(key);
-    this.__id = id;
+    this.__src = src;
     this.__altText = altText;
     this.__maxWidth = maxWidth;
     this.__width = width || "inherit" || "100%";
@@ -389,7 +453,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
       height: this.__height === "inherit" ? 0 : this.__height,
       maxWidth: this.__maxWidth,
       showCaption: this.__showCaption,
-      id: this.getId(),
+      src: this.getSrc(),
       type: "image",
       version: 1,
       width: this.__width === "inherit" ? 0 : "100%"
@@ -426,8 +490,8 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
     return false;
   }
 
-  getId(): string {
-    return this.__id;
+  getSrc(): string {
+    return this.__src;
   }
 
   getAltText(): string {
@@ -437,7 +501,7 @@ export class ImageNode extends DecoratorNode<JSX.Element> {
   decorate(): JSX.Element {
     return (
       <ImageComponent
-        id={this.__id}
+        src={this.__src}
         altText={this.__altText}
         width={this.__width}
         height={this.__height}
@@ -454,14 +518,14 @@ export function $createImageNode({
   altText,
   height,
   maxWidth = "100%",
-  id,
+  src,
   width,
   showCaption,
   caption,
   key
 }: ImagePayload): ImageNode {
   return new ImageNode(
-    id,
+    src,
     altText,
     maxWidth,
     width,
