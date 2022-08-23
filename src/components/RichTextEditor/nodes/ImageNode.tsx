@@ -1,11 +1,3 @@
-/**
- * Copyright (c) Meta Platforms, Inc. and affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- *
- */
-
 import type {
   DOMConversionMap,
   DOMConversionOutput,
@@ -21,9 +13,6 @@ import type {
   SerializedLexicalNode,
   Spread
 } from "lexical";
-
-import "./ImageNode.css";
-
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
@@ -47,10 +36,49 @@ import * as React from "react";
 import { useCallback, useEffect, useRef, useState, Suspense } from "react";
 
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
+import { makeStyles } from "@material-ui/core";
 
-import useGetImageUrl from "../../../utils/useGetImageUrl";
-import useUploadImage from "../../../utils/useUploadImage";
-import { imageMapVar } from "../../../api/cache";
+const useStyles = makeStyles(theme => ({
+  contentEditable: {
+    color: theme.palette.text.secondary,
+    minHeight: 20,
+    border: 0,
+    resize: "none",
+    cursor: "text",
+    caretColor: "rgb(5, 5, 5)",
+    display: "block",
+    position: "relative",
+    tabSize: 1,
+    outline: 0,
+    paddingTop: 4,
+    userSelect: "text",
+    fontWeight: 400,
+    fontSize: "0.75rem",
+    lineHeight: 1.66,
+    letterSpacing: "0.03333em",
+    whiteSpace: "pre-wrap",
+    wordBreak: "break-word"
+  },
+  placeholder: {
+    color: theme.palette.text.secondary,
+    overflow: "hidden",
+    position: "absolute",
+    textOverflow: "ellipsis",
+    top: 4,
+    left: 0,
+    userSelect: "none",
+    whiteSpace: "nowrap",
+    display: "inline-block",
+    pointerEvents: "none",
+    fontWeight: 400,
+    fontSize: "0.75rem",
+    lineHeight: 1.66,
+    letterSpacing: "0.03333em"
+  },
+  captionContainer: {
+    position: "relative"
+  }
+}));
 
 export interface ImagePayload {
   altText: string;
@@ -237,6 +265,8 @@ function ImageComponent({
 
   const [editor] = useLexicalComposerContext();
 
+  const classes = useStyles();
+
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
       if (isSelected && $isNodeSelection($getSelection())) {
@@ -284,15 +314,6 @@ function ImageComponent({
     );
   }, [clearSelection, editor, isSelected, nodeKey, onDelete, setSelected]);
 
-  const setShowCaption = () => {
-    editor.update(() => {
-      const node = $getNodeByKey(nodeKey);
-      if ($isImageNode(node)) {
-        node.setShowCaption(true);
-      }
-    });
-  };
-
   const { historyState } = useSharedHistoryContext();
 
   return (
@@ -318,34 +339,36 @@ function ImageComponent({
           />
         )}
       </div> */}
-      <LazyImage
-        src={src}
-        altText={altText}
-        imageRef={ref}
-        width={width}
-        height={height}
-        maxWidth={maxWidth}
-      />
-      {showCaption && (
-        <div onClick={setShowCaption}>
-          <LexicalNestedComposer initialEditor={caption}>
-            <LinkPlugin />
-            <HistoryPlugin externalHistoryState={historyState} />
-            <RichTextPlugin
-              contentEditable={
-                <ContentEditable className="ImageNode__contentEditable" />
-              }
-              placeholder={
-                <span className="ImageNode__placeholder">
-                  Enter a caption...
-                </span>
-              }
-              // TODO Remove after it's inherited from the parent (LexicalComposer)
-              initialEditorState={null}
-            />
-          </LexicalNestedComposer>
-        </div>
-      )}
+      <div>
+        <LazyImage
+          src={src}
+          altText={altText}
+          imageRef={ref}
+          width={width}
+          height={height}
+          maxWidth={maxWidth}
+        />
+        {showCaption && (
+          <div className={classes.captionContainer}>
+            <LexicalNestedComposer initialEditor={caption}>
+              <LinkPlugin />
+              <HistoryPlugin externalHistoryState={historyState} />
+              <RichTextPlugin
+                contentEditable={
+                  <ContentEditable className={classes.contentEditable} />
+                }
+                placeholder={
+                  <span className={classes.placeholder}>
+                    Enter a caption...
+                  </span>
+                }
+                // TODO Remove after it's inherited from the parent (LexicalComposer)
+                initialEditorState={null}
+              />
+            </LexicalNestedComposer>
+          </div>
+        )}
+      </div>
     </Suspense>
   );
 }
