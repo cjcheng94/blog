@@ -1,10 +1,9 @@
-import React, { useCallback } from "react";
+import React from "react";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
-import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import ImagesPlugin from "./plugins/ImagePlugin";
 
@@ -20,7 +19,8 @@ import {
   ToolbarPlugin,
   InitialStatePlugin,
   EditorTheme,
-  CodeHighlightPlugin
+  CodeHighlightPlugin,
+  OnChangePlugin
 } from "@components";
 import "./style.css";
 
@@ -32,15 +32,13 @@ function onError(error: any) {
 }
 
 type EditorProps = {
-  propOnChange: (value: string) => void;
+  onTextContentChange?: (data: string) => void;
+  onRichTextTextChange?: (data: string) => void;
 };
 
 const Editor: React.FC<EditorProps> = props => {
-  const { propOnChange } = props;
+  const { onTextContentChange, onRichTextTextChange } = props;
 
-  const onChange = useCallback((editorState: any) => {
-    propOnChange(JSON.stringify(editorState));
-  }, []);
   const { historyState } = useSharedHistoryContext();
 
   const initialConfig = {
@@ -58,6 +56,7 @@ const Editor: React.FC<EditorProps> = props => {
       LinkNode,
       ImageNode
     ]
+    // readOnly: true
   };
 
   return (
@@ -71,7 +70,11 @@ const Editor: React.FC<EditorProps> = props => {
         <CodeHighlightPlugin />
         <ListPlugin />
         <LinkPlugin />
-        <OnChangePlugin onChange={onChange} ignoreSelectionChange={true} />
+        <OnChangePlugin
+          ignoreSelectionChange={true}
+          onRichTextChange={onRichTextTextChange}
+          onTextContentChange={onTextContentChange}
+        />
         <HistoryPlugin externalHistoryState={historyState} />
         <AutoFocusPlugin />
         <InitialStatePlugin />
