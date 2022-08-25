@@ -362,8 +362,6 @@ function ImageComponent({
                     Enter a caption...
                   </span>
                 }
-                // TODO Remove after it's inherited from the parent (LexicalComposer)
-                initialEditorState={null}
               />
             </LexicalNestedComposer>
           </div>
