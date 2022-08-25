@@ -32,12 +32,21 @@ function onError(error: any) {
 }
 
 type EditorProps = {
+  readOnly?: boolean;
+  initialState?: string;
+  setContentEmpty?: (isEmpty: boolean) => void;
   onTextContentChange?: (data: string) => void;
   onRichTextTextChange?: (data: string) => void;
 };
 
 const Editor: React.FC<EditorProps> = props => {
-  const { onTextContentChange, onRichTextTextChange } = props;
+  const {
+    readOnly = false,
+    initialState,
+    setContentEmpty,
+    onTextContentChange,
+    onRichTextTextChange
+  } = props;
 
   const { historyState } = useSharedHistoryContext();
 
@@ -45,6 +54,7 @@ const Editor: React.FC<EditorProps> = props => {
     namespace: "MyEditor",
     theme: EditorTheme,
     onError,
+    readOnly,
     nodes: [
       HeadingNode,
       ListNode,
@@ -56,7 +66,6 @@ const Editor: React.FC<EditorProps> = props => {
       LinkNode,
       ImageNode
     ]
-    // readOnly: true
   };
 
   return (
@@ -72,12 +81,13 @@ const Editor: React.FC<EditorProps> = props => {
         <LinkPlugin />
         <OnChangePlugin
           ignoreSelectionChange={true}
+          setContentEmpty={setContentEmpty}
           onRichTextChange={onRichTextTextChange}
           onTextContentChange={onTextContentChange}
         />
         <HistoryPlugin externalHistoryState={historyState} />
         <AutoFocusPlugin />
-        <InitialStatePlugin />
+        <InitialStatePlugin data={initialState} />
         <ImagesPlugin />
       </LexicalComposer>
     </div>
