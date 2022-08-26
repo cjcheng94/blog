@@ -6,8 +6,11 @@ const InitialStatePlugin = ({ data }: { data?: string }) => {
 
   useEffect(() => {
     if (data) {
-      const editorState = editor.parseEditorState(data);
-      editor.setEditorState(editorState);
+      // Prevent legacy Draft editor state crash
+      try {
+        const editorState = editor.parseEditorState(data);
+        editor.setEditorState(editorState);
+      } catch (err) {}
     }
   }, []);
 
