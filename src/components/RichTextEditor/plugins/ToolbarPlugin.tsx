@@ -642,7 +642,7 @@ const ToolbarPlugin = () => {
       const file = event.target.files[0];
 
       // File size limit of 5 MB
-      if (file.size > 5 * 1024 * 1024) {
+      if (file && file.size > 5 * 1024 * 1024) {
         console.log("File size exceeded 5MB limit");
       } else {
         reader.readAsDataURL(file);
