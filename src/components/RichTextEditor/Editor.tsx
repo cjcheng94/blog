@@ -71,24 +71,26 @@ const Editor: React.FC<EditorProps> = props => {
   return (
     <div className="myEditor">
       <LexicalComposer initialConfig={initialConfig}>
-        <ToolbarPlugin />
-        <RichTextPlugin
-          contentEditable={<ContentEditable />}
-          placeholder={<div>Enter some text...</div>}
-        />
-        <CodeHighlightPlugin />
-        <ListPlugin />
-        <LinkPlugin />
-        <OnChangePlugin
-          ignoreSelectionChange={true}
-          setContentEmpty={setContentEmpty}
-          onRichTextChange={onRichTextTextChange}
-          onTextContentChange={onTextContentChange}
-        />
-        <HistoryPlugin externalHistoryState={historyState} />
-        <AutoFocusPlugin />
-        <InitialStatePlugin data={initialState} />
-        <ImagesPlugin />
+        <>
+          {!readOnly && <ToolbarPlugin />}
+          <RichTextPlugin
+            contentEditable={<ContentEditable />}
+            placeholder={<div>Enter some text...</div>}
+          />
+          <CodeHighlightPlugin />
+          <ListPlugin />
+          <LinkPlugin />
+          <OnChangePlugin
+            ignoreSelectionChange={true}
+            setContentEmpty={setContentEmpty}
+            onRichTextChange={onRichTextTextChange}
+            onTextContentChange={onTextContentChange}
+          />
+          <HistoryPlugin externalHistoryState={historyState} />
+          <AutoFocusPlugin />
+          <InitialStatePlugin data={initialState} />
+          <ImagesPlugin />
+        </>
       </LexicalComposer>
     </div>
   );
