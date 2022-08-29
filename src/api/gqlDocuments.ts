@@ -26,7 +26,7 @@ export const GET_ALL_POSTS = gql`
     posts {
       _id
       title
-      content
+      # content
       contentText
       date
       tagIds
