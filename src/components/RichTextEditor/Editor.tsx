@@ -13,7 +13,10 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
-import { useSharedHistoryContext } from "./context/SharedHistoryContext";
+import {
+  SharedHistoryContext,
+  useSharedHistoryContext
+} from "./context/SharedHistoryContext";
 import { ImageNode } from "./nodes/ImageNode";
 import {
   ToolbarPlugin,
@@ -71,7 +74,7 @@ const Editor: React.FC<EditorProps> = props => {
   return (
     <div className="myEditor">
       <LexicalComposer initialConfig={initialConfig}>
-        <>
+        <SharedHistoryContext>
           {!readOnly && <ToolbarPlugin />}
           <RichTextPlugin
             contentEditable={<ContentEditable />}
@@ -90,7 +93,7 @@ const Editor: React.FC<EditorProps> = props => {
           <AutoFocusPlugin />
           <InitialStatePlugin data={initialState} />
           <ImagesPlugin />
-        </>
+        </SharedHistoryContext>
       </LexicalComposer>
     </div>
   );

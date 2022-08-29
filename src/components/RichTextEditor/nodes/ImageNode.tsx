@@ -77,6 +77,14 @@ const useStyles = makeStyles(theme => ({
   },
   captionContainer: {
     position: "relative"
+  },
+  addCaptionButton: {
+    color: theme.palette.text.secondary,
+    fontWeight: 400,
+    fontSize: "0.75rem",
+    lineHeight: 1.66,
+    letterSpacing: "0.03333em",
+    cursor: "pointer"
   }
 }));
 
@@ -314,6 +322,15 @@ function ImageComponent({
     );
   }, [clearSelection, editor, isSelected, nodeKey, onDelete, setSelected]);
 
+  const setShowCaption = () => {
+    editor.update(() => {
+      const node = $getNodeByKey(nodeKey);
+      if ($isImageNode(node)) {
+        node.setShowCaption(true);
+      }
+    });
+  };
+
   const { historyState } = useSharedHistoryContext();
 
   return (
@@ -348,7 +365,7 @@ function ImageComponent({
           height={height}
           maxWidth={maxWidth}
         />
-        {showCaption && (
+        {showCaption ? (
           <div className={classes.captionContainer}>
             <LexicalNestedComposer initialEditor={caption}>
               <LinkPlugin />
@@ -365,6 +382,10 @@ function ImageComponent({
               />
             </LexicalNestedComposer>
           </div>
+        ) : (
+          <span className={classes.addCaptionButton} onClick={setShowCaption}>
+            add caption
+          </span>
         )}
       </div>
     </Suspense>

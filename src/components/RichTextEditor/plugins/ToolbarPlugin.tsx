@@ -631,7 +631,6 @@ const ToolbarPlugin = () => {
       }
       insertImage({
         altText: "",
-        showCaption: true,
         src: reader.result
       });
     };
