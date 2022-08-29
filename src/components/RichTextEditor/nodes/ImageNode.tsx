@@ -225,7 +225,6 @@ function LazyImage({
   maxWidth
 }: {
   altText: string;
-
   height: "inherit" | number;
   imageRef: { current: null | HTMLImageElement };
   maxWidth: number | string;
@@ -274,6 +273,13 @@ function ImageComponent({
   const [editor] = useLexicalComposerContext();
 
   const classes = useStyles();
+
+  const parentEditorReadOnly = editor.isReadOnly();
+  const initialCaptionEditor = caption;
+
+  useEffect(() => {
+    initialCaptionEditor.setReadOnly(parentEditorReadOnly);
+  }, []);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -367,7 +373,7 @@ function ImageComponent({
         />
         {showCaption ? (
           <div className={classes.captionContainer}>
-            <LexicalNestedComposer initialEditor={caption}>
+            <LexicalNestedComposer initialEditor={initialCaptionEditor}>
               <LinkPlugin />
               <HistoryPlugin externalHistoryState={historyState} />
               <RichTextPlugin
@@ -382,7 +388,7 @@ function ImageComponent({
               />
             </LexicalNestedComposer>
           </div>
-        ) : (
+        ) : parentEditorReadOnly ? null : (
           <span className={classes.addCaptionButton} onClick={setShowCaption}>
             add caption
           </span>
