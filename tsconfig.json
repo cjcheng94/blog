@@ -2,8 +2,8 @@
   "compilerOptions": {
     "strict": true,
     "module": "esnext",
-    "target": "es6",
-    "lib": ["es6", "dom", "dom.iterable"],
+    "target": "ES2019",
+    "lib": ["esnext", "dom", "dom.iterable"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
@@ -23,6 +23,7 @@
       "@components": ["components"],
       "@routes": ["routes"]
     },
+    "types": ["vite/client"]
   },
   "include":["src", "typings"],
   "exclude": [
