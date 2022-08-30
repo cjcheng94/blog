@@ -2,13 +2,9 @@ import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import throttle from "lodash/throttle";
-import {
-  makeStyles,
-  Snackbar,
-  TextField,
-  Button,
-  Typography
-} from "@material-ui/core";
+import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
 import {

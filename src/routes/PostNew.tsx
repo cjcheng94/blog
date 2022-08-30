@@ -8,13 +8,14 @@ import React, {
 import { useMutation } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import {
-  makeStyles,
   Snackbar,
   TextField,
   Button,
   Typography,
   FormHelperText
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import throttle from "lodash/throttle";
 
 import { ErrorAlert, CustomDialog, TagBar, Editor } from "@components";

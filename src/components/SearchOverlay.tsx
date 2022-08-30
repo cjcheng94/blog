@@ -6,9 +6,10 @@ import {
   ClickAwayListener,
   IconButton,
   Button,
-  makeStyles,
   LinearProgress
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { Search, Close } from "@material-ui/icons";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { CloudDone, Sync, SyncProblem } from "@material-ui/icons";
-import { IconButton, Tooltip, makeStyles } from "@material-ui/core";
+import { IconButton, Tooltip } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useReactiveVar } from "@apollo/client";
 import { draftUpdatingVar, draftErrorVar } from "../../api/cache";

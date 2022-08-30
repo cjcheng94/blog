@@ -9,13 +9,9 @@ import {
   GET_ALL_POSTS,
   GET_CACHED_POST_FRAGMENT
 } from "../api/gqlDocuments";
-import {
-  Snackbar,
-  Typography,
-  Divider,
-  Button,
-  makeStyles
-} from "@material-ui/core";
+import { Snackbar, Typography, Divider, Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import {
   DisqusComment,
   CustomDialog,

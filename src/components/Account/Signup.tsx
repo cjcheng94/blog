@@ -1,12 +1,8 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
-import {
-  makeStyles,
-  Snackbar,
-  Button,
-  Typography,
-  TextField
-} from "@material-ui/core";
+import { Snackbar, Button, Typography, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { USER_SIGNUP } from "../../api/gqlDocuments";
 import { loadingVar } from "../../api/cache";
 

@@ -2,14 +2,12 @@ import React, { useState, useEffect } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { indigo, pink, red } from "@material-ui/core/colors";
 import { useReactiveVar } from "@apollo/client";
+import { CssBaseline, Snackbar, useMediaQuery } from "@material-ui/core";
 import {
-  CssBaseline,
-  Snackbar,
-  useMediaQuery,
-  MuiThemeProvider,
+  makeStyles,
   createTheme,
-  makeStyles
-} from "@material-ui/core";
+  MuiThemeProvider
+} from "@material-ui/core/styles";
 import * as registerServiceWorker from "../registerServiceWorker";
 import {
   Header,

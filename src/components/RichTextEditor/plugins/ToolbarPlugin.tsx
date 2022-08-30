@@ -62,8 +62,6 @@ import {
   Redo as RedoIcon
 } from "@material-ui/icons";
 import {
-  makeStyles,
-  withStyles,
   Button,
   Divider,
   Paper,
@@ -76,6 +74,8 @@ import {
   InputAdornment,
   IconButton
 } from "@material-ui/core";
+import { makeStyles, withStyles } from "@material-ui/core/styles";
+
 import ToggleButton from "@material-ui/lab/ToggleButton";
 
 import { useMutation } from "@apollo/client";

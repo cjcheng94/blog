@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { AwsClient } from "aws4fetch";
 
 const aws = new AwsClient({
-  accessKeyId: process.env.REACT_APP_AWS_ACCESS_KEY,
-  secretAccessKey: process.env.REACT_APP_AWS_SECRET_ACCESS_KEY
+  accessKeyId: import.meta.env.VITE_AWS_ACCESS_KEY,
+  secretAccessKey: import.meta.env.VITE_AWS_SECRET_ACCESS_KEY
 });
 
 const getUrlFromArrayBuffer = (arrayBuffer: ArrayBuffer) => {
@@ -33,10 +33,10 @@ const useUploadImage = (payload: useUploadImagePayload) => {
 
     setLoading(true);
 
-    const res = await aws.fetch(`${process.env.REACT_APP_AWS_URL}/${fileId}`, {
+    const res = await aws.fetch(`${import.meta.env.VITE_AWS_URL}/${fileId}`, {
       method: "PUT",
       headers: {
-        "x-api-key": process.env.REACT_APP_AWS_X_API_KEY,
+        "x-api-key": import.meta.env.VITE_AWS_X_API_KEY,
         "Content-Type": "image/jpeg"
       },
       body: file

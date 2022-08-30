@@ -1,5 +1,7 @@
 import React from "react";
-import { Chip, CircularProgress, makeStyles } from "@material-ui/core";
+import { Chip, CircularProgress } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { useQuery, useMutation } from "@apollo/client";
 import { NewTagInput } from "@components";
 import { GET_ALL_TAGS, CREATE_TAG } from "../../api/gqlDocuments";
@@ -29,8 +31,9 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
   const classes = useStyles();
 
   // Get all tags
-  const { data, loading: getAllTagsLoading } =
-    useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  const { data, loading: getAllTagsLoading } = useQuery<{ tags: Tag[] }>(
+    GET_ALL_TAGS
+  );
 
   // Create-tag gql mutation
   const [createTag, { loading: createTagLoading }] = useMutation(CREATE_TAG, {
