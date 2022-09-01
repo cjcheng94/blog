@@ -3,7 +3,7 @@
     "strict": true,
     "module": "esnext",
     "target": "ES2019",
-    "lib": ["esnext", "dom", "dom.iterable"],
+    "lib": ["esnext", "dom", "dom.iterable", "WebWorker"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "react",
@@ -16,16 +16,16 @@
     "importHelpers": true,
     "strictNullChecks": true,
     "suppressImplicitAnyIndexErrors": true,
-    "allowSyntheticDefaultImports":true,
+    "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
     "baseUrl": "./src",
-    "paths":{
+    "paths": {
       "@components": ["components"],
       "@routes": ["routes"]
     },
     "types": ["vite/client"]
   },
-  "include":["src", "typings"],
+  "include": ["src", "typings"],
   "exclude": [
     "config",
     "node_modules",
@@ -35,5 +35,5 @@
     "webpack",
     "jest",
     "src/setupTests.ts"
-  ]  
+  ]
 }

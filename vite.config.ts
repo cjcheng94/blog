@@ -2,8 +2,16 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
+import { VitePWA } from "vite-plugin-pwa";
+import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
+  build: {
+    outDir: "build"
+  },
+  server: {
+    port: 3000
+  },
   optimizeDeps: {
     esbuildOptions: {
       define: {
@@ -36,12 +44,16 @@ export default defineConfig({
         ]
       }
     }),
-    tsConfigPaths()
-  ],
-  build: {
-    outDir: "build"
-  },
-  server: {
-    port: 3000
-  }
+    tsConfigPaths(),
+    VitePWA({
+      injectRegister: null,
+      strategies: "injectManifest",
+      srcDir: "src",
+      filename: "service-worker.ts",
+      devOptions: {
+        enabled: true
+      }
+    }),
+    visualizer()
+  ]
 });
