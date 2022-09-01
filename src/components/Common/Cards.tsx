@@ -3,7 +3,7 @@ import orderBy from "lodash/orderBy";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { Post, Draft } from "PostTypes";
 import { ArticleCard, PaginationLink } from "@components";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { useReactiveVar } from "@apollo/client";
 import { sortLatestFirstVar } from "../../api/cache";
 

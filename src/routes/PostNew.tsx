@@ -8,16 +8,17 @@ import React, {
 import { useMutation } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import {
-  makeStyles,
   Snackbar,
   TextField,
   Button,
   Typography,
   FormHelperText
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import throttle from "lodash/throttle";
 
-import { ErrorAlert, CustomDialog, RichTextEditor, TagBar } from "@components";
+import { ErrorAlert, CustomDialog, TagBar, Editor } from "@components";
 import {
   CREATE_NEW_POST,
   GET_ALL_POSTS,
@@ -255,11 +256,6 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     });
   };
 
-  const handleRichTextEditorChange = (richData: string, plainText: string) => {
-    setRichData(richData);
-    setPlainText(plainText);
-  };
-
   const renderSubmitOrLoginButton = () => {
     if (isAuthenticated) {
       return (
@@ -314,10 +310,10 @@ const PostNew: React.FC<RouteComponentProps> = props => {
           fullWidth
         />
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
-        <RichTextEditor
-          readOnly={false}
-          onChange={handleRichTextEditorChange}
-          isEmpty={setContentEmpty}
+        <Editor
+          onRichTextTextChange={setRichData}
+          onTextContentChange={setPlainText}
+          setContentEmpty={setContentEmpty}
         />
         <FormHelperText error>{contentErrorMessage}</FormHelperText>
         {renderSubmitOrLoginButton()}

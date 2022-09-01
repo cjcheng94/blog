@@ -9,20 +9,16 @@ import {
   GET_ALL_POSTS,
   GET_CACHED_POST_FRAGMENT
 } from "../api/gqlDocuments";
-import {
-  Snackbar,
-  Typography,
-  Divider,
-  Button,
-  makeStyles
-} from "@material-ui/core";
+import { Snackbar, Typography, Divider, Button } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import {
   DisqusComment,
   CustomDialog,
   ErrorAlert,
   NewPostButton,
-  RichTextEditor,
-  DisplayTag
+  DisplayTag,
+  Editor
 } from "@components";
 import { loadingVar } from "../api/cache";
 import { Post, GetPostVars, DeletePostVars } from "PostTypes";
@@ -175,7 +171,7 @@ const PostDetails: React.FC<Props> = props => {
 
         <div className={classes.tagRow}>{renderTags()}</div>
         <Divider className={classes.divider} />
-        <RichTextEditor readOnly={true} rawContent={content} />
+        <Editor readOnly={true} initialState={content} />
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
         {authorInfo.username === currentUsername && isAuthenticated ? (
           <Fragment>

@@ -1,11 +1,6 @@
 import React from "react";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  makeStyles,
-  Theme
-} from "@material-ui/core";
+import { Card, CardActionArea, CardContent, Theme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";

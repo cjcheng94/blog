@@ -1,6 +1,8 @@
 import React, { useEffect, Fragment } from "react";
 import { RouteComponentProps } from "react-router-dom";
-import { Typography, makeStyles } from "@material-ui/core";
+import { Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { useQuery, useLazyQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
