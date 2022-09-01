@@ -4,9 +4,10 @@ import {
   Snackbar,
   Card,
   CardContent,
-  Typography,
-  makeStyles
+  Typography
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import Alert from "@material-ui/lab/Alert";
 import Skeleton from "@material-ui/lab/Skeleton";
 import { Image as ImageIcon } from "@material-ui/icons";

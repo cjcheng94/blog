@@ -1,7 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { Edit } from "@material-ui/icons";
-import { Fab, Tooltip, makeStyles, Theme } from "@material-ui/core";
+import { Fab, Tooltip, Theme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) => ({
   fab: {

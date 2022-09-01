@@ -2,14 +2,10 @@ import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
 import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import throttle from "lodash/throttle";
-import {
-  makeStyles,
-  Snackbar,
-  TextField,
-  Button,
-  Typography
-} from "@material-ui/core";
-import { CustomDialog, ErrorAlert, RichTextEditor, TagBar } from "@components";
+import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
+import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
 import {
   GET_ALL_POSTS,
@@ -46,7 +42,7 @@ const PostUpdate: React.FC<Props> = props => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [content, setRichData] = useState("");
   const [plainText, setPlainText] = useState("");
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
@@ -195,7 +191,7 @@ const PostUpdate: React.FC<Props> = props => {
     if (getPostCalled && getPostData) {
       const { title, content, tagIds } = getPostData.getPostById;
       setTitle(title);
-      setContent(content);
+      setRichData(content);
       setSelectedTagIds(tagIds);
     }
   }, [getPostCalled, getPostData]);
@@ -205,7 +201,7 @@ const PostUpdate: React.FC<Props> = props => {
     if (getDraftCalled && getDraftData) {
       const { title, content, tagIds } = getDraftData.getDraftById;
       setTitle(title);
-      setContent(content);
+      setRichData(content);
       setSelectedTagIds(tagIds);
     }
   }, [getDraftCalled, getDraftData, cachedDraftData]);
@@ -216,7 +212,7 @@ const PostUpdate: React.FC<Props> = props => {
       console.log("Loaded draft from cache");
       const { title, content, tagIds } = cachedDraftData;
       setTitle(title);
-      setContent(content);
+      setRichData(content);
       setSelectedTagIds(tagIds);
     }
   }, [cachedDraftData]);
@@ -327,20 +323,15 @@ const PostUpdate: React.FC<Props> = props => {
     }
   };
 
-  const handleRichTextEditorChange = (richData: string, plainText: string) => {
-    setContent(richData);
-    setPlainText(plainText);
-  };
-
   // Render content field
   const renderContentField = () => {
     if (content) {
       return (
-        <RichTextEditor
-          readOnly={false}
-          rawContent={content}
-          onChange={handleRichTextEditorChange}
-          isEmpty={setContentEmpty}
+        <Editor
+          initialState={content}
+          onRichTextTextChange={setRichData}
+          onTextContentChange={setPlainText}
+          setContentEmpty={setContentEmpty}
         />
       );
     }

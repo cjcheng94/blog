@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@apollo/client": "^3.3.21",
+    "@lexical/react": "^0.3.8",
     "@material-ui/core": "^4.12.3",
     "@material-ui/icons": "^4.11.2",
     "@material-ui/lab": "^4.0.0-alpha.60",
@@ -12,127 +13,50 @@
     "babel-jest": "20.0.3",
     "babel-loader": "7.1.2",
     "babel-preset-react-app": "^3.1.2",
-    "case-sensitive-paths-webpack-plugin": "2.1.1",
-    "chalk": "1.1.3",
     "crypto-js": "^4.1.1",
     "disqus-react": "^1.0.7",
-    "dotenv": "4.0.0",
-    "dotenv-expand": "4.2.0",
     "draft-js": "^0.11.6",
-    "file-loader": "^1.1.5",
-    "fork-ts-checker-webpack-plugin": "^6.2.4",
-    "fs-extra": "3.0.1",
     "graphql": "^15.5.1",
-    "html-webpack-plugin": "^4.5.2",
     "idb-keyval": "^5.1.3",
-    "jest": "20.0.4",
     "jwt-decode": "^3.1.2",
+    "lexical": "^0.3.8",
     "lodash": "^4.17.15",
-    "mini-css-extract-plugin": "^1.5.0",
-    "moment": "^2.24.0",
-    "object-assign": "4.1.1",
+    "moment": "^2.29.4",
     "prism-react-renderer": "^1.3.1",
-    "promise": "8.0.1",
-    "raf": "3.4.0",
-    "react": "^16.13.1",
-    "react-dev-utils": "^6.1.1",
-    "react-dom": "^16.13.1",
+    "react": "^17.0.2",
+    "react-dom": "^17.0.2",
     "react-router-dom": "^5.2.0",
-    "source-map-loader": "^0.2.4",
-    "sw-precache-webpack-plugin": "0.11.4",
-    "ts-jest": "22.0.1",
-    "ts-loader": "^4.5.0",
-    "tsconfig-paths-webpack-plugin": "^3.5.1",
     "tslint": "^5.7.0",
-    "url-loader": "^0.6.2",
-    "uuid": "^8.3.2",
-    "webpack": "^4.46.0",
-    "webpack-dev-server": "2.11.3",
-    "webpack-manifest-plugin": "^2.2.0",
-    "whatwg-fetch": "2.0.3",
     "workbox-cacheable-response": "^6.2.4",
     "workbox-core": "^6.2.4",
     "workbox-expiration": "^6.2.4",
     "workbox-precaching": "^6.2.4",
     "workbox-routing": "^6.2.4",
-    "workbox-strategies": "^6.2.4",
-    "workbox-webpack-plugin": "^6.2.4"
+    "workbox-strategies": "^6.2.4"
   },
   "scripts": {
-    "start": "node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom",
-    "serve": "serve -s build",
-    "start-server": "npm run build && npm run serve",
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
-    "build-with-stats": "node scripts/build.js --stats",
-    "analyze-bundle": "webpack-bundle-analyzer build/bundle-stats.json",
-    "build-and-analyze": "npm run build-with-stats && npm run analyze-bundle"
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host",
+    "start-preview": "npm run build && npm run preview"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-decorators": "^7.18.10",
+    "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@rollup/plugin-babel": "^5.3.1",
     "@types/draft-js": "^0.10.45",
     "@types/lodash": "^4.14.154",
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.6",
     "@types/react-router-dom": "^5.1.4",
-    "@types/uuid": "^8.3.4",
+    "@vitejs/plugin-react": "^2.0.1",
+    "babel-plugin-direct-import": "^1.0.0",
     "babel-plugin-transform-decorators-legacy": "^1.3.5",
-    "bfj": "^7.0.2",
+    "rollup-plugin-visualizer": "^5.8.0",
     "source-map-explorer": "^2.5.2",
-    "terser-webpack-plugin": "^4.2.3",
-    "typescript": "^3.8.3"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx,ts,tsx}",
-      "!**/*.d.ts"
-    ],
-    "setupFiles": [
-      "<rootDir>/config/polyfills.js"
-    ],
-    "testMatch": [
-      "<rootDir>/src/**/__tests__/**/*.(j|t)s?(x)",
-      "<rootDir>/src/**/?(*.)(spec|test).(j|t)s?(x)"
-    ],
-    "testEnvironment": "node",
-    "testURL": "http://localhost",
-    "transform": {
-      "^.+\\.(js|jsx|mjs)$": "<rootDir>/node_modules/babel-jest",
-      "^.+\\.tsx?$": "<rootDir>/config/jest/typescriptTransform.js",
-      "^.+\\.css$": "<rootDir>/config/jest/cssTransform.js",
-      "^(?!.*\\.(js|jsx|mjs|css|json)$)": "<rootDir>/config/jest/fileTransform.js"
-    },
-    "transformIgnorePatterns": [
-      "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs|ts|tsx)$"
-    ],
-    "moduleNameMapper": {
-      "^react-native$": "react-native-web"
-    },
-    "moduleFileExtensions": [
-      "web.ts",
-      "ts",
-      "web.tsx",
-      "tsx",
-      "web.js",
-      "js",
-      "web.jsx",
-      "jsx",
-      "json",
-      "node",
-      "mjs"
-    ],
-    "globals": {
-      "ts-jest": {
-        "tsConfigFile": "/Users/alexcheng/web-dev/portfolio/LATEST/react_blog/tsconfig.test.json"
-      }
-    }
-  },
-  "babel": {
-    "presets": [
-      "react-app"
-    ],
-    "plugins": [
-      "transform-decorators-legacy"
-    ]
+    "typescript": "^3.8.3",
+    "vite": "^3.0.9",
+    "vite-plugin-pwa": "^0.12.4",
+    "vite-tsconfig-paths": "^3.5.0"
   }
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles(theme => ({
   container: {

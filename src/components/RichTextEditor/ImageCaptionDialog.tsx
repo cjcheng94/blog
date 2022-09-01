@@ -5,9 +5,10 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField,
-  makeStyles
+  TextField
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { useMutation } from "@apollo/client";
 import { UPDATE_IMAGE, GET_IMAGE } from "../../api/gqlDocuments";
 

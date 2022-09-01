@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Route, Switch } from "react-router-dom";
-import { makeStyles } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { LoadingOverlay } from "@components";
 import { useReactiveVar } from "@apollo/client";
 import { drawerVar } from "../api/cache";

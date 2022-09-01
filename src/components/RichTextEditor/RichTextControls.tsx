@@ -2,13 +2,14 @@ import React, { useState, useEffect, useRef } from "react";
 import { EditorState } from "draft-js";
 import ToggleButton from "@material-ui/lab/ToggleButton";
 import {
-  makeStyles,
   TextField,
   Divider,
   InputAdornment,
   IconButton,
   Paper
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import {
   FormatBold as FormatBoldIcon,
   FormatItalic as FormatItalicIcon,

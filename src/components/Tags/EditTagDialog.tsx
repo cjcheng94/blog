@@ -7,9 +7,10 @@ import {
   DialogTitle,
   Slide,
   IconButton,
-  CircularProgress,
-  makeStyles
+  CircularProgress
 } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+
 import { Label, Delete } from "@material-ui/icons";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { useQuery, useMutation } from "@apollo/client";

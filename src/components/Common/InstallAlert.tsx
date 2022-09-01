@@ -1,5 +1,6 @@
 import React from "react";
-import { Snackbar, Button, IconButton, makeStyles } from "@material-ui/core";
+import { Snackbar, Button, IconButton } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import { Close } from "@material-ui/icons";
 
 type Props = {

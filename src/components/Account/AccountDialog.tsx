@@ -1,6 +1,7 @@
 import React from "react";
 import { TransitionProps } from "@material-ui/core/transitions";
-import { Dialog, DialogContent, Slide, makeStyles } from "@material-ui/core";
+import { Dialog, DialogContent, Slide } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 
 import { Login, Signup } from "@components";
 import { accountDialogTypeVar } from "../../api/cache";
