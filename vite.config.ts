@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig, splitVendorChunkPlugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
@@ -54,6 +54,7 @@ export default defineConfig({
         enabled: true
       }
     }),
+    splitVendorChunkPlugin(),
     visualizer({ gzipSize: true })
   ]
 });
