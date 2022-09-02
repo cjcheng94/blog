@@ -28,6 +28,11 @@ const useStyles = makeStyles(theme => ({
   button: {
     marginTop: 20,
     marginRight: 20
+  },
+  title: {
+    "& input": {
+      fontFamily: "Source Serif Pro, serif"
+    }
   }
 }));
 
@@ -381,6 +386,7 @@ const PostUpdate: React.FC<Props> = props => {
         </Typography>
 
         <TextField
+          className={classes.title}
           value={title}
           onChange={e => {
             setTitle(e.target.value);
