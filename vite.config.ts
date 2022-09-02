@@ -54,6 +54,6 @@ export default defineConfig({
         enabled: true
       }
     }),
-    visualizer()
+    visualizer({ gzipSize: true })
   ]
 });
