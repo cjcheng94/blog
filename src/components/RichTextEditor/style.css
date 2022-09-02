@@ -107,15 +107,21 @@ h1 {
 }
 
 .editor-text-code {
-  background-color: rgb(240, 242, 245);
+  background-color: rgba(0, 0, 0, 0.08);
   padding: 1px 0.25rem;
   font-family: Menlo, Consolas, Monaco, monospace;
   font-size: 94%;
 }
+.dark-mode-editor .editor-text-code {
+  background-color: rgba(255, 255, 255, 0.16);
+}
 
 .editor-link {
-  color: rgb(33, 111, 219);
+  color: #1976d2;
   text-decoration: none;
+}
+.dark-mode-editor .editor-link {
+  color: #90caf9;
 }
 
 .tree-view-output {
@@ -135,7 +141,7 @@ h1 {
 }
 
 .editor-code {
-  background-color: #404040;
+  background-color: #2f2f2f;
   color: #eee;
   font-family: Menlo, Consolas, Monaco, monospace;
   display: block;
@@ -150,11 +156,14 @@ h1 {
   overflow-x: auto;
   position: relative;
 }
+.dark-mode-editor .editor-code {
+  background-color: #404040;
+}
 
 .editor-code:before {
   content: attr(data-gutter);
   position: absolute;
-  background-color: #30303052;
+  background-color: #363636;
   left: 0;
   top: 0;
   border-right: 1px solid #eee;
@@ -164,6 +173,10 @@ h1 {
   text-align: right;
   min-width: 25px;
 }
+.dark-mode-editor .editor-code:before {
+  background-color: #30303052;
+}
+
 .editor-code:after {
   content: attr(data-highlight-language);
   top: 0;
@@ -186,23 +199,28 @@ h1 {
 
 .editor-heading-h2 {
   font-size: 15px;
-  color: rgb(101, 103, 107);
+  color: rgba(0, 0, 0, 0.54);
   font-weight: 700;
-  margin: 0;
-  margin-top: 10px;
+  margin: 10px 0;
   padding: 0;
   text-transform: uppercase;
 }
+.dark-mode-editor .editor-heading-h2 {
+  color: rgba(255, 255, 255, 0.7);
+}
 
 .editor-quote {
-  margin: 0;
-  margin-left: 20px;
-  font-size: 15px;
-  color: rgb(101, 103, 107);
-  border-left-color: rgb(206, 208, 212);
+  margin: 8px 0;
+  font-size: 1.4em;
+  color: rgba(0, 0, 0, 0.54);
+  border-left-color: rgba(0, 0, 0, 0.54);
   border-left-width: 4px;
   border-left-style: solid;
   padding-left: 16px;
+}
+.dark-mode-editor .editor-quote {
+  color: rgba(255, 255, 255, 0.7);
+  border-left-color: rgba(255, 255, 255, 0.7);
 }
 
 .editor-list-ol {
@@ -228,6 +246,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 10px 0;
 }
 .editor-image img {
   display: block;

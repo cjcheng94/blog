@@ -27,6 +27,9 @@ import {
 } from "@components";
 import "./style.css";
 import "./prism-material-dark.css";
+import { useReactiveVar } from "@apollo/client";
+import { darkModeVar } from "../../api/cache";
+
 // Catch any errors that occur during Lexical updates and log them
 // or throw them as needed. If you don't throw them, Lexical will
 // try to recover gracefully without losing user data.
@@ -53,6 +56,8 @@ const Editor: React.FC<EditorProps> = props => {
 
   const { historyState } = useSharedHistoryContext();
 
+  const isDarkMode = useReactiveVar(darkModeVar);
+
   const initialConfig = {
     namespace: "MyEditor",
     theme: EditorTheme,
@@ -71,8 +76,10 @@ const Editor: React.FC<EditorProps> = props => {
     ]
   };
 
+  const darkModeClass = isDarkMode ? "dark-mode-editor" : "";
+
   return (
-    <div className="myEditor">
+    <div className={`myEditor ${darkModeClass}`}>
       <LexicalComposer initialConfig={initialConfig}>
         <SharedHistoryContext>
           {!readOnly && <ToolbarPlugin />}

@@ -50,6 +50,9 @@ const useStyles = makeStyles(theme => ({
     marginTop: theme.spacing(2),
     marginRight: theme.spacing(1),
     fontWeight: "bold"
+  },
+  title: {
+    fontFamily: "Source Serif Pro, serif"
   }
 }));
 
@@ -156,7 +159,7 @@ const PostDetails: React.FC<Props> = props => {
       {getPostError && isOnline && <ErrorAlert error={getPostError} />}
       {deletePostError && isOnline && <ErrorAlert error={deletePostError} />}
       <div className={classes.wrapper}>
-        <Typography variant="h3" gutterBottom>
+        <Typography variant="h3" gutterBottom className={classes.title}>
           {title}
         </Typography>
         <div className={classes.info}>

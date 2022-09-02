@@ -35,8 +35,9 @@ const useStyles = makeStyles((theme: Theme) => {
       display: "inline",
       paddingLeft: 2,
       paddingRight: 4,
-      fontWeight: 700,
-      backgroundColor: isDarkTheme ? "hsl(230,0%,20%)" : "hsl(230,100%,94%);"
+      fontWeight: 600,
+      backgroundColor: isDarkTheme ? "hsl(230,0%,20%)" : "hsl(230,100%,94%);",
+      fontFamily: "Source Serif Pro, serif"
     },
     author: {
       margin: "8px 0",
@@ -45,7 +46,8 @@ const useStyles = makeStyles((theme: Theme) => {
     content: {
       display: "-webkit-box",
       "-webkit-line-clamp": 3,
-      "-webkit-box-orient": "vertical"
+      "-webkit-box-orient": "vertical",
+      fontFamily: "Source Serif Pro, serif"
     },
     tagsContainer: {
       display: "flex",

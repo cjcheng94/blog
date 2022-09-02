@@ -3,12 +3,9 @@ import type {
   DOMConversionOutput,
   DOMExportOutput,
   EditorConfig,
-  GridSelection,
   LexicalEditor,
   LexicalNode,
   NodeKey,
-  NodeSelection,
-  RangeSelection,
   SerializedEditor,
   SerializedLexicalNode,
   Spread
@@ -33,7 +30,7 @@ import {
   KEY_DELETE_COMMAND
 } from "lexical";
 import * as React from "react";
-import { useCallback, useEffect, useRef, useState, Suspense } from "react";
+import { useCallback, useEffect, useRef, Suspense } from "react";
 
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
 import { makeStyles } from "@material-ui/core/styles";
