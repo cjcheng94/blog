@@ -201,8 +201,7 @@ h1 {
   font-size: 15px;
   color: rgba(0, 0, 0, 0.54);
   font-weight: 700;
-  margin: 0;
-  margin-top: 10px;
+  margin: 10px 0;
   padding: 0;
   text-transform: uppercase;
 }
@@ -211,17 +210,17 @@ h1 {
 }
 
 .editor-quote {
-  margin: 0;
+  margin: 8px 0;
   font-size: 1.4em;
-  font-style: italic;
   color: rgba(0, 0, 0, 0.54);
-  border-left-color: rgb(206, 208, 212);
+  border-left-color: rgba(0, 0, 0, 0.54);
   border-left-width: 4px;
   border-left-style: solid;
   padding-left: 16px;
 }
 .dark-mode-editor .editor-quote {
   color: rgba(255, 255, 255, 0.7);
+  border-left-color: rgba(255, 255, 255, 0.7);
 }
 
 .editor-list-ol {
@@ -247,6 +246,7 @@ h1 {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin: 10px 0;
 }
 .editor-image img {
   display: block;
