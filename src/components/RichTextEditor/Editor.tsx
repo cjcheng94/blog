@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
@@ -13,6 +13,10 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { ListItemNode, ListNode } from "@lexical/list";
 import { CodeHighlightNode, CodeNode } from "@lexical/code";
 import { AutoLinkNode, LinkNode } from "@lexical/link";
+
+import { Snackbar, IconButton } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
+
 import {
   SharedHistoryContext,
   useSharedHistoryContext
@@ -39,7 +43,8 @@ function onError(error: any) {
 
 type EditorProps = {
   readOnly?: boolean;
-  initialState?: string;
+  initialContent?: string;
+  initialPlainText?: string;
   setContentEmpty?: (isEmpty: boolean) => void;
   onTextContentChange?: (data: string) => void;
   onRichTextTextChange?: (data: string) => void;
@@ -48,11 +53,13 @@ type EditorProps = {
 const Editor: React.FC<EditorProps> = props => {
   const {
     readOnly = false,
-    initialState,
+    initialContent,
+    initialPlainText,
     setContentEmpty,
     onTextContentChange,
     onRichTextTextChange
   } = props;
+  const [showLegacyAlert, setShowLegacyAlert] = useState(false);
 
   const { historyState } = useSharedHistoryContext();
 
@@ -78,6 +85,17 @@ const Editor: React.FC<EditorProps> = props => {
 
   const darkModeClass = isDarkMode ? "dark-mode-editor" : "";
 
+  const handleSnackbarClose = (
+    event: React.SyntheticEvent<any, Event>,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setShowLegacyAlert(false);
+  };
+
   return (
     <div className={`myEditor ${darkModeClass}`}>
       <LexicalComposer initialConfig={initialConfig}>
@@ -98,10 +116,40 @@ const Editor: React.FC<EditorProps> = props => {
           />
           <HistoryPlugin externalHistoryState={historyState} />
           <AutoFocusPlugin />
-          <InitialStatePlugin data={initialState} />
+          <InitialStatePlugin
+            data={initialContent}
+            initialPlainText={initialPlainText}
+            setShowLegacyAlert={setShowLegacyAlert}
+          />
           <ImagesPlugin />
         </SharedHistoryContext>
       </LexicalComposer>
+      <Snackbar
+        anchorOrigin={{
+          vertical: "bottom",
+          horizontal: "left"
+        }}
+        open={showLegacyAlert}
+        onClose={handleSnackbarClose}
+        message={
+          <>
+            <div>This article was written in a legacy editor</div>
+            <div>We can only display the text content at the moment</div>
+          </>
+        }
+        action={
+          <>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleSnackbarClose}
+            >
+              <Close />
+            </IconButton>
+          </>
+        }
+      />
     </div>
   );
 };
