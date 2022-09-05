@@ -135,7 +135,7 @@ const PostDetails: React.FC<Props> = props => {
   const url = `/posts/edit/${props.match.params._id}`;
   const currentUsername = localStorage.getItem("currentUsername");
   const isAuthenticated = !checkIfExpired();
-  const { title, authorInfo, content, date, tags } = post;
+  const { title, authorInfo, content, contentText, date, tags } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
   const handleDelete = () => {
@@ -174,7 +174,11 @@ const PostDetails: React.FC<Props> = props => {
 
         <div className={classes.tagRow}>{renderTags()}</div>
         <Divider className={classes.divider} />
-        <Editor readOnly={true} initialState={content} />
+        <Editor
+          readOnly={true}
+          initialContent={content}
+          initialPlainText={contentText}
+        />
         {/* Conditionally render 'Edit' and 'Delete' buttons*/}
         {authorInfo.username === currentUsername && isAuthenticated ? (
           <Fragment>

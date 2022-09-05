@@ -194,9 +194,10 @@ const PostUpdate: React.FC<Props> = props => {
   // Use post data to initialize our form
   useEffect(() => {
     if (getPostCalled && getPostData) {
-      const { title, content, tagIds } = getPostData.getPostById;
+      const { title, content, contentText, tagIds } = getPostData.getPostById;
       setTitle(title);
       setRichData(content);
+      setPlainText(contentText);
       setSelectedTagIds(tagIds);
     }
   }, [getPostCalled, getPostData]);
@@ -204,9 +205,10 @@ const PostUpdate: React.FC<Props> = props => {
   // Use draft data to initialize our form
   useEffect(() => {
     if (getDraftCalled && getDraftData) {
-      const { title, content, tagIds } = getDraftData.getDraftById;
+      const { title, content, contentText, tagIds } = getDraftData.getDraftById;
       setTitle(title);
       setRichData(content);
+      setPlainText(contentText);
       setSelectedTagIds(tagIds);
     }
   }, [getDraftCalled, getDraftData, cachedDraftData]);
@@ -215,9 +217,10 @@ const PostUpdate: React.FC<Props> = props => {
     // Offline, use cached draft data
     if (!isOnline && cachedDraftData && isDraft) {
       console.log("Loaded draft from cache");
-      const { title, content, tagIds } = cachedDraftData;
+      const { title, content, contentText, tagIds } = cachedDraftData;
       setTitle(title);
       setRichData(content);
+      setPlainText(contentText);
       setSelectedTagIds(tagIds);
     }
   }, [cachedDraftData]);
@@ -333,7 +336,8 @@ const PostUpdate: React.FC<Props> = props => {
     if (content) {
       return (
         <Editor
-          initialState={content}
+          initialContent={content}
+          initialPlainText={plainText}
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}

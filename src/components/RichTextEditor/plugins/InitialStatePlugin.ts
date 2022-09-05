@@ -1,7 +1,15 @@
 import { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-
-const InitialStatePlugin = ({ data }: { data?: string }) => {
+import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
+const InitialStatePlugin = ({
+  data,
+  initialPlainText,
+  setShowLegacyAlert
+}: {
+  data?: string;
+  initialPlainText?: string;
+  setShowLegacyAlert: (show: boolean) => void;
+}) => {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
@@ -10,7 +18,15 @@ const InitialStatePlugin = ({ data }: { data?: string }) => {
       try {
         const editorState = editor.parseEditorState(data);
         editor.setEditorState(editorState);
-      } catch (err) {}
+      } catch (err) {
+        setShowLegacyAlert(true);
+        editor.update(() => {
+          const paragraph = $createParagraphNode();
+          const text = $createTextNode(initialPlainText);
+          paragraph.append(text);
+          $getRoot().append(paragraph);
+        });
+      }
     }
   }, []);
 
