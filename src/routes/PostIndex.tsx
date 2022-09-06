@@ -12,7 +12,7 @@ const PostIndex = () => {
   }, [loading]);
 
   const renderCards = () => {
-    if (loading) {
+    if (loading || !data?.posts) {
       return <CardPlaceholder />;
     }
     return <Cards posts={data.posts} />;
