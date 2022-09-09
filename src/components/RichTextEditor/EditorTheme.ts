@@ -50,7 +50,7 @@ const exampleTheme = {
     important: "editor-token-important",
     inserted: "editor-token-inserted",
     keyword: "editor-token-keyword",
-    namespace: "editor-token-variable",
+    namespace: "editor-token-namespace",
     number: "editor-token-number",
     operator: "editor-token-operator",
     prolog: "editor-token-prolog",
