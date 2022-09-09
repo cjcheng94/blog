@@ -1,0 +1,158 @@
+/**
+ * MIT License
+ * Copyright (c) 2018 Sarah Drasner
+ * Sarah Drasner's[@sdras] Night Owl
+ * Ported by Sara vieria [@SaraVieira]
+ * Added by Souvik Mandal [@SimpleIndian]
+ */
+
+code[class*="language-"],
+pre[class*="language-"] {
+  color: #d6deeb;
+  font-family: Consolas, Monaco, "Andale Mono", "Ubuntu Mono", monospace;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  word-wrap: normal;
+  line-height: 1.5;
+  font-size: 1em;
+
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+
+  -webkit-hyphens: none;
+  -moz-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+pre[class*="language-"]::-moz-selection,
+pre[class*="language-"] ::-moz-selection,
+code[class*="language-"]::-moz-selection,
+code[class*="language-"] ::-moz-selection {
+  text-shadow: none;
+  background: rgba(29, 59, 83, 0.99);
+}
+
+pre[class*="language-"]::selection,
+pre[class*="language-"] ::selection,
+code[class*="language-"]::selection,
+code[class*="language-"] ::selection {
+  text-shadow: none;
+  background: rgba(29, 59, 83, 0.99);
+}
+
+@media print {
+  code[class*="language-"],
+  pre[class*="language-"] {
+    text-shadow: none;
+  }
+}
+
+/* Code blocks */
+pre[class*="language-"] {
+  padding: 1em;
+  margin: 0.5em 0;
+  overflow: auto;
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+  color: white;
+  background: #011627;
+}
+
+:not(pre) > code[class*="language-"] {
+  padding: 0.1em;
+  border-radius: 0.3em;
+  white-space: normal;
+}
+
+.editor-token-comment,
+.editor-token-prolog,
+.editor-token-cdata {
+  color: rgb(99, 119, 119);
+  font-style: italic;
+}
+
+.editor-token-punctuation {
+  color: rgb(199, 146, 234);
+}
+
+.editor-token-namespace {
+  color: rgb(178, 204, 214);
+}
+
+.editor-token-deleted {
+  color: rgba(239, 83, 80, 0.56);
+  font-style: italic;
+}
+
+.editor-token-symbol,
+.editor-token-property {
+  color: rgb(128, 203, 196);
+}
+
+.editor-token-tag,
+.editor-token-operator,
+.editor-token-keyword {
+  color: rgb(127, 219, 202);
+}
+
+.editor-token-boolean {
+  color: rgb(255, 88, 116);
+}
+
+.editor-token-number {
+  color: rgb(247, 140, 108);
+}
+
+.editor-token-constant,
+.editor-token-function,
+.editor-token-builtin,
+.editor-token-char {
+  color: rgb(130, 170, 255);
+}
+
+.editor-token-selector,
+.editor-token-doctype {
+  color: rgb(199, 146, 234);
+  font-style: italic;
+}
+
+.editor-token-attr-name,
+.editor-token-inserted {
+  color: rgb(173, 219, 103);
+  font-style: italic;
+}
+
+.editor-token-string,
+.editor-token-url,
+.editor-token-entity,
+.language-css .editor-token-string,
+.style .editor-token-string {
+  color: rgb(173, 219, 103);
+}
+
+.editor-token-class-name,
+.editor-token-atrule,
+.editor-token-attr-value {
+  color: rgb(255, 203, 139);
+}
+
+.editor-token-regex,
+.editor-token-important,
+.editor-token-variable {
+  color: rgb(214, 222, 235);
+}
+
+.editor-token-important,
+.editor-token-bold {
+  font-weight: bold;
+}
+
+.editor-token-italic {
+  font-style: italic;
+}
