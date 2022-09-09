@@ -30,7 +30,7 @@ import {
   OnChangePlugin
 } from "@components";
 import "./style.css";
-import "./prism-material-dark.css";
+import "./prism-night-owl.css";
 import { useReactiveVar } from "@apollo/client";
 import { darkModeVar } from "../../api/cache";
 

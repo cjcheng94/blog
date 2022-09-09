@@ -12,8 +12,10 @@ import {
   TextField,
   Button,
   Typography,
-  FormHelperText
+  FormHelperText,
+  IconButton
 } from "@material-ui/core";
+import { Close } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
 import throttle from "lodash/throttle";
@@ -65,6 +67,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [showExploreMessage, setShowExploreMessage] = useState(true);
 
   const [
     createNewPost,
@@ -131,6 +134,10 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   );
 
   useEffect(() => {
+    if (!isAuthenticated) {
+      return;
+    }
+
     // We can create/update draft if either title or plainText is present
     if (title || plainText) {
       // Create a draft if we haven't already
@@ -261,6 +268,17 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     });
   };
 
+  const handleExploreMessageClose = (
+    event: React.SyntheticEvent<any, Event>,
+    reason?: string
+  ) => {
+    if (reason === "clickaway") {
+      return;
+    }
+
+    setShowExploreMessage(false);
+  };
+
   const renderSubmitOrLoginButton = () => {
     if (isAuthenticated) {
       return (
@@ -358,6 +376,34 @@ const PostNew: React.FC<RouteComponentProps> = props => {
           "aria-describedby": "message-id"
         }}
         message={<span id="message-id">Create new post successfull!</span>}
+      />
+      <Snackbar
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center"
+        }}
+        open={!isAuthenticated && showExploreMessage}
+        onClose={handleExploreMessageClose}
+        message={
+          <>
+            <div>
+              As this is a personal blog, I have disabled new user registration,
+            </div>
+            <div>but you can still explore the editor 😉</div>
+          </>
+        }
+        action={
+          <>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={handleExploreMessageClose}
+            >
+              <Close />
+            </IconButton>
+          </>
+        }
       />
     </Fragment>
   );
