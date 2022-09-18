@@ -37,17 +37,18 @@ const useStyles = makeStyles((theme: Theme) => {
       paddingRight: 4,
       fontWeight: 600,
       backgroundColor: isDarkTheme ? "hsl(230,0%,20%)" : "hsl(230,100%,94%);",
-      fontFamily: "Source Serif Pro, serif"
+      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
     },
     author: {
       margin: "8px 0",
-      fontSize: "0.8em"
+      fontSize: "0.8em",
+      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
     },
     content: {
       display: "-webkit-box",
       "-webkit-line-clamp": 3,
       "-webkit-box-orient": "vertical",
-      fontFamily: "Source Serif Pro, serif"
+      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
     },
     tagsContainer: {
       display: "flex",
