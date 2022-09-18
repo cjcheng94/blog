@@ -51,7 +51,6 @@ import {
 import checkIfExpired from "../utils/checkTokenExpired";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
-import { JsxElement } from "typescript";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
