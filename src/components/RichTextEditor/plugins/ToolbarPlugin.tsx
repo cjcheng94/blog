@@ -72,7 +72,8 @@ import {
   Select,
   TextField,
   InputAdornment,
-  IconButton
+  IconButton,
+  useScrollTrigger
 } from "@material-ui/core";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
@@ -84,9 +85,9 @@ import { CREATE_IMAGE } from "../../../api/gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   controls: {
-    height: 46,
+    minHeight: 46,
     position: "sticky",
-    top: "72px",
+    top: 72,
     display: "inline-flex",
     alignItems: "center",
     flexWrap: "wrap",
@@ -95,6 +96,10 @@ const useStyles = makeStyles(theme => ({
     borderRadius: "4px",
     zIndex: 1,
     marginBottom: theme.spacing(1),
+    transition: theme.transitions.create("top", {
+      easing: theme.transitions.easing.sharp,
+      duration: theme.transitions.duration.leavingScreen
+    }),
     "& button": {
       border: "none",
       margin: "4px",
@@ -103,13 +108,10 @@ const useStyles = makeStyles(theme => ({
     "& .MuiToggleButton-root.Mui-selected + .MuiToggleButton-root.Mui-selected":
       {
         margin: "4px"
-      },
-    [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
-      top: "56px"
-    },
-    [theme.breakpoints.up("sm")]: {
-      top: "72px"
-    }
+      }
+  },
+  controlsSlideUp: {
+    top: 16
   },
   divider: {
     margin: theme.spacing(1, 0.5)
@@ -459,6 +461,8 @@ const ToolbarPlugin = () => {
 
   const [createImage] = useMutation(CREATE_IMAGE);
 
+  const trigger = useScrollTrigger();
+
   const updateToolbar = useCallback(() => {
     const selection = $getSelection();
     if ($isRangeSelection(selection)) {
@@ -649,8 +653,12 @@ const ToolbarPlugin = () => {
     }
   };
 
+  const controlsClassName = trigger
+    ? `${classes.controlsSlideUp} ${classes.controls}`
+    : classes.controls;
+
   return (
-    <Paper className={classes.controls}>
+    <Paper className={controlsClassName}>
       <ToggleButton
         size="small"
         value="undo"

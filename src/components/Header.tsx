@@ -25,7 +25,8 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
+  useScrollTrigger
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -73,12 +74,9 @@ const useStyles = makeStyles(theme => {
       height: 5,
       width: "100%",
       position: "fixed",
-      top: 56,
-      [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
-        top: 48
-      },
-      [theme.breakpoints.up("sm")]: {
-        top: 64
+      top: 64,
+      [theme.breakpoints.down("sm")]: {
+        top: 56
       }
     },
     drawerPaper: {
@@ -97,21 +95,27 @@ const useStyles = makeStyles(theme => {
     appBar: {
       color: "#fff",
       backgroundColor: isDarkTheme ? "#333" : theme.palette.primary.main,
-      transition: theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      })
+      transition: theme.transitions.create(
+        ["margin", "width", "transform", "boxShadow"],
+        {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen
+        }
+      )
     },
     appBarShift: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      transition: theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      }),
       [theme.breakpoints.down("xs")]: {
         width: "initial",
         marginLeft: 0
+      }
+    },
+    appBarSlideUp: {
+      boxShadow: "none",
+      transform: "translateY(-64px)",
+      [theme.breakpoints.down("xs")]: {
+        transform: "translateY(-56px)"
       }
     },
     centerAligned: {
@@ -313,8 +317,13 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
   const sortButtonText = sortLatestFirst ? "Latest first" : "Oldest first";
 
+  // trigger is true when user scrolls down, false when user scrolls up
+  const trigger = useScrollTrigger();
+
   const appBarClass = showDrawer
     ? `${classes.appBar} ${classes.appBarShift}`
+    : trigger
+    ? `${classes.appBar} ${classes.appBarSlideUp}`
     : classes.appBar;
 
   const menuButtonClass = showDrawer
@@ -376,7 +385,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
                   <AccountCircle />
                 </IconButton>
               </Tooltip>
-
               <Menu
                 id="simple-menu"
                 anchorEl={anchorEl}
@@ -426,7 +434,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
             </Fragment>
           </div>
         </Toolbar>
-
         <div className={classes.progressContainer}>
           {/* Show Progress Bar */}
           {isLoading && <LinearProgress color="secondary" />}
