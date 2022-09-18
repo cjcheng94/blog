@@ -25,7 +25,9 @@ import {
   List,
   ListItem,
   ListItemText,
-  ListItemIcon
+  ListItemIcon,
+  useScrollTrigger,
+  Slide
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -50,6 +52,7 @@ import {
 import checkIfExpired from "../utils/checkTokenExpired";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
+import { JsxElement } from "typescript";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -310,6 +313,15 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
     ));
   };
 
+  const HideOnScroll = ({ children }: { children: React.ReactElement }) => {
+    const trigger = useScrollTrigger();
+    return (
+      <Slide appear={false} direction="down" in={!trigger}>
+        {children}
+      </Slide>
+    );
+  };
+
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
   const sortButtonText = sortLatestFirst ? "Latest first" : "Oldest first";
 
@@ -324,114 +336,118 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   return (
     <Fragment>
       {getTagsError && <ErrorAlert error={getTagsError} />}
-      <AppBar position="sticky" className={appBarClass}>
-        <Toolbar className={classes.toolBar}>
-          <div className={classes.centerAligned}>
-            <IconButton
-              color="inherit"
-              aria-label="open drawer"
-              onClick={setShowDrawer(true)}
-              edge="start"
-              className={menuButtonClass}
-            >
-              <MenuIcon />
-            </IconButton>
-            <Typography
-              color="inherit"
-              className={classes.brand}
-              component={Link}
-              to="/"
-            >
-              {logo}
-            </Typography>
-          </div>
-          {/* Show different sets of buttons based on whether user is signed in or not*/}
-          <div id="conditional-buttons">
-            <AutosaveSpinner />
-            <Tooltip title="Search">
+      <HideOnScroll>
+        <AppBar position="sticky" className={appBarClass}>
+          <Toolbar className={classes.toolBar}>
+            <div className={classes.centerAligned}>
               <IconButton
-                aria-haspopup="true"
                 color="inherit"
-                onClick={toggleSearchOverlay}
+                aria-label="open drawer"
+                onClick={setShowDrawer(true)}
+                edge="start"
+                className={menuButtonClass}
               >
-                <Search />
+                <MenuIcon />
               </IconButton>
-            </Tooltip>
-            <Tooltip title="Toggle darkmode">
-              <IconButton
-                aria-haspopup="true"
+              <Typography
                 color="inherit"
-                onClick={toggleDarkMode}
+                className={classes.brand}
+                component={Link}
+                to="/"
               >
-                <Brightness4 />
-              </IconButton>
-            </Tooltip>
-            <Fragment>
-              <Tooltip title="My Account">
+                {logo}
+              </Typography>
+            </div>
+            {/* Show different sets of buttons based on whether user is signed in or not*/}
+            <div id="conditional-buttons">
+              <AutosaveSpinner />
+              <Tooltip title="Search">
                 <IconButton
                   aria-haspopup="true"
                   color="inherit"
-                  onClick={showMenu}
+                  onClick={toggleSearchOverlay}
                 >
-                  <AccountCircle />
+                  <Search />
                 </IconButton>
               </Tooltip>
-
-              <Menu
-                id="simple-menu"
-                anchorEl={anchorEl}
-                open={!!anchorEl}
-                onClose={hideMenu}
-              >
-                {isAuthenticated ? (
-                  <MenuList>
-                    <MenuItem button={false}>
-                      <AccountCircle className={classes.menuIcon} />
-                      <span>{currentUsername}</span>
-                    </MenuItem>
-                    <MenuItem
-                      component={Link}
-                      to={getUserPath()}
-                      onClick={hideMenu}
-                    >
-                      <LibraryBooks className={classes.menuIcon} />
-                      My Posts
-                    </MenuItem>
-                    <MenuItem component={Link} to="/drafts" onClick={hideMenu}>
-                      <DraftIcon className={classes.menuIcon} />
-                      Drafts
-                    </MenuItem>
-                    <MenuItem
-                      onClick={() => {
-                        setShowCustomDialog(true);
-                        hideMenu();
-                      }}
-                      color="inherit"
-                    >
-                      <ExitToApp className={classes.menuIcon} />
-                      Log Out
-                    </MenuItem>
-                  </MenuList>
-                ) : (
-                  <MenuList>
-                    <MenuItem onClick={openAccountDialog("login")}>
-                      Log In
-                    </MenuItem>
-                    <MenuItem onClick={openAccountDialog("signup")}>
-                      Sign Up
-                    </MenuItem>
-                  </MenuList>
-                )}
-              </Menu>
-            </Fragment>
+              <Tooltip title="Toggle darkmode">
+                <IconButton
+                  aria-haspopup="true"
+                  color="inherit"
+                  onClick={toggleDarkMode}
+                >
+                  <Brightness4 />
+                </IconButton>
+              </Tooltip>
+              <Fragment>
+                <Tooltip title="My Account">
+                  <IconButton
+                    aria-haspopup="true"
+                    color="inherit"
+                    onClick={showMenu}
+                  >
+                    <AccountCircle />
+                  </IconButton>
+                </Tooltip>
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  open={!!anchorEl}
+                  onClose={hideMenu}
+                >
+                  {isAuthenticated ? (
+                    <MenuList>
+                      <MenuItem button={false}>
+                        <AccountCircle className={classes.menuIcon} />
+                        <span>{currentUsername}</span>
+                      </MenuItem>
+                      <MenuItem
+                        component={Link}
+                        to={getUserPath()}
+                        onClick={hideMenu}
+                      >
+                        <LibraryBooks className={classes.menuIcon} />
+                        My Posts
+                      </MenuItem>
+                      <MenuItem
+                        component={Link}
+                        to="/drafts"
+                        onClick={hideMenu}
+                      >
+                        <DraftIcon className={classes.menuIcon} />
+                        Drafts
+                      </MenuItem>
+                      <MenuItem
+                        onClick={() => {
+                          setShowCustomDialog(true);
+                          hideMenu();
+                        }}
+                        color="inherit"
+                      >
+                        <ExitToApp className={classes.menuIcon} />
+                        Log Out
+                      </MenuItem>
+                    </MenuList>
+                  ) : (
+                    <MenuList>
+                      <MenuItem onClick={openAccountDialog("login")}>
+                        Log In
+                      </MenuItem>
+                      <MenuItem onClick={openAccountDialog("signup")}>
+                        Sign Up
+                      </MenuItem>
+                    </MenuList>
+                  )}
+                </Menu>
+              </Fragment>
+            </div>
+          </Toolbar>
+          <div className={classes.progressContainer}>
+            {/* Show Progress Bar */}
+            {isLoading && <LinearProgress color="secondary" />}
           </div>
-        </Toolbar>
-
-        <div className={classes.progressContainer}>
-          {/* Show Progress Bar */}
-          {isLoading && <LinearProgress color="secondary" />}
-        </div>
-      </AppBar>
+        </AppBar>
+      </HideOnScroll>
       <Drawer
         anchor="left"
         variant="persistent"
