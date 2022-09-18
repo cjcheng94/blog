@@ -1,7 +1,6 @@
 .myEditor {
-  font-family: "Source Serif Pro", serif;
+  font-family: "Source Serif Pro", "PingFang SC", "Microsoft YaHei", serif;
   font-size: 18px;
-  font-weight: 500;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }

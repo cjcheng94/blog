@@ -31,7 +31,7 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     "& input": {
-      fontFamily: "Source Serif Pro, serif"
+      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
     }
   }
 }));
