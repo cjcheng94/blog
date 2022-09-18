@@ -26,8 +26,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
-  useScrollTrigger,
-  Slide
+  useScrollTrigger
 } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import {
@@ -76,12 +75,9 @@ const useStyles = makeStyles(theme => {
       height: 5,
       width: "100%",
       position: "fixed",
-      top: 56,
-      [`${theme.breakpoints.up("xs")} and (orientation: landscape)`]: {
-        top: 48
-      },
-      [theme.breakpoints.up("sm")]: {
-        top: 64
+      top: 64,
+      [theme.breakpoints.down("sm")]: {
+        top: 56
       }
     },
     drawerPaper: {
@@ -100,21 +96,27 @@ const useStyles = makeStyles(theme => {
     appBar: {
       color: "#fff",
       backgroundColor: isDarkTheme ? "#333" : theme.palette.primary.main,
-      transition: theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen
-      })
+      transition: theme.transitions.create(
+        ["margin", "width", "transform", "boxShadow"],
+        {
+          easing: theme.transitions.easing.sharp,
+          duration: theme.transitions.duration.leavingScreen
+        }
+      )
     },
     appBarShift: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      transition: theme.transitions.create(["margin", "width"], {
-        easing: theme.transitions.easing.easeOut,
-        duration: theme.transitions.duration.enteringScreen
-      }),
       [theme.breakpoints.down("xs")]: {
         width: "initial",
         marginLeft: 0
+      }
+    },
+    appBarSlideUp: {
+      boxShadow: "none",
+      transform: "translateY(-64px)",
+      [theme.breakpoints.down("xs")]: {
+        transform: "translateY(-56px)"
       }
     },
     centerAligned: {
@@ -313,20 +315,16 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
     ));
   };
 
-  const HideOnScroll = ({ children }: { children: React.ReactElement }) => {
-    const trigger = useScrollTrigger();
-    return (
-      <Slide appear={false} direction="down" in={!trigger}>
-        {children}
-      </Slide>
-    );
-  };
-
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
   const sortButtonText = sortLatestFirst ? "Latest first" : "Oldest first";
 
+  // trigger is true when user scrolls down, false when user scrolls up
+  const trigger = useScrollTrigger();
+
   const appBarClass = showDrawer
     ? `${classes.appBar} ${classes.appBarShift}`
+    : trigger
+    ? `${classes.appBar} ${classes.appBarSlideUp}`
     : classes.appBar;
 
   const menuButtonClass = showDrawer
@@ -336,118 +334,112 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   return (
     <Fragment>
       {getTagsError && <ErrorAlert error={getTagsError} />}
-      <HideOnScroll>
-        <AppBar position="sticky" className={appBarClass}>
-          <Toolbar className={classes.toolBar}>
-            <div className={classes.centerAligned}>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={setShowDrawer(true)}
-                edge="start"
-                className={menuButtonClass}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Typography
-                color="inherit"
-                className={classes.brand}
-                component={Link}
-                to="/"
-              >
-                {logo}
-              </Typography>
-            </div>
-            {/* Show different sets of buttons based on whether user is signed in or not*/}
-            <div id="conditional-buttons">
-              <AutosaveSpinner />
-              <Tooltip title="Search">
-                <IconButton
-                  aria-haspopup="true"
-                  color="inherit"
-                  onClick={toggleSearchOverlay}
-                >
-                  <Search />
-                </IconButton>
-              </Tooltip>
-              <Tooltip title="Toggle darkmode">
-                <IconButton
-                  aria-haspopup="true"
-                  color="inherit"
-                  onClick={toggleDarkMode}
-                >
-                  <Brightness4 />
-                </IconButton>
-              </Tooltip>
-              <Fragment>
-                <Tooltip title="My Account">
-                  <IconButton
-                    aria-haspopup="true"
-                    color="inherit"
-                    onClick={showMenu}
-                  >
-                    <AccountCircle />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  id="simple-menu"
-                  anchorEl={anchorEl}
-                  open={!!anchorEl}
-                  onClose={hideMenu}
-                >
-                  {isAuthenticated ? (
-                    <MenuList>
-                      <MenuItem button={false}>
-                        <AccountCircle className={classes.menuIcon} />
-                        <span>{currentUsername}</span>
-                      </MenuItem>
-                      <MenuItem
-                        component={Link}
-                        to={getUserPath()}
-                        onClick={hideMenu}
-                      >
-                        <LibraryBooks className={classes.menuIcon} />
-                        My Posts
-                      </MenuItem>
-                      <MenuItem
-                        component={Link}
-                        to="/drafts"
-                        onClick={hideMenu}
-                      >
-                        <DraftIcon className={classes.menuIcon} />
-                        Drafts
-                      </MenuItem>
-                      <MenuItem
-                        onClick={() => {
-                          setShowCustomDialog(true);
-                          hideMenu();
-                        }}
-                        color="inherit"
-                      >
-                        <ExitToApp className={classes.menuIcon} />
-                        Log Out
-                      </MenuItem>
-                    </MenuList>
-                  ) : (
-                    <MenuList>
-                      <MenuItem onClick={openAccountDialog("login")}>
-                        Log In
-                      </MenuItem>
-                      <MenuItem onClick={openAccountDialog("signup")}>
-                        Sign Up
-                      </MenuItem>
-                    </MenuList>
-                  )}
-                </Menu>
-              </Fragment>
-            </div>
-          </Toolbar>
-          <div className={classes.progressContainer}>
-            {/* Show Progress Bar */}
-            {isLoading && <LinearProgress color="secondary" />}
+      <AppBar position="sticky" className={appBarClass}>
+        <Toolbar className={classes.toolBar}>
+          <div className={classes.centerAligned}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              onClick={setShowDrawer(true)}
+              edge="start"
+              className={menuButtonClass}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Typography
+              color="inherit"
+              className={classes.brand}
+              component={Link}
+              to="/"
+            >
+              {logo}
+            </Typography>
           </div>
-        </AppBar>
-      </HideOnScroll>
+          {/* Show different sets of buttons based on whether user is signed in or not*/}
+          <div id="conditional-buttons">
+            <AutosaveSpinner />
+            <Tooltip title="Search">
+              <IconButton
+                aria-haspopup="true"
+                color="inherit"
+                onClick={toggleSearchOverlay}
+              >
+                <Search />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Toggle darkmode">
+              <IconButton
+                aria-haspopup="true"
+                color="inherit"
+                onClick={toggleDarkMode}
+              >
+                <Brightness4 />
+              </IconButton>
+            </Tooltip>
+            <Fragment>
+              <Tooltip title="My Account">
+                <IconButton
+                  aria-haspopup="true"
+                  color="inherit"
+                  onClick={showMenu}
+                >
+                  <AccountCircle />
+                </IconButton>
+              </Tooltip>
+              <Menu
+                id="simple-menu"
+                anchorEl={anchorEl}
+                open={!!anchorEl}
+                onClose={hideMenu}
+              >
+                {isAuthenticated ? (
+                  <MenuList>
+                    <MenuItem button={false}>
+                      <AccountCircle className={classes.menuIcon} />
+                      <span>{currentUsername}</span>
+                    </MenuItem>
+                    <MenuItem
+                      component={Link}
+                      to={getUserPath()}
+                      onClick={hideMenu}
+                    >
+                      <LibraryBooks className={classes.menuIcon} />
+                      My Posts
+                    </MenuItem>
+                    <MenuItem component={Link} to="/drafts" onClick={hideMenu}>
+                      <DraftIcon className={classes.menuIcon} />
+                      Drafts
+                    </MenuItem>
+                    <MenuItem
+                      onClick={() => {
+                        setShowCustomDialog(true);
+                        hideMenu();
+                      }}
+                      color="inherit"
+                    >
+                      <ExitToApp className={classes.menuIcon} />
+                      Log Out
+                    </MenuItem>
+                  </MenuList>
+                ) : (
+                  <MenuList>
+                    <MenuItem onClick={openAccountDialog("login")}>
+                      Log In
+                    </MenuItem>
+                    <MenuItem onClick={openAccountDialog("signup")}>
+                      Sign Up
+                    </MenuItem>
+                  </MenuList>
+                )}
+              </Menu>
+            </Fragment>
+          </div>
+        </Toolbar>
+        <div className={classes.progressContainer}>
+          {/* Show Progress Bar */}
+          {isLoading && <LinearProgress color="secondary" />}
+        </div>
+      </AppBar>
       <Drawer
         anchor="left"
         variant="persistent"
