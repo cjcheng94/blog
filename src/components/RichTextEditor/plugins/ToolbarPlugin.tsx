@@ -700,9 +700,6 @@ const ToolbarPlugin = () => {
               {language}
             </MenuItem>
           ))}
-          <MenuItem key={"typescript"} value="typescript">
-            typescript
-          </MenuItem>
         </Select>
       ) : (
         <>
