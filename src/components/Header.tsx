@@ -320,6 +320,12 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   // trigger is true when user scrolls down, false when user scrolls up
   const trigger = useScrollTrigger();
 
+  const isPostNewRoute = location.pathname === "/posts/new";
+  const isUpdateDraftRoute = location.pathname.startsWith("/drafts/edit");
+  const isUpdatePostRoute = location.pathname.startsWith("/posts/edit");
+  const showAutoSaveSpinner =
+    isPostNewRoute || isUpdateDraftRoute || isUpdatePostRoute;
+
   const appBarClass = showDrawer
     ? `${classes.appBar} ${classes.appBarShift}`
     : trigger
@@ -356,7 +362,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
           </div>
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">
-            <AutosaveSpinner />
+            {showAutoSaveSpinner && <AutosaveSpinner />}
             <Tooltip title="Search">
               <IconButton
                 aria-haspopup="true"
