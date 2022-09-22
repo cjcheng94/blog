@@ -17,7 +17,6 @@ import {
   DELETE_DRAFT,
   GET_CACHED_DRAFT_FRAGMENT
 } from "../api/gqlDocuments";
-import { Draft } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {
@@ -123,6 +122,7 @@ const DraftUpdate: React.FC<Props> = props => {
 
   type DraftVariables = {
     _id: string;
+    postId: string;
     title: string;
     content: string;
     contentText: string;
@@ -160,8 +160,10 @@ const DraftUpdate: React.FC<Props> = props => {
   useEffect(() => {
     // Update draft
     if (title || plainText) {
+      const postId = getDraftData.getDraftById.postId;
       throttledUpdateDraft({
         _id,
+        postId,
         title,
         content,
         contentText: plainText,

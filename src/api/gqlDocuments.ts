@@ -241,6 +241,7 @@ export const GET_DRAFT_BY_ID = gql`
   query getDraftById($_id: String!) {
     getDraftById(_id: $_id) {
       _id
+      postId
       title
       author
       content
@@ -278,6 +279,7 @@ export const GET_USER_DRAFTS = gql`
   query getUserDrafts {
     getUserDrafts {
       _id
+      postId
       title
       author
       content
@@ -434,6 +436,7 @@ export const GET_CACHED_POST_FRAGMENT = gql`
 export const GET_CACHED_DRAFT_FRAGMENT = gql`
   fragment MyDraft on Draft {
     _id
+    postId
     title
     author
     content
