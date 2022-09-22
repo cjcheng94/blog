@@ -45,6 +45,8 @@ type EditorProps = {
   readOnly?: boolean;
   initialContent?: string;
   initialPlainText?: string;
+  allowInitialStateChange?: boolean;
+  initialStateChangeCallback?: () => void;
   setContentEmpty?: (isEmpty: boolean) => void;
   onTextContentChange?: (data: string) => void;
   onRichTextTextChange?: (data: string) => void;
@@ -57,7 +59,9 @@ const Editor: React.FC<EditorProps> = props => {
     initialPlainText,
     setContentEmpty,
     onTextContentChange,
-    onRichTextTextChange
+    onRichTextTextChange,
+    allowInitialStateChange = false,
+    initialStateChangeCallback
   } = props;
   const [showLegacyAlert, setShowLegacyAlert] = useState(false);
 
@@ -120,6 +124,8 @@ const Editor: React.FC<EditorProps> = props => {
             data={initialContent}
             initialPlainText={initialPlainText}
             setShowLegacyAlert={setShowLegacyAlert}
+            allowInitialStateChange={allowInitialStateChange}
+            initialStateChangeCallback={initialStateChangeCallback}
           />
           <ImagesPlugin />
         </SharedHistoryContext>

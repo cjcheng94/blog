@@ -4,10 +4,14 @@ import { $createParagraphNode, $createTextNode, $getRoot } from "lexical";
 const InitialStatePlugin = ({
   data,
   initialPlainText,
-  setShowLegacyAlert
+  setShowLegacyAlert,
+  allowInitialStateChange,
+  initialStateChangeCallback
 }: {
   data?: string;
   initialPlainText?: string;
+  allowInitialStateChange?: boolean;
+  initialStateChangeCallback?: () => void;
   setShowLegacyAlert: (show: boolean) => void;
 }) => {
   const [editor] = useLexicalComposerContext();
@@ -29,6 +33,16 @@ const InitialStatePlugin = ({
       }
     }
   }, []);
+
+  useEffect(() => {
+    // When applying changes from draft, allow a one-time initial state change from PostUpdate
+    // this prevents a possible circular state update
+    if (allowInitialStateChange && initialStateChangeCallback && data) {
+      const editorState = editor.parseEditorState(data);
+      editor.setEditorState(editorState);
+      initialStateChangeCallback();
+    }
+  }, [allowInitialStateChange, initialStateChangeCallback, data]);
 
   return null;
 };
