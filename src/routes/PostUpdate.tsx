@@ -49,10 +49,12 @@ const PostUpdate: React.FC<Props> = props => {
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [draftId, setDraftId] = useState("");
+  const [applyChanges, setApplyChanges] = useState(false);
 
   const classes = useStyles();
 
-  const { _id } = props.match.params;
+  const { _id: postId } = props.match.params;
   const isOnline = navigator.onLine;
 
   const {
@@ -61,7 +63,7 @@ const PostUpdate: React.FC<Props> = props => {
     data: getPostData,
     called: getPostCalled
   } = useQuery(GET_CURRENT_POST, {
-    variables: { _id }
+    variables: { _id: postId }
   });
 
   const {
@@ -69,7 +71,15 @@ const PostUpdate: React.FC<Props> = props => {
     error: getDraftByPostIdError,
     data: getDraftByPostIdData,
     called: getDraftByPostIdCalled
-  } = useQuery(GET_DRAFT_BY_POSTID);
+  } = useQuery(GET_DRAFT_BY_POSTID, {
+    variables: {
+      postId
+    },
+    // The no-cache policy is because we have a throttled draft update that's being called many times,
+    // and that will cause the cached draft to update,
+    // which in turn causes this hook being called multiple times unnecessarily
+    fetchPolicy: "no-cache"
+  });
 
   const [
     createDraft,
@@ -114,8 +124,55 @@ const PostUpdate: React.FC<Props> = props => {
     refetchQueries: [{ query: GET_USER_DRAFTS }]
   });
 
+  // Use post data to initialize our form
+  useEffect(() => {
+    if (getPostCalled && getPostData) {
+      const { title, content, contentText, tagIds } = getPostData.getPostById;
+      setTitle(title);
+      setRichData(content);
+      setPlainText(contentText);
+      setSelectedTagIds(tagIds);
+    }
+  }, [getPostCalled, getPostData]);
+
+  useEffect(() => {
+    // There's no corresponding draft, create one
+    if (getDraftByPostIdCalled && getDraftByPostIdError) {
+      const noDraft = getDraftByPostIdError?.message === "Cannot find draft";
+
+      if (noDraft && getPostData) {
+        const { title, content, contentText, tagIds } = getPostData.getPostById;
+        createDraft({
+          variables: {
+            postId,
+            title,
+            content,
+            contentText,
+            tagIds
+          }
+        });
+      }
+      return;
+    }
+
+    // There is a corresponding draft
+    if (getDraftByPostIdCalled && getDraftByPostIdData) {
+      const draftId = getDraftByPostIdData.getDraftByPostId._id;
+      setDraftId(draftId);
+      setShowApplyDraftDialog(true);
+    }
+  }, [getDraftByPostIdData, getDraftByPostIdCalled, getDraftByPostIdError]);
+
+  useEffect(() => {
+    if (createDraftCalled && createDraftData) {
+      const draftId = createDraftData.createDraft._id;
+      setDraftId(draftId);
+    }
+  }, [createDraftData, createDraftCalled]);
+
   type DraftVariables = {
     _id: string;
+    postId: string;
     title: string;
     content: string;
     contentText: string;
@@ -136,10 +193,14 @@ const PostUpdate: React.FC<Props> = props => {
 
   // If user changed content, call throttled updateHandler to update draft
   useEffect(() => {
+    if (!draftId) {
+      return;
+    }
     // Update draft
     if (title || plainText) {
       throttledUpdateDraft({
-        _id,
+        _id: draftId,
+        postId,
         title,
         content,
         contentText: plainText,
@@ -147,17 +208,6 @@ const PostUpdate: React.FC<Props> = props => {
       });
     }
   }, [title, plainText, content, selectedTagIds]);
-
-  // Use post data to initialize our form
-  useEffect(() => {
-    if (getPostCalled && getPostData) {
-      const { title, content, contentText, tagIds } = getPostData.getPostById;
-      setTitle(title);
-      setRichData(content);
-      setPlainText(contentText);
-      setSelectedTagIds(tagIds);
-    }
-  }, [getPostCalled, getPostData]);
 
   const alertAndRedirect = (alertMessage: string, destination: string) => {
     setAlertMessage(alertMessage);
@@ -169,14 +219,10 @@ const PostUpdate: React.FC<Props> = props => {
   // Update success
   useEffect(() => {
     if (updatePostCalled && updatePostData) {
-      deleteOldDraft(false);
+      deleteDraft({ variables: { _id: draftId } });
       alertAndRedirect("Update successful", "/");
     }
   }, [updatePostCalled, updatePostData]);
-
-  const deleteOldDraft = (isExplicit: boolean) => {
-    deleteDraft({ variables: { _id } });
-  };
 
   // Clear error messages when user enters text
   useEffect(() => {
@@ -225,7 +271,7 @@ const PostUpdate: React.FC<Props> = props => {
       // Update mode
       updatePost({
         variables: {
-          _id,
+          _id: postId,
           title,
           content,
           contentText: plainText,
@@ -245,6 +291,10 @@ const PostUpdate: React.FC<Props> = props => {
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
+          allowInitialStateChange={applyChanges}
+          initialStateChangeCallback={() => {
+            setApplyChanges(false);
+          }}
         />
       );
     }
@@ -258,6 +308,17 @@ const PostUpdate: React.FC<Props> = props => {
       }
       return [...prevIds, tag._id];
     });
+  };
+
+  const applyDraft = () => {
+    const { title, content, contentText, tagIds } =
+      getDraftByPostIdData.getDraftByPostId;
+    setTitle(title);
+    setRichData(content);
+    setPlainText(contentText);
+    setSelectedTagIds(tagIds);
+    setApplyChanges(true);
+    setShowApplyDraftDialog(false);
   };
 
   return (
@@ -311,7 +372,7 @@ const PostUpdate: React.FC<Props> = props => {
       <CustomDialog
         dialogTitle="Apply unsaved changes?"
         open={showApplyDraftDialog}
-        handleConfirm={() => {}}
+        handleConfirm={applyDraft}
         handleClose={() => {
           setShowApplyDraftDialog(false);
         }}
