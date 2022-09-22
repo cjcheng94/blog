@@ -255,6 +255,25 @@ export const GET_DRAFT_BY_ID = gql`
   }
 `;
 
+export const GET_DRAFT_BY_POSTID = gql`
+  query getDraftByPostId($postId: ID!) {
+    getDraftByPostId(postId: $postId) {
+      _id
+      postId
+      title
+      author
+      content
+      contentText
+      date
+      tagIds
+      tags {
+        _id
+        name
+      }
+    }
+  }
+`;
+
 export const GET_USER_DRAFTS = gql`
   query getUserDrafts {
     getUserDrafts {
@@ -279,14 +298,17 @@ export const CREATE_DRAFT = gql`
     $content: String!
     $contentText: String!
     $tagIds: [ID]!
+    $postId: ID
   ) {
     createDraft(
       title: $title
       content: $content
       contentText: $contentText
       tagIds: $tagIds
+      postId: $postId
     ) {
       _id
+      postId
       title
       author
       content
@@ -308,6 +330,7 @@ export const UPDATE_DRAFT = gql`
     $content: String!
     $contentText: String!
     $tagIds: [ID]!
+    $postId: ID
   ) {
     updateDraft(
       _id: $_id
@@ -315,8 +338,10 @@ export const UPDATE_DRAFT = gql`
       content: $content
       contentText: $contentText
       tagIds: $tagIds
+      postId: $postId
     ) {
       _id
+      postId
       title
       author
       content
