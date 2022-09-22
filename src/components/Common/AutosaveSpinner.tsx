@@ -1,9 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 import { CloudDone, Sync, SyncProblem } from "@material-ui/icons";
 import { IconButton, Tooltip } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { RouteComponentProps, withRouter } from "react-router-dom";
 import { useReactiveVar } from "@apollo/client";
 import { draftUpdatingVar, draftErrorVar } from "../../api/cache";
 
@@ -23,26 +22,11 @@ const useStyles = makeStyles(() => ({
   }
 }));
 
-const AutosaveSpinner: React.FC<RouteComponentProps> = ({ location }) => {
-  const [showAutosaveSpinner, setShowAutosaveSpinner] =
-    useState<boolean>(false);
-
+const AutosaveSpinner = () => {
   const classes = useStyles();
 
   const draftUpdating = useReactiveVar(draftUpdatingVar);
   const draftError = useReactiveVar(draftErrorVar);
-
-  useEffect(() => {
-    const isPostNewRoute = location.pathname === "/posts/new";
-    const isUpdateDraftRoute = location.pathname.startsWith("/drafts/edit");
-
-    // Show autosave spinner conditionally
-    if (isPostNewRoute || isUpdateDraftRoute) {
-      setShowAutosaveSpinner(true);
-    } else {
-      setShowAutosaveSpinner(false);
-    }
-  }, [location.pathname]);
 
   const renderIcon = () => {
     if (draftUpdating) {
@@ -66,7 +50,7 @@ const AutosaveSpinner: React.FC<RouteComponentProps> = ({ location }) => {
     );
   };
 
-  return showAutosaveSpinner ? (
+  return (
     <IconButton
       disableRipple
       disableFocusRipple
@@ -79,7 +63,7 @@ const AutosaveSpinner: React.FC<RouteComponentProps> = ({ location }) => {
     >
       {renderIcon()}
     </IconButton>
-  ) : null;
+  );
 };
 
-export default withRouter(AutosaveSpinner);
+export default AutosaveSpinner;
