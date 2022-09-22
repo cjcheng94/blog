@@ -1,6 +1,6 @@
 import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
+import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
 import throttle from "lodash/throttle";
 import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -9,14 +9,15 @@ import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
 import {
   GET_ALL_POSTS,
-  GET_CURRENT_POST,
-  UPDATE_POST,
+  CREATE_NEW_POST,
   GET_USER_DRAFTS,
+  GET_DRAFT_BY_ID,
   GET_DRAFT_BY_POSTID,
-  CREATE_DRAFT,
   UPDATE_DRAFT,
-  DELETE_DRAFT
+  DELETE_DRAFT,
+  GET_CACHED_DRAFT_FRAGMENT
 } from "../api/gqlDocuments";
+import { Draft } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {
@@ -39,9 +40,8 @@ type TParams = {
 };
 type Props = RouteComponentProps<TParams>;
 
-const PostUpdate: React.FC<Props> = props => {
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [showApplyDraftDialog, setShowApplyDraftDialog] = useState(false);
+const DraftUpdate: React.FC<Props> = props => {
+  const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [title, setTitle] = useState("");
   const [content, setRichData] = useState("");
@@ -49,49 +49,46 @@ const PostUpdate: React.FC<Props> = props => {
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [explicitDeleteDraft, setExplicitDeleteDraft] = useState(false);
 
   const classes = useStyles();
 
   const { _id } = props.match.params;
   const isOnline = navigator.onLine;
 
-  const {
-    loading: getPostLoading,
-    error: getPostError,
-    data: getPostData,
-    called: getPostCalled
-  } = useQuery(GET_CURRENT_POST, {
+  const [
+    createNewPost,
+    {
+      loading: createNewPostLoading,
+      error: createNewPostError,
+      data: createNewPostData,
+      called: createNewPostCalled
+    }
+  ] = useMutation(CREATE_NEW_POST, {
+    refetchQueries: [{ query: GET_ALL_POSTS }]
+  });
+
+  const [
+    getDraftById,
+    {
+      loading: getDraftLoading,
+      error: getDraftError,
+      data: getDraftData,
+      called: getDraftCalled
+    }
+  ] = useLazyQuery(GET_DRAFT_BY_ID, {
     variables: { _id }
   });
 
-  const {
-    loading: getDraftByPostIdLoading,
-    error: getDraftByPostIdError,
-    data: getDraftByPostIdData,
-    called: getDraftByPostIdCalled
-  } = useQuery(GET_DRAFT_BY_POSTID);
-
   const [
-    createDraft,
+    getDraftByPostId,
     {
-      loading: createDraftLoading,
-      error: createDraftError,
-      data: createDraftData,
-      called: createDraftCalled
+      loading: getDraftByPostIdLoading,
+      error: getDraftByPostIdError,
+      data: getDraftByPostIdData,
+      called: getDraftByPostIdCalled
     }
-  ] = useMutation(CREATE_DRAFT);
-
-  const [
-    updatePost,
-    {
-      loading: updatePostLoading,
-      error: updatePostError,
-      data: updatePostData,
-      called: updatePostCalled
-    }
-  ] = useMutation(UPDATE_POST, {
-    refetchQueries: [{ query: GET_ALL_POSTS }]
-  });
+  ] = useLazyQuery(GET_DRAFT_BY_POSTID);
 
   const [
     updateDraft,
@@ -114,6 +111,16 @@ const PostUpdate: React.FC<Props> = props => {
     refetchQueries: [{ query: GET_USER_DRAFTS }]
   });
 
+  // Get draft from cache
+  const client = useApolloClient();
+  // Apollo client only caches *queries*, so we have to use readFragment.
+  // This allows us to read cached draft data
+  // even when user never called GET_DRAFT_BY_ID.
+  const cachedDraftData = client.readFragment({
+    id: `Draft:${_id}`,
+    fragment: GET_CACHED_DRAFT_FRAGMENT
+  });
+
   type DraftVariables = {
     _id: string;
     title: string;
@@ -134,6 +141,21 @@ const PostUpdate: React.FC<Props> = props => {
     []
   );
 
+  useEffect(() => {
+    getDraftById();
+  }, []);
+
+  // Use draft data to initialize our form
+  useEffect(() => {
+    if (getDraftCalled && getDraftData) {
+      const { title, content, contentText, tagIds } = getDraftData.getDraftById;
+      setTitle(title);
+      setRichData(content);
+      setPlainText(contentText);
+      setSelectedTagIds(tagIds);
+    }
+  }, [getDraftCalled, getDraftData, cachedDraftData]);
+
   // If user changed content, call throttled updateHandler to update draft
   useEffect(() => {
     // Update draft
@@ -148,35 +170,33 @@ const PostUpdate: React.FC<Props> = props => {
     }
   }, [title, plainText, content, selectedTagIds]);
 
-  // Use post data to initialize our form
   useEffect(() => {
-    if (getPostCalled && getPostData) {
-      const { title, content, contentText, tagIds } = getPostData.getPostById;
+    // Offline, use cached draft data
+    if (!isOnline && cachedDraftData) {
+      console.log("Loaded draft from cache");
+      const { title, content, contentText, tagIds } = cachedDraftData;
       setTitle(title);
       setRichData(content);
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
     }
-  }, [getPostCalled, getPostData]);
+  }, [cachedDraftData]);
 
-  const alertAndRedirect = (alertMessage: string, destination: string) => {
-    setAlertMessage(alertMessage);
-    setTimeout(() => {
-      props.history.push(destination);
-    }, 1000);
-  };
-
-  // Update success
+  // Create post success
   useEffect(() => {
-    if (updatePostCalled && updatePostData) {
-      deleteOldDraft(false);
-      alertAndRedirect("Update successful", "/");
+    if (createNewPostCalled && createNewPostData) {
+      // Delete draft after user successfully created post
+      deleteOldDraft(false)();
+      alertAndRedirect("Create post successful", "/");
     }
-  }, [updatePostCalled, updatePostData]);
+  }, [createNewPostCalled, createNewPostData]);
 
-  const deleteOldDraft = (isExplicit: boolean) => {
-    deleteDraft({ variables: { _id } });
-  };
+  // Explicit delete draft success
+  useEffect(() => {
+    if (deleteDraftCalled && deleteDraftData && explicitDeleteDraft) {
+      alertAndRedirect("Deleted draft successful", "/drafts");
+    }
+  }, [deleteDraftCalled, deleteDraftData]);
 
   // Clear error messages when user enters text
   useEffect(() => {
@@ -185,7 +205,7 @@ const PostUpdate: React.FC<Props> = props => {
     }
   }, [title, contentEmpty]);
 
-  const isLoading = getPostLoading || updatePostLoading;
+  const isLoading = getDraftLoading;
 
   useEffect(() => {
     loadingVar(isLoading);
@@ -198,6 +218,21 @@ const PostUpdate: React.FC<Props> = props => {
   useEffect(() => {
     draftErrorVar(!!updateDraftError);
   }, [updateDraftError]);
+
+  const alertAndRedirect = (alertMessage: string, destination: string) => {
+    setAlertMessage(alertMessage);
+    setTimeout(() => {
+      props.history.push(destination);
+    }, 1000);
+  };
+
+  // Used after create post success,
+  // or when user explicitly clicked "delete draft button".
+  // We use the "isExplicit" parameter to differentiate between the two use cases
+  const deleteOldDraft = (isExplicit: boolean) => () => {
+    deleteDraft({ variables: { _id } });
+    setExplicitDeleteDraft(isExplicit);
+  };
 
   // Check if title or content field is empty
   const validate = () => {
@@ -214,18 +249,16 @@ const PostUpdate: React.FC<Props> = props => {
   const handleSubmitClick = () => {
     const isValid = validate();
     if (isValid) {
-      setShowConfirmDialog(true);
+      setShowCustomDialog(true);
     }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setShowConfirmDialog(false);
+    setShowCustomDialog(false);
     if (validate()) {
-      // Update mode
-      updatePost({
+      createNewPost({
         variables: {
-          _id,
           title,
           content,
           contentText: plainText,
@@ -262,8 +295,7 @@ const PostUpdate: React.FC<Props> = props => {
 
   return (
     <Fragment>
-      {getPostError && isOnline && <ErrorAlert error={getPostError} />}
-      {updatePostError && isOnline && <ErrorAlert error={updatePostError} />}
+      {getDraftError && isOnline && <ErrorAlert error={getDraftError} />}
       <form
         id="update-form"
         className={classes.formEdit}
@@ -296,7 +328,15 @@ const PostUpdate: React.FC<Props> = props => {
         >
           Submit
         </Button>
-
+        <Button
+          className={classes.button}
+          onClick={deleteOldDraft(true)}
+          disabled={deleteDraftLoading}
+          variant="contained"
+          color="secondary"
+        >
+          Delete Draft
+        </Button>
         <Button
           className={classes.button}
           variant="contained"
@@ -309,21 +349,10 @@ const PostUpdate: React.FC<Props> = props => {
       </form>
 
       <CustomDialog
-        dialogTitle="Apply unsaved changes?"
-        open={showApplyDraftDialog}
-        handleConfirm={() => {}}
+        dialogTitle="Create story?"
+        open={showCustomDialog}
         handleClose={() => {
-          setShowApplyDraftDialog(false);
-        }}
-        isDisabled={false}
-        type="button"
-      />
-
-      <CustomDialog
-        dialogTitle="Submit changes?"
-        open={showConfirmDialog}
-        handleClose={() => {
-          setShowConfirmDialog(false);
+          setShowCustomDialog(false);
         }}
         isDisabled={false}
         formId="update-form"
@@ -348,4 +377,4 @@ const PostUpdate: React.FC<Props> = props => {
   );
 };
 
-export default PostUpdate;
+export default DraftUpdate;

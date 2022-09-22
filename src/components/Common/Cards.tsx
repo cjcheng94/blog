@@ -72,7 +72,7 @@ const Cards: React.FC<Props> = props => {
     let url = `/posts/detail/${_id}`;
 
     if (type === "draft") {
-      url = `/posts/edit/${_id}?isDraft`;
+      url = `/drafts/edit/${_id}`;
     }
 
     return (

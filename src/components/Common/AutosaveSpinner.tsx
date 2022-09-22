@@ -33,14 +33,8 @@ const AutosaveSpinner: React.FC<RouteComponentProps> = ({ location }) => {
   const draftError = useReactiveVar(draftErrorVar);
 
   useEffect(() => {
-    // Draft routes
-    const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
-    const urlQuery = getUrlQuery(location.search);
-    const isDraft = urlQuery.has("isDraft");
-
     const isPostNewRoute = location.pathname === "/posts/new";
-    const isUpdateDraftRoute =
-      location.pathname.startsWith("/posts/edit") && isDraft;
+    const isUpdateDraftRoute = location.pathname.startsWith("/drafts/edit");
 
     // Show autosave spinner conditionally
     if (isPostNewRoute || isUpdateDraftRoute) {
