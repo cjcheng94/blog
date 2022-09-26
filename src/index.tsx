@@ -22,7 +22,7 @@ import {
 } from "./api/cache";
 
 const httpLink = createHttpLink({
-  uri: "https://blog-gql.herokuapp.com"
+  uri: import.meta.env.VITE_BACKEND_URL
 });
 
 const authLink = setContext((_, { headers }) => {
