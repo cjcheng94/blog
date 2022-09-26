@@ -55,7 +55,7 @@ registerRoute(
 // Workbox with custom handler to use IndexedDB for cache.
 registerRoute(
   ({ url }) => {
-    return url.origin === "https://blog-gql.herokuapp.com";
+    return url.origin === import.meta.env.VITE_BACKEND_URL;
   },
   async ({ request }) => networkFirst(request),
   "POST"
