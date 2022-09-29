@@ -101,7 +101,7 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.sharp,
       duration: theme.transitions.duration.leavingScreen
     }),
-    "& button": {
+    "& button, label > span": {
       border: "none",
       margin: "4px",
       color: theme.palette.text.secondary
@@ -586,10 +586,6 @@ const ToolbarPlugin = () => {
     }
   }, [editor, isLink]);
 
-  const triggerImageInput = () => {
-    document.getElementById("imageInput")!.click();
-  };
-
   const insertImage = useCallback(
     (payload: InsertImagePayload) => {
       activeEditor.dispatchCommand(INSERT_IMAGE_COMMAND, payload);
@@ -621,6 +617,9 @@ const ToolbarPlugin = () => {
         handleImage(file);
       }
     }
+    // reset input value, otherwise repeated upload of the same image won't trigger
+    // change event
+    event.target.value = "";
   };
 
   const controlsClassName = trigger
@@ -650,10 +649,15 @@ const ToolbarPlugin = () => {
         <RedoIcon />
       </ToggleButton>
 
-      <Divider flexItem orientation="vertical" className={classes.divider} />
-
       {activeEditor === editor && blockType in blockTypeMap && (
-        <BlockOptionsMenu editor={editor} blockType={blockType} />
+        <>
+          <Divider
+            flexItem
+            orientation="vertical"
+            className={classes.divider}
+          />
+          <BlockOptionsMenu editor={editor} blockType={blockType} />
+        </>
       )}
 
       <Divider flexItem orientation="vertical" className={classes.divider} />
@@ -729,16 +733,16 @@ const ToolbarPlugin = () => {
             orientation="vertical"
             className={classes.divider}
           />
-
-          <ToggleButton
-            size="small"
-            value="image"
-            aria-label="Image"
-            onMouseDown={preventDefault}
-            onClick={triggerImageInput}
-          >
-            <ImageIcon />
-          </ToggleButton>
+          <label htmlFor="image-input">
+            <ToggleButton
+              size="small"
+              value="image"
+              aria-label="Image"
+              component="span"
+            >
+              <ImageIcon />
+            </ToggleButton>
+          </label>
           <ToggleButton
             size="small"
             value="link"
@@ -751,7 +755,7 @@ const ToolbarPlugin = () => {
           </ToggleButton>
           {isLink && <LinkEditor editor={activeEditor} />}
           <input
-            id="imageInput"
+            id="image-input"
             type="file"
             accept="image/*"
             className={classes.invisibleInput}
