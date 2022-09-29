@@ -73,14 +73,14 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  useScrollTrigger
+  useScrollTrigger,
+  Snackbar
 } from "@material-ui/core";
+import ToggleButton from "@material-ui/lab/ToggleButton";
+import Alert from "@material-ui/lab/Alert";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
 
-import ToggleButton from "@material-ui/lab/ToggleButton";
-
 import { useMutation } from "@apollo/client";
-import { imageMapVar } from "../../../api/cache";
 import { uploadImage } from "../../../api/imgur";
 import { CREATE_IMAGE } from "../../../api/gqlDocuments";
 
@@ -133,6 +133,9 @@ const useStyles = makeStyles(theme => ({
   },
   invisibleInput: {
     display: "none"
+  },
+  alert: {
+    top: 80
   }
 }));
 
@@ -458,6 +461,9 @@ const ToolbarPlugin = () => {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
+  const [showAlert, setShowAlert] = useState(false);
+  const [alertMessage, setAlertMessage] = useState("");
+
   const classes = useStyles();
 
   const [createImage] = useMutation(CREATE_IMAGE);
@@ -593,26 +599,47 @@ const ToolbarPlugin = () => {
     [activeEditor]
   );
 
+  const setMessageAndShowAlert = (message: string) => {
+    setShowAlert(true);
+    setAlertMessage(message);
+  };
+
+  const closeAlert = (event?: React.SyntheticEvent, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setShowAlert(false);
+    setAlertMessage("");
+  };
+
   const handleImageInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const handleImage = async (file: File) => {
-      const uploadRes = await uploadImage(file);
-      if (uploadRes.success) {
+      const { success, link, errorMessage } = await uploadImage(file);
+      console.log({ success, link, errorMessage });
+
+      if (success) {
         insertImage({
           altText: "my alt text",
-          src: uploadRes.data.link,
+          src: link,
           showCaption: true
         });
+        return;
       }
+      setMessageAndShowAlert(errorMessage);
     };
 
     if (event.target.files) {
       const file = event.target.files[0];
 
+      if (!file) {
+        return;
+      }
+
       // File size limit of 5 MB
-      if (file && file.size > 5 * 1024 * 1024) {
-        console.log("File size exceeded 5MB limit");
+      if (file.size > 5 * 1024 * 1024) {
+        setMessageAndShowAlert("File size exceeded 5MB limit");
       } else {
         handleImage(file);
       }
@@ -763,6 +790,17 @@ const ToolbarPlugin = () => {
           />
         </>
       )}
+      <Snackbar
+        className={classes.alert}
+        open={showAlert}
+        autoHideDuration={5000}
+        onClose={closeAlert}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert severity="error" variant="filled" onClose={closeAlert}>
+          {alertMessage}
+        </Alert>
+      </Snackbar>
     </Paper>
   );
 };
