@@ -109,7 +109,7 @@ const PostDetails: React.FC<Props> = props => {
         props.history.push("/");
       }, 1000);
     }
-  }, [deletePostCalled, deletePostData]);
+  }, [deletePostCalled, deletePostData, props.history]);
 
   let post: Post | null = null;
 

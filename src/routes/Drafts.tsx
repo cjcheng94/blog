@@ -11,8 +11,9 @@ const showAccountDialog = (type: "login" | "signup") => {
 };
 
 const Drafts = () => {
-  const [getUserDrafts, { loading, error, data }] =
-    useLazyQuery<{ getUserDrafts: Draft[] }>(GET_USER_DRAFTS);
+  const [getUserDrafts, { loading, error, data }] = useLazyQuery<{
+    getUserDrafts: Draft[];
+  }>(GET_USER_DRAFTS);
 
   const isAuthenticated = !checkIfExpired();
 
@@ -24,18 +25,11 @@ const Drafts = () => {
     }
     // If user has already logged in, get drafts
     getUserDrafts();
-  }, []);
+  }, [getUserDrafts, isAuthenticated]);
 
   useEffect(() => {
     loadingVar(loading);
   }, [loading]);
-
-  // Get drafts after user has logged in
-  useEffect(() => {
-    if (isAuthenticated) {
-      getUserDrafts();
-    }
-  }, [isAuthenticated]);
 
   const renderCards = () => {
     if (loading || !data?.getUserDrafts) {

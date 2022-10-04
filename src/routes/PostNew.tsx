@@ -128,6 +128,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   };
 
   // Throttled update draft mutation
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const throttledUpdateDraft = useCallback(
     throttle(updateDraftHandler, 1000 * 5),
     []
@@ -166,7 +167,18 @@ const PostNew: React.FC<RouteComponentProps> = props => {
         tagIds: selectedTagIds
       });
     }
-  }, [title, plainText, richData, selectedTagIds]);
+  }, [
+    title,
+    plainText,
+    richData,
+    selectedTagIds,
+    isAuthenticated,
+    createDraftCalled,
+    createdDraftId,
+    throttledUpdateDraft,
+    createDraftLoading,
+    createDraft
+  ]);
 
   // Use custom hook to delete empty draft when user leaves this route
   useCleanup(
@@ -183,7 +195,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     if (!isAuthenticated) {
       showAccountDialog("login");
     }
-  }, []);
+  }, [isAuthenticated]);
 
   // Clear error messages when user enters text
   useEffect(() => {
@@ -207,7 +219,13 @@ const PostNew: React.FC<RouteComponentProps> = props => {
       setShowAlert(true);
       setTimeout(() => props.history.push("/"), 1000);
     }
-  }, [createNewPostCalled, createNewPostData]);
+  }, [
+    createNewPostCalled,
+    createNewPostData,
+    createdDraftId,
+    deleteDraft,
+    props.history
+  ]);
 
   useEffect(() => {
     loadingVar(createNewPostLoading);

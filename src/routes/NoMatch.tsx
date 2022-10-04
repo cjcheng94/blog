@@ -23,7 +23,7 @@ const NoMatch: React.FC<Props> = props => {
       </Typography>
       <p className={classes.url}>{location.pathname}</p>
       <Typography variant="body1" color="error">
-        This page doesn't exist, please go back.
+        This page doesn&#39;t exist, please go back.
       </Typography>
     </div>
   );

@@ -152,16 +152,23 @@ const PostUpdate: React.FC<Props> = props => {
           }
         });
       }
-      return;
     }
+  }, [
+    getDraftByPostIdCalled,
+    getDraftByPostIdError,
+    getPostData,
+    createDraft,
+    postId
+  ]);
 
+  useEffect(() => {
     // There is a corresponding draft
     if (getDraftByPostIdCalled && getDraftByPostIdData) {
       const draftId = getDraftByPostIdData.getDraftByPostId._id;
       setDraftId(draftId);
       setShowApplyDraftDialog(true);
     }
-  }, [getDraftByPostIdData, getDraftByPostIdCalled, getDraftByPostIdError]);
+  }, [getDraftByPostIdCalled, getDraftByPostIdData]);
 
   useEffect(() => {
     if (createDraftCalled && createDraftData) {
@@ -186,6 +193,7 @@ const PostUpdate: React.FC<Props> = props => {
   };
 
   // Throttled update draft mutation
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const throttledUpdateDraft = useCallback(
     throttle(updateDraftHandler, 1000 * 5),
     []
@@ -207,14 +215,25 @@ const PostUpdate: React.FC<Props> = props => {
         tagIds: selectedTagIds
       });
     }
-  }, [title, plainText, content, selectedTagIds]);
+  }, [
+    title,
+    plainText,
+    content,
+    selectedTagIds,
+    draftId,
+    throttledUpdateDraft,
+    postId
+  ]);
 
-  const alertAndRedirect = (alertMessage: string, destination: string) => {
-    setAlertMessage(alertMessage);
-    setTimeout(() => {
-      props.history.push(destination);
-    }, 1000);
-  };
+  const alertAndRedirect = useCallback(
+    (alertMessage: string, destination: string) => {
+      setAlertMessage(alertMessage);
+      setTimeout(() => {
+        props.history.push(destination);
+      }, 1000);
+    },
+    [props.history]
+  );
 
   // Update success
   useEffect(() => {
@@ -222,7 +241,13 @@ const PostUpdate: React.FC<Props> = props => {
       deleteDraft({ variables: { _id: draftId } });
       alertAndRedirect("Update successful", "/");
     }
-  }, [updatePostCalled, updatePostData]);
+  }, [
+    alertAndRedirect,
+    deleteDraft,
+    draftId,
+    updatePostCalled,
+    updatePostData
+  ]);
 
   // Clear error messages when user enters text
   useEffect(() => {
