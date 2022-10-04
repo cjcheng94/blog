@@ -9,7 +9,7 @@ import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
 import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { Tag, SearchResult, Post } from "PostTypes";
-import useGetUrlParams from "../utils/useGetUrlParams";
+import { useGetUrlParams } from "@utils";
 
 type TParams = { searchTerm: string };
 type Props = RouteComponentProps<TParams>;

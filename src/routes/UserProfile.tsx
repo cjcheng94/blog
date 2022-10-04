@@ -5,7 +5,7 @@ import { Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 import { GET_USER_POSTS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
-import useGetUrlParams from "../utils/useGetUrlParams";
+import { useGetUrlParams } from "@utils";
 
 type TParams = { userId: string };
 type Props = RouteComponentProps<TParams>;
