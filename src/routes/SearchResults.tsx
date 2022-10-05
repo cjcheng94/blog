@@ -9,11 +9,10 @@ import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
 import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { Tag, SearchResult, Post } from "PostTypes";
+import { useGetUrlParams } from "@utils";
 
 type TParams = { searchTerm: string };
 type Props = RouteComponentProps<TParams>;
-
-const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
 
 const useStyles = makeStyles(theme => ({
   tagsRow: {
@@ -34,9 +33,7 @@ const useStyles = makeStyles(theme => ({
 const SearchResults: React.FC<Props> = props => {
   const classes = useStyles();
   // Get Search params from URL query
-  const urlQuery = getUrlQuery(props.location.search);
-  const searchTerm = urlQuery.get("searchTerm");
-  const tagIds = urlQuery.getAll("tagIds");
+  const { searchTerm, tagIds } = useGetUrlParams(props.location.search);
 
   const hasTags = tagIds.length > 0;
   const hasSearchTerm = !!searchTerm && searchTerm.length > 0;
@@ -66,22 +63,26 @@ const SearchResults: React.FC<Props> = props => {
   ] = useLazyQuery<{ getPostsByTags: Post[] }>(GET_POSTS_BY_TAGS);
 
   // Execute query on url query change
+  // Search term is provided, search
   useEffect(() => {
-    // Get posts by tags when search term is empty and tagIds are provided
+    if (hasSearchTerm) {
+      search({
+        variables: {
+          searchTerm,
+          tagIds
+        }
+      });
+    }
+  }, [hasSearchTerm, search, searchTerm, tagIds, tagsOnly]);
+
+  // Get posts by tags when search term is empty and tagIds are provided
+  useEffect(() => {
     if (tagsOnly) {
       getPostsByTags({
         variables: { tagIds }
       });
-      return;
     }
-    // Search term is provided, search
-    search({
-      variables: {
-        searchTerm,
-        tagIds
-      }
-    });
-  }, [props.location.search]);
+  }, [getPostsByTags, tagIds, tagsOnly]);
 
   useEffect(() => {
     loadingVar(searchLoading || getPostsByTagsLoading || getTagsLoading);

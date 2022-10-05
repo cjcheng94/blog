@@ -6,12 +6,10 @@ import { ErrorAlert, Cards, NewPostButton } from "@components";
 import { GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { Post } from "PostTypes";
-
-const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
+import { useGetUrlParams } from "@utils";
 
 const PostsByTags: React.FC<RouteComponentProps> = props => {
-  const urlQuery = getUrlQuery(props.location.search);
-  const tagIds = urlQuery.getAll("tagIds");
+  const { tagIds } = useGetUrlParams(props.location.search);
 
   // Get posts by tags
   const { loading, error, data } = useQuery<{ getPostsByTags: Post[] }>(
