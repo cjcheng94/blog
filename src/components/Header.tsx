@@ -7,7 +7,8 @@ import {
   drawerVar,
   loadingVar,
   sortLatestFirstVar,
-  accountDialogTypeVar
+  accountDialogTypeVar,
+  isAuthedVar
 } from "../api/cache";
 import {
   Tooltip,
@@ -48,7 +49,7 @@ import {
   ErrorAlert,
   AutosaveSpinner
 } from "@components";
-import checkIfExpired from "../utils/checkTokenExpired";
+import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
 
@@ -171,10 +172,7 @@ const showAccountDialog = (type: "login" | "signup") => {
 
 type UserLogout = (callback: () => void) => void;
 const userLogout: UserLogout = callback => {
-  localStorage.removeItem("currentUserToken");
-  localStorage.removeItem("currentUsername");
-  localStorage.removeItem("currentUserId");
-
+  removeAuth();
   callback();
 };
 
@@ -203,6 +201,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   const isLoading = useReactiveVar(loadingVar);
   const showDrawer = useReactiveVar(drawerVar);
   const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
+  const isAuthenticated = useReactiveVar(isAuthedVar);
 
   // Get all tags to render searched tags
   const {
@@ -231,7 +230,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
     }
   }, [selectedTagIds]);
 
-  const isAuthenticated = !checkIfExpired();
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
 

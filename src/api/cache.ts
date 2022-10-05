@@ -9,3 +9,4 @@ export const accountDialogTypeVar = makeVar<"" | "login" | "signup">("");
 export const draftUpdatingVar = makeVar(false);
 export const draftErrorVar = makeVar(false);
 export const imageMapVar = makeVar<{ [id: string]: ArrayBuffer }>({});
+export const isAuthedVar = makeVar(false);

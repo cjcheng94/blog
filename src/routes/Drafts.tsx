@@ -1,9 +1,8 @@
 import React, { Fragment, useEffect } from "react";
-import { useLazyQuery } from "@apollo/client";
+import { useLazyQuery, useReactiveVar } from "@apollo/client";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 import { GET_USER_DRAFTS } from "../api/gqlDocuments";
-import { loadingVar, accountDialogTypeVar } from "../api/cache";
-import checkIfExpired from "../utils/checkTokenExpired";
+import { loadingVar, accountDialogTypeVar, isAuthedVar } from "../api/cache";
 import { Draft } from "PostTypes";
 
 const showAccountDialog = (type: "login" | "signup") => {
@@ -11,10 +10,11 @@ const showAccountDialog = (type: "login" | "signup") => {
 };
 
 const Drafts = () => {
-  const [getUserDrafts, { loading, error, data }] =
-    useLazyQuery<{ getUserDrafts: Draft[] }>(GET_USER_DRAFTS);
+  const [getUserDrafts, { loading, error, data }] = useLazyQuery<{
+    getUserDrafts: Draft[];
+  }>(GET_USER_DRAFTS);
 
-  const isAuthenticated = !checkIfExpired();
+  const isAuthenticated = useReactiveVar(isAuthedVar);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -24,18 +24,11 @@ const Drafts = () => {
     }
     // If user has already logged in, get drafts
     getUserDrafts();
-  }, []);
+  }, [getUserDrafts, isAuthenticated]);
 
   useEffect(() => {
     loadingVar(loading);
   }, [loading]);
-
-  // Get drafts after user has logged in
-  useEffect(() => {
-    if (isAuthenticated) {
-      getUserDrafts();
-    }
-  }, [isAuthenticated]);
 
   const renderCards = () => {
     if (loading || !data?.getUserDrafts) {

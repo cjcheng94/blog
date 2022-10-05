@@ -129,6 +129,27 @@ const DraftUpdate: React.FC<Props> = props => {
     tagIds: string[];
   };
 
+  const alertAndRedirect = useCallback(
+    (alertMessage: string, destination: string) => {
+      setAlertMessage(alertMessage);
+      setTimeout(() => {
+        props.history.push(destination);
+      }, 1000);
+    },
+    [props.history]
+  );
+
+  // Used after create post success,
+  // or when user explicitly clicked "delete draft button".
+  // We use the "isExplicit" parameter to differentiate between the two use cases
+  const deleteOldDraft = useCallback(
+    (isExplicit: boolean) => () => {
+      deleteDraft({ variables: { _id } });
+      setExplicitDeleteDraft(isExplicit);
+    },
+    [_id, deleteDraft]
+  );
+
   const updateDraftHandler = (draftVariables: DraftVariables) => {
     updateDraft({
       variables: draftVariables
@@ -136,6 +157,7 @@ const DraftUpdate: React.FC<Props> = props => {
   };
 
   // Throttled update draft mutation
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const throttledUpdateDraft = useCallback(
     throttle(updateDraftHandler, 1000 * 5),
     []
@@ -143,7 +165,7 @@ const DraftUpdate: React.FC<Props> = props => {
 
   useEffect(() => {
     getDraftById();
-  }, []);
+  }, [getDraftById]);
 
   // Use draft data to initialize our form
   useEffect(() => {
@@ -160,7 +182,8 @@ const DraftUpdate: React.FC<Props> = props => {
   useEffect(() => {
     // Update draft
     if (title || plainText) {
-      const postId = getDraftData.getDraftById.postId;
+      const { postId } = getDraftData.getDraftById;
+
       throttledUpdateDraft({
         _id,
         postId,
@@ -170,7 +193,15 @@ const DraftUpdate: React.FC<Props> = props => {
         tagIds: selectedTagIds
       });
     }
-  }, [title, plainText, content, selectedTagIds]);
+  }, [
+    _id,
+    title,
+    plainText,
+    content,
+    selectedTagIds,
+    getDraftData,
+    throttledUpdateDraft
+  ]);
 
   useEffect(() => {
     // Offline, use cached draft data
@@ -182,7 +213,7 @@ const DraftUpdate: React.FC<Props> = props => {
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
     }
-  }, [cachedDraftData]);
+  }, [cachedDraftData, isOnline]);
 
   // Create post success
   useEffect(() => {
@@ -191,14 +222,24 @@ const DraftUpdate: React.FC<Props> = props => {
       deleteOldDraft(false)();
       alertAndRedirect("Create post successful", "/");
     }
-  }, [createNewPostCalled, createNewPostData]);
+  }, [
+    alertAndRedirect,
+    createNewPostCalled,
+    createNewPostData,
+    deleteOldDraft
+  ]);
 
   // Explicit delete draft success
   useEffect(() => {
     if (deleteDraftCalled && deleteDraftData && explicitDeleteDraft) {
       alertAndRedirect("Deleted draft successful", "/drafts");
     }
-  }, [deleteDraftCalled, deleteDraftData]);
+  }, [
+    alertAndRedirect,
+    deleteDraftCalled,
+    deleteDraftData,
+    explicitDeleteDraft
+  ]);
 
   // Clear error messages when user enters text
   useEffect(() => {
@@ -220,21 +261,6 @@ const DraftUpdate: React.FC<Props> = props => {
   useEffect(() => {
     draftErrorVar(!!updateDraftError);
   }, [updateDraftError]);
-
-  const alertAndRedirect = (alertMessage: string, destination: string) => {
-    setAlertMessage(alertMessage);
-    setTimeout(() => {
-      props.history.push(destination);
-    }, 1000);
-  };
-
-  // Used after create post success,
-  // or when user explicitly clicked "delete draft button".
-  // We use the "isExplicit" parameter to differentiate between the two use cases
-  const deleteOldDraft = (isExplicit: boolean) => () => {
-    deleteDraft({ variables: { _id } });
-    setExplicitDeleteDraft(isExplicit);
-  };
 
   // Check if title or content field is empty
   const validate = () => {

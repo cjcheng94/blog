@@ -28,3 +28,4 @@ editor.js
 temp
 .env
 stats.html
+.vercel

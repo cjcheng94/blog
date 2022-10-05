@@ -1,8 +1,12 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useQuery, useMutation, useApolloClient } from "@apollo/client";
+import {
+  useQuery,
+  useMutation,
+  useApolloClient,
+  useReactiveVar
+} from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import checkIfExpired from "../utils/checkTokenExpired";
 import {
   GET_CURRENT_POST,
   DELETE_POST,
@@ -20,7 +24,7 @@ import {
   DisplayTag,
   Editor
 } from "@components";
-import { loadingVar } from "../api/cache";
+import { loadingVar, isAuthedVar } from "../api/cache";
 import { Post, GetPostVars, DeletePostVars } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
@@ -109,7 +113,9 @@ const PostDetails: React.FC<Props> = props => {
         props.history.push("/");
       }, 1000);
     }
-  }, [deletePostCalled, deletePostData]);
+  }, [deletePostCalled, deletePostData, props.history]);
+
+  const isAuthenticated = useReactiveVar(isAuthedVar);
 
   let post: Post | null = null;
 
@@ -134,7 +140,6 @@ const PostDetails: React.FC<Props> = props => {
 
   const url = `/posts/edit/${props.match.params._id}`;
   const currentUsername = localStorage.getItem("currentUsername");
-  const isAuthenticated = !checkIfExpired();
   const { title, authorInfo, content, contentText, date, tags } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 

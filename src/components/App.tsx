@@ -21,6 +21,7 @@ import {
   searchOverlayVar,
   accountDialogTypeVar
 } from "../api/cache";
+import { checkLocalStorageAuth, handleLocalStorageAuthDeletion } from "@utils";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -179,6 +180,17 @@ const App: React.FC = () => {
       window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
       window.removeEventListener("online", updateIsOnline);
       window.removeEventListener("offline", updateOffline);
+    };
+  }, []);
+
+  useEffect(() => {
+    // Persist auth from local storage
+    checkLocalStorageAuth();
+
+    // Detect if token is removed from local storage
+    window.addEventListener("storage", handleLocalStorageAuthDeletion);
+    return () => {
+      window.removeEventListener("storage", handleLocalStorageAuthDeletion);
     };
   }, []);
 

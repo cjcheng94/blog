@@ -5,11 +5,10 @@ import { Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 import { GET_USER_POSTS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
+import { useGetUrlParams } from "@utils";
 
 type TParams = { userId: string };
 type Props = RouteComponentProps<TParams>;
-
-const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
 
 const UserProfile: React.FC<Props> = props => {
   const { loading, error, data } = useQuery(GET_USER_POSTS, {
@@ -18,12 +17,11 @@ const UserProfile: React.FC<Props> = props => {
     }
   });
 
+  const { username } = useGetUrlParams(props.location.search);
+
   useEffect(() => {
     loadingVar(loading);
   }, [loading]);
-
-  const urlQuery = getUrlQuery(props.location.search);
-  const username = urlQuery.get("username");
 
   if (loading || !data) {
     return null;
