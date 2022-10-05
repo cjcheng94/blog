@@ -1,8 +1,12 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { useQuery, useMutation, useApolloClient } from "@apollo/client";
+import {
+  useQuery,
+  useMutation,
+  useApolloClient,
+  useReactiveVar
+} from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import { checkAuth } from "@utils";
 import {
   GET_CURRENT_POST,
   DELETE_POST,
@@ -20,7 +24,7 @@ import {
   DisplayTag,
   Editor
 } from "@components";
-import { loadingVar } from "../api/cache";
+import { loadingVar, isAuthedVar } from "../api/cache";
 import { Post, GetPostVars, DeletePostVars } from "PostTypes";
 
 const useStyles = makeStyles(theme => ({
@@ -111,7 +115,7 @@ const PostDetails: React.FC<Props> = props => {
     }
   }, [deletePostCalled, deletePostData, props.history]);
 
-  const isAuthenticated = checkAuth();
+  const isAuthenticated = useReactiveVar(isAuthedVar);
 
   let post: Post | null = null;
 

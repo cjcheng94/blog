@@ -5,7 +5,7 @@ import React, {
   Fragment,
   FormEvent
 } from "react";
-import { useMutation } from "@apollo/client";
+import { useMutation, useReactiveVar } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import {
   Snackbar,
@@ -32,9 +32,9 @@ import {
   loadingVar,
   accountDialogTypeVar,
   draftUpdatingVar,
-  draftErrorVar
+  draftErrorVar,
+  isAuthedVar
 } from "../api/cache";
-import { checkAuth } from "@utils";
 import useCleanup from "../utils/useCleanup";
 
 const useStyles = makeStyles(theme => ({
@@ -110,7 +110,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   ] = useMutation(DELETE_DRAFT);
 
   const classes = useStyles();
-  const isAuthenticated = checkAuth();
+  const isAuthenticated = useReactiveVar(isAuthedVar);
   // Id of newly created draft
   const createdDraftId = createDraftData?.createDraft?._id;
 

@@ -4,6 +4,7 @@ import { Snackbar, Button, Typography, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { USER_LOGIN } from "../../api/gqlDocuments";
 import { loadingVar } from "../../api/cache";
+import { saveAuth } from "@utils";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -64,10 +65,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
     // Called Api and successfully got token
     if (called && data) {
       const { token, username, userId } = data.userLogin;
-      localStorage.setItem("currentUsername", username);
-      localStorage.setItem("currentUserToken", token);
-      localStorage.setItem("currentUserId", userId);
-
+      saveAuth({ token, username, userId });
       setShowAlert(true);
       setTimeout(() => onSuccess(), 1000);
     }
