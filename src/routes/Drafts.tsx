@@ -3,7 +3,7 @@ import { useLazyQuery } from "@apollo/client";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 import { GET_USER_DRAFTS } from "../api/gqlDocuments";
 import { loadingVar, accountDialogTypeVar } from "../api/cache";
-import checkIfExpired from "../utils/checkTokenExpired";
+import { checkAuth } from "@utils";
 import { Draft } from "PostTypes";
 
 const showAccountDialog = (type: "login" | "signup") => {
@@ -15,7 +15,7 @@ const Drafts = () => {
     getUserDrafts: Draft[];
   }>(GET_USER_DRAFTS);
 
-  const isAuthenticated = !checkIfExpired();
+  const isAuthenticated = checkAuth();
 
   useEffect(() => {
     if (!isAuthenticated) {

@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from "react";
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import { Link, RouteComponentProps } from "react-router-dom";
 import moment from "moment";
-import checkIfExpired from "../utils/checkTokenExpired";
+import { checkAuth } from "@utils";
 import {
   GET_CURRENT_POST,
   DELETE_POST,
@@ -111,6 +111,8 @@ const PostDetails: React.FC<Props> = props => {
     }
   }, [deletePostCalled, deletePostData, props.history]);
 
+  const isAuthenticated = checkAuth();
+
   let post: Post | null = null;
 
   if (isOnline) {
@@ -134,7 +136,6 @@ const PostDetails: React.FC<Props> = props => {
 
   const url = `/posts/edit/${props.match.params._id}`;
   const currentUsername = localStorage.getItem("currentUsername");
-  const isAuthenticated = !checkIfExpired();
   const { title, authorInfo, content, contentText, date, tags } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 

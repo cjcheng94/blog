@@ -34,7 +34,7 @@ import {
   draftUpdatingVar,
   draftErrorVar
 } from "../api/cache";
-import checkIfExpired from "../utils/checkTokenExpired";
+import { checkAuth } from "@utils";
 import useCleanup from "../utils/useCleanup";
 
 const useStyles = makeStyles(theme => ({
@@ -110,7 +110,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   ] = useMutation(DELETE_DRAFT);
 
   const classes = useStyles();
-  const isAuthenticated = !checkIfExpired();
+  const isAuthenticated = checkAuth();
   // Id of newly created draft
   const createdDraftId = createDraftData?.createDraft?._id;
 

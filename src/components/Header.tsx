@@ -48,7 +48,7 @@ import {
   ErrorAlert,
   AutosaveSpinner
 } from "@components";
-import checkIfExpired from "../utils/checkTokenExpired";
+import { checkAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
 
@@ -231,7 +231,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
     }
   }, [selectedTagIds]);
 
-  const isAuthenticated = !checkIfExpired();
+  const isAuthenticated = checkAuth();
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
 
