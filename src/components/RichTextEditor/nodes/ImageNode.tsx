@@ -276,7 +276,7 @@ function ImageComponent({
 
   useEffect(() => {
     initialCaptionEditor.setReadOnly(parentEditorReadOnly);
-  }, []);
+  }, [initialCaptionEditor, parentEditorReadOnly]);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {

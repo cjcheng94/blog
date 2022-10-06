@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useCallback } from "react";
 import { TransitionProps } from "@material-ui/core/transitions";
 import { Dialog, DialogContent, Slide } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -24,7 +24,7 @@ const Transition = React.forwardRef(function Transition(
 
 type AccountActionType = "login" | "signup";
 
-const setAccountDialogType = (type: AccountActionType | "") => () => {
+const setAccountDialogType = (type: AccountActionType | "") => {
   accountDialogTypeVar(type);
 };
 
@@ -35,20 +35,9 @@ type AccountDialogProps = {
 const AccountDialog: React.FC<AccountDialogProps> = ({ type }) => {
   const classes = useStyles();
 
-  const onClose = setAccountDialogType("");
-  const goToLogin = setAccountDialogType("login");
-  const goToSignup = setAccountDialogType("signup");
-
-  const renderLoginOrSignup = (type: AccountActionType) => {
-    if (type === "login") {
-      return (
-        <Login onCancel={onClose} onSuccess={onClose} goToSignup={goToSignup} />
-      );
-    }
-    return (
-      <Signup onCancel={onClose} onSuccess={onClose} goToLogin={goToLogin} />
-    );
-  };
+  const onClose = useCallback(() => setAccountDialogType(""), []);
+  const goToLogin = useCallback(() => setAccountDialogType("login"), []);
+  const goToSignup = useCallback(() => setAccountDialogType("signup"), []);
 
   return (
     <Dialog
@@ -58,7 +47,19 @@ const AccountDialog: React.FC<AccountDialogProps> = ({ type }) => {
       aria-labelledby="form-dialog-title"
     >
       <DialogContent classes={{ root: classes.dialogContent }}>
-        {renderLoginOrSignup(type)}
+        {type === "login" ? (
+          <Login
+            onCancel={onClose}
+            onSuccess={onClose}
+            goToSignup={goToSignup}
+          />
+        ) : (
+          <Signup
+            onCancel={onClose}
+            onSuccess={onClose}
+            goToLogin={goToLogin}
+          />
+        )}
       </DialogContent>
     </Dialog>
   );

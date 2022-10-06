@@ -96,7 +96,12 @@ const DraftUpdate: React.FC<Props> = props => {
       error: updateDraftError,
       data: updateDraftData
     }
-  ] = useMutation(UPDATE_DRAFT);
+  ] = useMutation(UPDATE_DRAFT, {
+    // The no-cache policy is because we have a throttled draft update that's being called many times,
+    // and that will cause the cached draft to update,
+    // which in turn causes this hook being called multiple times unnecessarily
+    fetchPolicy: "no-cache"
+  });
 
   const [
     deleteDraft,

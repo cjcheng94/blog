@@ -32,6 +32,7 @@ const InitialStatePlugin = ({
         });
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -42,6 +43,7 @@ const InitialStatePlugin = ({
       editor.setEditorState(editorState);
       initialStateChangeCallback();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [allowInitialStateChange, initialStateChangeCallback, data]);
 
   return null;

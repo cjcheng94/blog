@@ -374,7 +374,7 @@ const LinkEditor = ({ editor }: { editor: LexicalEditor }) => {
       setEditMode(false);
     }
     return true;
-  }, [editor]);
+  }, []);
 
   useEffect(() => {
     return mergeRegister(
