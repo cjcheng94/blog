@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Route, withRouter } from "react-router-dom";
 import { indigo, pink, red } from "@material-ui/core/colors";
 import { useReactiveVar } from "@apollo/client";
@@ -76,7 +76,7 @@ const App: React.FC = () => {
     });
 
   // Temporary solution to dark mode palette
-  const getCustomTheme = (mode: ThemeType) => {
+  const getCustomTheme = useCallback((mode: ThemeType) => {
     const defaultTheme = getDefaultTheme(mode);
     return {
       ...defaultTheme,
@@ -100,11 +100,11 @@ const App: React.FC = () => {
             })
       }
     };
-  };
+  }, []);
 
   const customTheme = React.useMemo(
     () => createTheme(getCustomTheme(userDarkModeSetting ? "dark" : "light")),
-    [userDarkModeSetting]
+    [getCustomTheme, userDarkModeSetting]
   );
 
   const enqueueAlert = (item: AlertItem) => {
@@ -116,24 +116,6 @@ const App: React.FC = () => {
   };
 
   useEffect(() => {
-    registerServiceWorker.register({
-      onSuccess: () => {
-        enqueueAlert({
-          type: "generic",
-          message: "Content is cached for offline use"
-        });
-      },
-      onUpdate: () => {
-        // Alert user new version available
-        enqueueAlert({
-          type: "generic",
-          message:
-            "New content is available and will be used when all " +
-            "tabs for this page are closed."
-        });
-      }
-    });
-
     const onAppInstalled = () => {
       // Hide the app-provided install promotion
       setPreventInstallAlert(true);
@@ -181,6 +163,27 @@ const App: React.FC = () => {
       window.removeEventListener("online", updateIsOnline);
       window.removeEventListener("offline", updateOffline);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    registerServiceWorker.register({
+      onSuccess: () => {
+        enqueueAlert({
+          type: "generic",
+          message: "Content is cached for offline use"
+        });
+      },
+      onUpdate: () => {
+        // Alert user new version available
+        enqueueAlert({
+          type: "generic",
+          message:
+            "New content is available and will be used when all " +
+            "tabs for this page are closed."
+        });
+      }
+    });
   }, []);
 
   useEffect(() => {
@@ -219,7 +222,7 @@ const App: React.FC = () => {
       }
       setShowInstallSnackbar(true);
     }
-  }, [alertQueue]);
+  }, [alertQueue, preventInstallAlert, showAlert, showInstallSnackbar]);
 
   const installHandler = async () => {
     if (!deferredPrompt) {

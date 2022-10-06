@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { Tag } from "PostTypes";
 import { DisplayTag } from "@components";
 import {
@@ -112,6 +112,8 @@ const ArticleCard: React.FC<Props> = props => {
     </>
   );
 
+  const memoizedTags = useMemo(() => renderTags(tags), [tags]);
+
   return (
     <Card className={classes.card}>
       <CardActionArea className={classes.cardButton} onClick={onClick}>
@@ -126,7 +128,7 @@ const ArticleCard: React.FC<Props> = props => {
           )}
           <Typography className={classes.content}>{contentText}</Typography>
         </CardContent>
-        <div className={classes.tagsContainer}>{renderTags(tags)}</div>
+        <div className={classes.tagsContainer}>{memoizedTags}</div>
       </CardActionArea>
     </Card>
   );

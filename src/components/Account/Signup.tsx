@@ -75,7 +75,7 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
         onSuccess();
       }, 1000);
     }
-  }, [called, data]);
+  }, [called, data, onSuccess]);
 
   useEffect(() => {
     loadingVar(loading);
