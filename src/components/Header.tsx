@@ -218,6 +218,17 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
   }, [location.pathname]);
 
   useEffect(() => {
+    // Go to PostsByTags page and pass selected tagIds in query string
+    const handleSearch = () => {
+      const searchParams = new URLSearchParams();
+      selectedTagIds.forEach(tagId => {
+        searchParams.append("tagIds", tagId);
+      });
+      const queryString = searchParams.toString();
+      const postsByTagsUrl = `/posts/tags?${queryString}`;
+      history.push(postsByTagsUrl);
+    };
+
     // There are selected tags, go to postsByTags page
     if (selectedTagIds.length > 0) {
       handleSearch();
@@ -228,7 +239,7 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
     if (location.pathname === "/posts/tags") {
       history.push("/");
     }
-  }, [selectedTagIds]);
+  }, [history, location.pathname, selectedTagIds]);
 
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
@@ -267,17 +278,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
       }
       return [...prevList, tagId];
     });
-  };
-
-  // Go to PostsByTags page and pass selected tagIds in query string
-  const handleSearch = () => {
-    const searchParams = new URLSearchParams();
-    selectedTagIds.forEach(tagId => {
-      searchParams.append("tagIds", tagId);
-    });
-    const queryString = searchParams.toString();
-    const postsByTagsUrl = `/posts/tags?${queryString}`;
-    history.push(postsByTagsUrl);
   };
 
   const isTagSelected = (tagId: string) => selectedTagIds.includes(tagId);

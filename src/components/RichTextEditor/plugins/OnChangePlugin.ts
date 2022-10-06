@@ -39,7 +39,7 @@ const OnChangePlugin = ({
         });
       });
     }
-  }, [editor]);
+  }, [editor, setContentEmpty]);
 
   useEffect(() => {
     if (onRichTextChange) {
@@ -62,7 +62,7 @@ const OnChangePlugin = ({
         }
       );
     }
-  }, [editor]);
+  }, [editor, ignoreInitialChange, ignoreSelectionChange, onRichTextChange]);
 
   useEffect(() => {
     if (onTextContentChange) {
@@ -70,7 +70,7 @@ const OnChangePlugin = ({
         onTextContentChange(textContent);
       });
     }
-  }, [editor]);
+  }, [editor, onTextContentChange]);
 
   return null;
 };

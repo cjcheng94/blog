@@ -69,7 +69,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
       setShowAlert(true);
       setTimeout(() => onSuccess(), 1000);
     }
-  }, [called, data]);
+  }, [called, data, onSuccess]);
 
   useEffect(() => {
     loadingVar(loading);
@@ -142,7 +142,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
           </div>
 
           <div className={classes.bottomMessage}>
-            <span>Don't have an account? </span>
+            <span>Don&#39;t have an account? </span>
             <span className={classes.buttonText} onClick={goToSignup}>
               Sign up
             </span>
