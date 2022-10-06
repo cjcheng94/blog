@@ -15,7 +15,8 @@ const PostsByTags: React.FC<RouteComponentProps> = props => {
   const { loading, error, data } = useQuery<{ getPostsByTags: Post[] }>(
     GET_POSTS_BY_TAGS,
     {
-      variables: { tagIds }
+      variables: { tagIds },
+      skip: tagIds.length < 1
     }
   );
 
