@@ -39,6 +39,7 @@ export const checkLocalStorageAuth = () => {
   // token expired
   if (currentTime > <number>decoded.exp) {
     isAuthedVar(false);
+    return;
   }
 
   isAuthedVar(true);
