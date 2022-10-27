@@ -3,7 +3,7 @@ import { RouteComponentProps } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
 import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
@@ -46,47 +46,38 @@ const SearchResults: React.FC<Props> = props => {
     data: getTagsData
   } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
 
-  // Search
-  const [
-    search,
-    { loading: searchLoading, error: searchError, data: searchData }
-  ] = useLazyQuery<{ search: SearchResult[] }>(SEARCH);
-
-  // Get posts by tags
-  const [
-    getPostsByTags,
-    {
-      loading: getPostsByTagsLoading,
-      error: getPostsByTagsError,
-      data: getPostsByTagsData
-    }
-  ] = useLazyQuery<{ getPostsByTags: Post[] }>(GET_POSTS_BY_TAGS);
-
   // Execute query on url query change
   // Search term is provided, search
-  useEffect(() => {
-    if (hasSearchTerm) {
-      search({
-        variables: {
-          searchTerm,
-          tagIds
-        }
-      });
+  const {
+    loading: searchLoading,
+    error: searchError,
+    data: searchData
+  } = useQuery<{ search: SearchResult[] }>(SEARCH, {
+    skip: !hasSearchTerm,
+    variables: {
+      searchTerm,
+      tagIds
     }
-  }, [hasSearchTerm, search, searchTerm, tagIds, tagsOnly]);
+  });
 
   // Get posts by tags when search term is empty and tagIds are provided
-  useEffect(() => {
-    if (tagsOnly) {
-      getPostsByTags({
-        variables: { tagIds }
-      });
+
+  const {
+    loading: getPostsByTagsLoading,
+    error: getPostsByTagsError,
+    data: getPostsByTagsData
+  } = useQuery<{ getPostsByTags: Post[] }>(GET_POSTS_BY_TAGS, {
+    skip: !tagsOnly,
+    variables: {
+      tagIds
     }
-  }, [getPostsByTags, tagIds, tagsOnly]);
+  });
+
+  const isLoading = searchLoading || getPostsByTagsLoading || getTagsLoading;
 
   useEffect(() => {
-    loadingVar(searchLoading || getPostsByTagsLoading || getTagsLoading);
-  }, [searchLoading, getPostsByTagsLoading, getTagsLoading]);
+    loadingVar(isLoading);
+  }, [isLoading]);
 
   const renderTags = () => {
     if (!getTagsData?.tags) return;
@@ -108,24 +99,16 @@ const SearchResults: React.FC<Props> = props => {
 
   const getResults = () => {
     if (tagsOnly) {
-      if (getPostsByTagsData && getPostsByTagsData.getPostsByTags) {
-        return getPostsByTagsData.getPostsByTags;
-      }
+      return getPostsByTagsData?.getPostsByTags || [];
     }
-    if (searchData && searchData.search) {
-      return searchData.search;
-    }
-    return [];
+    return searchData?.search || [];
   };
 
-  const renderError = () => {
-    const error = searchError || getPostsByTagsError || getTagsError;
-    return error && <ErrorAlert error={error} />;
-  };
+  const error = searchError || getPostsByTagsError || getTagsError;
 
   return (
     <Fragment>
-      {renderError()}
+      {error && <ErrorAlert error={error} />}
       <Typography variant="h5" gutterBottom align="center">
         Search results for <strong>{searchTerm}</strong>
       </Typography>

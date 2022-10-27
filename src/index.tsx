@@ -97,7 +97,9 @@ const client = new ApolloClient({
 ReactDOM.render(
   <ApolloProvider client={client}>
     <Router>
-      <App />
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
     </Router>
   </ApolloProvider>,
   document.getElementById("root") as HTMLElement

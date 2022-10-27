@@ -18,7 +18,7 @@ import {
 import { Close } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
 
-import throttle from "lodash/throttle";
+import debounce from "lodash/debounce";
 
 import { ErrorAlert, CustomDialog, TagBar, Editor } from "@components";
 import {
@@ -127,10 +127,10 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     });
   };
 
-  // Throttled update draft mutation
+  // Debounce update draft mutation
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const throttledUpdateDraft = useCallback(
-    throttle(updateDraftHandler, 1000 * 5),
+  const debouncedUpdateDraft = useCallback(
+    debounce(updateDraftHandler, 1000 * 5),
     []
   );
 
@@ -158,8 +158,8 @@ const PostNew: React.FC<RouteComponentProps> = props => {
       }
 
       // User changed content and we've already created a draft,
-      // call throttled updateHandler w/ the id from newly created draft to update it
-      throttledUpdateDraft({
+      // call debounced updateHandler w/ the id from newly created draft to update it
+      debouncedUpdateDraft({
         _id: createdDraftId,
         title,
         content: richData,
@@ -175,7 +175,7 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     isAuthenticated,
     createDraftCalled,
     createdDraftId,
-    throttledUpdateDraft,
+    debouncedUpdateDraft,
     createDraftLoading,
     createDraft
   ]);

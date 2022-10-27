@@ -1,7 +1,12 @@
 import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { useLazyQuery, useMutation, useApolloClient } from "@apollo/client";
-import throttle from "lodash/throttle";
+import {
+  useQuery,
+  useLazyQuery,
+  useMutation,
+  useApolloClient
+} from "@apollo/client";
+import debounce from "lodash/debounce";
 import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -67,15 +72,12 @@ const DraftUpdate: React.FC<Props> = props => {
     refetchQueries: [{ query: GET_ALL_POSTS }]
   });
 
-  const [
-    getDraftById,
-    {
-      loading: getDraftLoading,
-      error: getDraftError,
-      data: getDraftData,
-      called: getDraftCalled
-    }
-  ] = useLazyQuery(GET_DRAFT_BY_ID, {
+  const {
+    loading: getDraftLoading,
+    error: getDraftError,
+    data: getDraftData,
+    called: getDraftCalled
+  } = useQuery(GET_DRAFT_BY_ID, {
     variables: { _id }
   });
 
@@ -97,7 +99,7 @@ const DraftUpdate: React.FC<Props> = props => {
       data: updateDraftData
     }
   ] = useMutation(UPDATE_DRAFT, {
-    // The no-cache policy is because we have a throttled draft update that's being called many times,
+    // The no-cache policy is because we have a debounced draft update that's being called many times,
     // and that will cause the cached draft to update,
     // which in turn causes this hook being called multiple times unnecessarily
     fetchPolicy: "no-cache"
@@ -161,16 +163,12 @@ const DraftUpdate: React.FC<Props> = props => {
     });
   };
 
-  // Throttled update draft mutation
+  // Debounced update draft mutation
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const throttledUpdateDraft = useCallback(
-    throttle(updateDraftHandler, 1000 * 5),
+  const debouncedUpdateDraft = useCallback(
+    debounce(updateDraftHandler, 1000 * 5),
     []
   );
-
-  useEffect(() => {
-    getDraftById();
-  }, [getDraftById]);
 
   // Use draft data to initialize our form
   useEffect(() => {
@@ -183,13 +181,25 @@ const DraftUpdate: React.FC<Props> = props => {
     }
   }, [getDraftCalled, getDraftData, cachedDraftData]);
 
-  // If user changed content, call throttled updateHandler to update draft
+  useEffect(() => {
+    // Offline, use cached draft data
+    if (!isOnline && cachedDraftData) {
+      console.log("Loaded draft from cache");
+      const { title, content, contentText, tagIds } = cachedDraftData;
+      setTitle(title);
+      setRichData(content);
+      setPlainText(contentText);
+      setSelectedTagIds(tagIds);
+    }
+  }, [cachedDraftData, isOnline]);
+
+  // If user changed content, call debounced updateHandler to update draft
   useEffect(() => {
     // Update draft
     if (title || plainText) {
       const { postId } = getDraftData.getDraftById;
 
-      throttledUpdateDraft({
+      debouncedUpdateDraft({
         _id,
         postId,
         title,
@@ -205,20 +215,8 @@ const DraftUpdate: React.FC<Props> = props => {
     content,
     selectedTagIds,
     getDraftData,
-    throttledUpdateDraft
+    debouncedUpdateDraft
   ]);
-
-  useEffect(() => {
-    // Offline, use cached draft data
-    if (!isOnline && cachedDraftData) {
-      console.log("Loaded draft from cache");
-      const { title, content, contentText, tagIds } = cachedDraftData;
-      setTitle(title);
-      setRichData(content);
-      setPlainText(contentText);
-      setSelectedTagIds(tagIds);
-    }
-  }, [cachedDraftData, isOnline]);
 
   // Create post success
   useEffect(() => {
@@ -237,7 +235,7 @@ const DraftUpdate: React.FC<Props> = props => {
   // Explicit delete draft success
   useEffect(() => {
     if (deleteDraftCalled && deleteDraftData && explicitDeleteDraft) {
-      alertAndRedirect("Deleted draft successful", "/drafts");
+      alertAndRedirect("Deleted draft", "/drafts");
     }
   }, [
     alertAndRedirect,
@@ -251,13 +249,11 @@ const DraftUpdate: React.FC<Props> = props => {
     if (title) {
       setTitleErrorMessage("");
     }
-  }, [title, contentEmpty]);
-
-  const isLoading = getDraftLoading;
+  }, [title]);
 
   useEffect(() => {
-    loadingVar(isLoading);
-  }, [isLoading]);
+    loadingVar(getDraftLoading);
+  }, [getDraftLoading]);
 
   useEffect(() => {
     draftUpdatingVar(updateDraftLoading);
