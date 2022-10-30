@@ -277,7 +277,6 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
       <Menu
         id="block-options-menu"
         anchorEl={anchorEl}
-        keepMounted
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
@@ -805,4 +804,4 @@ const ToolbarPlugin = () => {
   );
 };
 
-export default ToolbarPlugin;
+export default React.memo(ToolbarPlugin);
