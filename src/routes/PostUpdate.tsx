@@ -1,6 +1,6 @@
-import React, { useState, useEffect, Fragment, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
+import { useQuery, useMutation } from "@apollo/client";
 import debounce from "lodash/debounce";
 import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -60,7 +60,7 @@ const PostUpdate: React.FC<Props> = props => {
   const [contentEmpty, setContentEmpty] = useState(true);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [draftId, setDraftId] = useState("");
-  const [applyChanges, setApplyChanges] = useState(false);
+  const [editorKey, setEditorKey] = useState(1);
 
   const classes = useStyles();
 
@@ -312,15 +312,12 @@ const PostUpdate: React.FC<Props> = props => {
     if (content) {
       return (
         <Editor
+          key={editorKey}
           initialContent={content}
           initialPlainText={plainText}
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
-          allowInitialStateChange={applyChanges}
-          initialStateChangeCallback={() => {
-            setApplyChanges(false);
-          }}
         />
       );
     }
@@ -343,7 +340,7 @@ const PostUpdate: React.FC<Props> = props => {
     setRichData(content);
     setPlainText(contentText);
     setSelectedTagIds(tagIds);
-    setApplyChanges(true);
+    setEditorKey(2);
     setShowApplyDraftDialog(false);
   };
 
