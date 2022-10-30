@@ -277,14 +277,14 @@ const PostNew: React.FC<RouteComponentProps> = props => {
     }
   };
 
-  const handleTagsChange = (tag: any) => {
+  const handleTagsChange = useCallback((tag: any) => {
     setSelectedTagIds(prevIds => {
       if (prevIds.includes(tag._id)) {
         return prevIds.filter(id => id !== tag._id);
       }
       return [...prevIds, tag._id];
     });
-  };
+  }, []);
 
   const handleExploreMessageClose = (
     event: React.SyntheticEvent<any, Event>,

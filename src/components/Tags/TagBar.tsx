@@ -98,4 +98,4 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
   );
 };
 
-export default TagRow;
+export default React.memo(TagRow);

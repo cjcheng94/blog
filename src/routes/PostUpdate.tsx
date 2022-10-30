@@ -324,14 +324,14 @@ const PostUpdate: React.FC<Props> = props => {
     return <div>Loading content...</div>;
   };
 
-  const handleTagsChange = (tag: any) => {
+  const handleTagsChange = useCallback((tag: any) => {
     setSelectedTagIds(prevIds => {
       if (prevIds.includes(tag._id)) {
         return prevIds.filter(id => id !== tag._id);
       }
       return [...prevIds, tag._id];
     });
-  };
+  }, []);
 
   const applyDraft = () => {
     const { title, content, contentText, tagIds } =
