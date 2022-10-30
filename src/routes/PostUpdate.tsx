@@ -1,7 +1,7 @@
-import React, { useState, useEffect, Fragment, useCallback } from "react";
+import React, { useState, useEffect, useCallback, Fragment } from "react";
 import { Link, RouteComponentProps } from "react-router-dom";
-import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
-import throttle from "lodash/throttle";
+import { useQuery, useMutation } from "@apollo/client";
+import debounce from "lodash/debounce";
 import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -37,7 +37,17 @@ const useStyles = makeStyles(theme => ({
 type TParams = {
   _id: string;
 };
+
 type Props = RouteComponentProps<TParams>;
+
+type DraftVariables = {
+  _id: string;
+  postId: string;
+  title: string;
+  content: string;
+  contentText: string;
+  tagIds: string[];
+};
 
 const PostUpdate: React.FC<Props> = props => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -50,7 +60,7 @@ const PostUpdate: React.FC<Props> = props => {
   const [contentEmpty, setContentEmpty] = useState(true);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [draftId, setDraftId] = useState("");
-  const [applyChanges, setApplyChanges] = useState(false);
+  const [editorKey, setEditorKey] = useState(1);
 
   const classes = useStyles();
 
@@ -75,7 +85,7 @@ const PostUpdate: React.FC<Props> = props => {
     variables: {
       postId
     },
-    // The no-cache policy is because we have a throttled draft update that's being called many times,
+    // The no-cache policy is because we have a debounced draft update that's being called many times,
     // and that will cause the cached draft to update,
     // which in turn causes this hook being called multiple times unnecessarily
     fetchPolicy: "no-cache"
@@ -177,36 +187,27 @@ const PostUpdate: React.FC<Props> = props => {
     }
   }, [createDraftData, createDraftCalled]);
 
-  type DraftVariables = {
-    _id: string;
-    postId: string;
-    title: string;
-    content: string;
-    contentText: string;
-    tagIds: string[];
-  };
-
   const updateDraftHandler = (draftVariables: DraftVariables) => {
     updateDraft({
       variables: draftVariables
     });
   };
 
-  // Throttled update draft mutation
+  // Debounced update draft mutation
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  const throttledUpdateDraft = useCallback(
-    throttle(updateDraftHandler, 1000 * 5),
+  const debouncedUpdateDraft = useCallback(
+    debounce(updateDraftHandler, 1000 * 5),
     []
   );
 
-  // If user changed content, call throttled updateHandler to update draft
+  // If user changed content, call debounced updateHandler to update draft
   useEffect(() => {
     if (!draftId) {
       return;
     }
     // Update draft
     if (title || plainText) {
-      throttledUpdateDraft({
+      debouncedUpdateDraft({
         _id: draftId,
         postId,
         title,
@@ -221,7 +222,7 @@ const PostUpdate: React.FC<Props> = props => {
     content,
     selectedTagIds,
     draftId,
-    throttledUpdateDraft,
+    debouncedUpdateDraft,
     postId
   ]);
 
@@ -254,7 +255,7 @@ const PostUpdate: React.FC<Props> = props => {
     if (title) {
       setTitleErrorMessage("");
     }
-  }, [title, contentEmpty]);
+  }, [title]);
 
   const isLoading = getPostLoading || updatePostLoading;
 
@@ -311,29 +312,26 @@ const PostUpdate: React.FC<Props> = props => {
     if (content) {
       return (
         <Editor
+          key={editorKey}
           initialContent={content}
           initialPlainText={plainText}
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
-          allowInitialStateChange={applyChanges}
-          initialStateChangeCallback={() => {
-            setApplyChanges(false);
-          }}
         />
       );
     }
     return <div>Loading content...</div>;
   };
 
-  const handleTagsChange = (tag: any) => {
+  const handleTagsChange = useCallback((tag: any) => {
     setSelectedTagIds(prevIds => {
       if (prevIds.includes(tag._id)) {
         return prevIds.filter(id => id !== tag._id);
       }
       return [...prevIds, tag._id];
     });
-  };
+  }, []);
 
   const applyDraft = () => {
     const { title, content, contentText, tagIds } =
@@ -342,7 +340,7 @@ const PostUpdate: React.FC<Props> = props => {
     setRichData(content);
     setPlainText(contentText);
     setSelectedTagIds(tagIds);
-    setApplyChanges(true);
+    setEditorKey(2);
     setShowApplyDraftDialog(false);
   };
 

@@ -149,11 +149,9 @@ const PostDetails: React.FC<Props> = props => {
     deletePost({ variables: { _id } });
   };
 
-  const renderTags = () => {
-    return tags.map(
-      tag => tag && <DisplayTag key={tag._id} value={tag.name} />
-    );
-  };
+  const displayTags = tags.map(
+    tag => tag && <DisplayTag key={tag._id} value={tag.name} />
+  );
 
   const userPostUrl = `/user/profile/${
     authorInfo._id
@@ -177,7 +175,7 @@ const PostDetails: React.FC<Props> = props => {
           <Typography variant="body2">{postTime}</Typography>
         </div>
 
-        <div className={classes.tagRow}>{renderTags()}</div>
+        <div className={classes.tagRow}>{displayTags}</div>
         <Divider className={classes.divider} />
         <Editor
           readOnly={true}

@@ -24,17 +24,10 @@ const PostsByTags: React.FC<RouteComponentProps> = props => {
     loadingVar(loading);
   }, [loading]);
 
-  const getResults = () => {
-    if (data?.getPostsByTags) {
-      return data.getPostsByTags;
-    }
-    return [];
-  };
-
   return (
     <Fragment>
       {error && <ErrorAlert error={error} />}
-      <Cards posts={getResults()} />
+      <Cards posts={data?.getPostsByTags || []} />
       <NewPostButton />
     </Fragment>
   );

@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect } from "react";
-import { useLazyQuery, useReactiveVar } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 import { GET_USER_DRAFTS } from "../api/gqlDocuments";
 import { loadingVar, accountDialogTypeVar, isAuthedVar } from "../api/cache";
@@ -10,21 +10,20 @@ const showAccountDialog = (type: "login" | "signup") => {
 };
 
 const Drafts = () => {
-  const [getUserDrafts, { loading, error, data }] = useLazyQuery<{
-    getUserDrafts: Draft[];
-  }>(GET_USER_DRAFTS);
-
   const isAuthenticated = useReactiveVar(isAuthedVar);
+
+  const { loading, error, data } = useQuery<{
+    getUserDrafts: Draft[];
+  }>(GET_USER_DRAFTS, {
+    skip: !isAuthenticated
+  });
 
   useEffect(() => {
     if (!isAuthenticated) {
       //Prompt user to log in
       showAccountDialog("login");
-      return;
     }
-    // If user has already logged in, get drafts
-    getUserDrafts();
-  }, [getUserDrafts, isAuthenticated]);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     loadingVar(loading);

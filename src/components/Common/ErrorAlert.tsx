@@ -34,7 +34,6 @@ const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
       <Dialog
         open={isOpen}
         TransitionComponent={Transition}
-        keepMounted
         aria-labelledby="alert-dialog-slide-title"
         aria-describedby="alert-dialog-slide-description"
       >
