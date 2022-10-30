@@ -1,5 +1,10 @@
 import React, { useState } from "react";
-
+import {
+  LexicalEditor,
+  $createParagraphNode,
+  $createTextNode,
+  $getRoot
+} from "lexical";
 import { LexicalComposer } from "@lexical/react/LexicalComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
@@ -24,7 +29,7 @@ import {
 import { ImageNode } from "./nodes/ImageNode";
 import {
   ToolbarPlugin,
-  InitialStatePlugin,
+  IsLegacyDataPlugin,
   EditorTheme,
   CodeHighlightPlugin,
   OnChangePlugin
@@ -45,8 +50,6 @@ type EditorProps = {
   readOnly?: boolean;
   initialContent?: string;
   initialPlainText?: string;
-  allowInitialStateChange?: boolean;
-  initialStateChangeCallback?: () => void;
   setContentEmpty?: (isEmpty: boolean) => void;
   onTextContentChange?: (data: string) => void;
   onRichTextTextChange?: (data: string) => void;
@@ -59,9 +62,7 @@ const Editor: React.FC<EditorProps> = props => {
     initialPlainText,
     setContentEmpty,
     onTextContentChange,
-    onRichTextTextChange,
-    allowInitialStateChange = false,
-    initialStateChangeCallback
+    onRichTextTextChange
   } = props;
   const [showLegacyAlert, setShowLegacyAlert] = useState(false);
 
@@ -69,11 +70,32 @@ const Editor: React.FC<EditorProps> = props => {
 
   const isDarkMode = useReactiveVar(darkModeVar);
 
+  const initializeEditor = (editor: LexicalEditor) => {
+    try {
+      // Parse initial rich text data (stringified editorState)
+      if (initialContent) {
+        const editorState = editor.parseEditorState(initialContent);
+        editor.setEditorState(editorState);
+      }
+    } catch (err) {
+      // Failed to parse as rich text, populate editor with plain text instead (legacy data)
+      if (initialPlainText) {
+        editor.update(() => {
+          const paragraph = $createParagraphNode();
+          const text = $createTextNode(initialPlainText);
+          paragraph.append(text);
+          $getRoot().append(paragraph);
+        });
+      }
+    }
+  };
+
   const initialConfig = {
     namespace: "MyEditor",
     theme: EditorTheme,
     onError,
     readOnly,
+    editorState: initializeEditor,
     nodes: [
       HeadingNode,
       ListNode,
@@ -120,12 +142,9 @@ const Editor: React.FC<EditorProps> = props => {
           />
           <HistoryPlugin externalHistoryState={historyState} />
           <AutoFocusPlugin />
-          <InitialStatePlugin
-            data={initialContent}
-            initialPlainText={initialPlainText}
+          <IsLegacyDataPlugin
+            initialContent={initialContent}
             setShowLegacyAlert={setShowLegacyAlert}
-            allowInitialStateChange={allowInitialStateChange}
-            initialStateChangeCallback={initialStateChangeCallback}
           />
           <ImagesPlugin />
         </SharedHistoryContext>
@@ -160,4 +179,4 @@ const Editor: React.FC<EditorProps> = props => {
   );
 };
 
-export default Editor;
+export default React.memo(Editor);
