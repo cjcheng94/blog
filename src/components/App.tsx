@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Route, withRouter } from "react-router-dom";
+import { Route } from "react-router-dom";
 import { indigo, pink, red } from "@material-ui/core/colors";
 import { useReactiveVar } from "@apollo/client";
 import { CssBaseline, Snackbar, useMediaQuery } from "@material-ui/core";
@@ -287,4 +287,4 @@ const App: React.FC = () => {
   );
 };
 
-export default withRouter(App);
+export default App;

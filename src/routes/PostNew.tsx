@@ -6,7 +6,7 @@ import React, {
   FormEvent
 } from "react";
 import { useMutation, useReactiveVar } from "@apollo/client";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link, useHistory } from "react-router-dom";
 import {
   Snackbar,
   TextField,
@@ -57,7 +57,7 @@ const showAccountDialog = (type: "login" | "signup") => {
   accountDialogTypeVar(type);
 };
 
-const PostNew: React.FC<RouteComponentProps> = props => {
+const PostNew = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [title, setTitle] = useState("");
@@ -68,6 +68,8 @@ const PostNew: React.FC<RouteComponentProps> = props => {
   const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
   const [showExploreMessage, setShowExploreMessage] = useState(true);
+
+  const history = useHistory();
 
   const [
     createNewPost,
@@ -217,14 +219,14 @@ const PostNew: React.FC<RouteComponentProps> = props => {
 
       // Show success message and redirect to homepage
       setShowAlert(true);
-      setTimeout(() => props.history.push("/"), 1000);
+      setTimeout(() => history.push("/"), 1000);
     }
   }, [
     createNewPostCalled,
     createNewPostData,
     createdDraftId,
     deleteDraft,
-    props.history
+    history
   ]);
 
   useEffect(() => {

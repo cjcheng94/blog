@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -11,11 +11,10 @@ const useStyles = makeStyles({
   }
 });
 
-type Props = RouteComponentProps<{}>;
-
-const NoMatch: React.FC<Props> = props => {
-  const { location } = props;
+const NoMatch = () => {
+  const location = useLocation();
   const classes = useStyles();
+
   return (
     <div>
       <Typography variant="h5" color="error">
