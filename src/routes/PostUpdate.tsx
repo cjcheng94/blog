@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, Fragment } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link, useRouteMatch, useHistory } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import debounce from "lodash/debounce";
 import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
@@ -34,12 +34,6 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type TParams = {
-  _id: string;
-};
-
-type Props = RouteComponentProps<TParams>;
-
 type DraftVariables = {
   _id: string;
   postId: string;
@@ -49,7 +43,7 @@ type DraftVariables = {
   tagIds: string[];
 };
 
-const PostUpdate: React.FC<Props> = props => {
+const PostUpdate = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showApplyDraftDialog, setShowApplyDraftDialog] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
@@ -64,7 +58,10 @@ const PostUpdate: React.FC<Props> = props => {
 
   const classes = useStyles();
 
-  const { _id: postId } = props.match.params;
+  const history = useHistory();
+  const match = useRouteMatch<{ _id: string }>();
+
+  const { _id: postId } = match.params;
   const isOnline = navigator.onLine;
 
   const {
@@ -230,10 +227,10 @@ const PostUpdate: React.FC<Props> = props => {
     (alertMessage: string, destination: string) => {
       setAlertMessage(alertMessage);
       setTimeout(() => {
-        props.history.push(destination);
+        history.push(destination);
       }, 1000);
     },
-    [props.history]
+    [history]
   );
 
   // Update success

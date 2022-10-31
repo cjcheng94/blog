@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { useLocation, useRouteMatch } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { Typography } from "@material-ui/core";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
@@ -7,17 +7,17 @@ import { GET_USER_POSTS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { useGetUrlParams } from "@utils";
 
-type TParams = { userId: string };
-type Props = RouteComponentProps<TParams>;
+const UserProfile = () => {
+  const location = useLocation();
+  const match = useRouteMatch<{ userId: string }>();
 
-const UserProfile: React.FC<Props> = props => {
   const { loading, error, data } = useQuery(GET_USER_POSTS, {
     variables: {
-      _id: props.match.params.userId
+      _id: match.params.userId
     }
   });
 
-  const { username } = useGetUrlParams(props.location.search);
+  const { username } = useGetUrlParams(location.search);
 
   useEffect(() => {
     loadingVar(loading);

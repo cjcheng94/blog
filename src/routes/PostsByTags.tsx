@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton } from "@components";
@@ -8,8 +8,9 @@ import { loadingVar } from "../api/cache";
 import { Post } from "PostTypes";
 import { useGetUrlParams } from "@utils";
 
-const PostsByTags: React.FC<RouteComponentProps> = props => {
-  const { tagIds } = useGetUrlParams(props.location.search);
+const PostsByTags = () => {
+  const location = useLocation();
+  const { tagIds } = useGetUrlParams(location.search);
 
   // Get posts by tags
   const { loading, error, data } = useQuery<{ getPostsByTags: Post[] }>(

@@ -5,7 +5,7 @@ import {
   useApolloClient,
   useReactiveVar
 } from "@apollo/client";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import moment from "moment";
 import {
   GET_CURRENT_POST,
@@ -60,14 +60,15 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type TParams = { _id: string };
-type Props = RouteComponentProps<TParams>;
-
-const PostDetails: React.FC<Props> = props => {
+const PostDetails = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
+
+  const match = useRouteMatch<{ _id: string }>();
+  const history = useHistory();
+
   const isOnline = navigator.onLine;
 
   // Get post from server
@@ -76,7 +77,7 @@ const PostDetails: React.FC<Props> = props => {
     error: getPostError,
     data: getPostData
   } = useQuery<{ getPostById: Post }, GetPostVars>(GET_CURRENT_POST, {
-    variables: { _id: props.match.params._id }
+    variables: { _id: match.params._id }
   });
 
   // Get post from cache
@@ -85,7 +86,7 @@ const PostDetails: React.FC<Props> = props => {
   // This allows us to read cached post data even when user only called GET_ALL_POSTS
   // and never called GET_CURRENT_POST.
   const cachedPostData: Post | null = client.readFragment({
-    id: `Post:${props.match.params._id}`,
+    id: `Post:${match.params._id}`,
     fragment: GET_CACHED_POST_FRAGMENT
   });
 
@@ -110,10 +111,10 @@ const PostDetails: React.FC<Props> = props => {
       setShowAlert(true);
       setShowCustomDialog(false);
       setTimeout(() => {
-        props.history.push("/");
+        history.push("/");
       }, 1000);
     }
-  }, [deletePostCalled, deletePostData, props.history]);
+  }, [deletePostCalled, deletePostData, history]);
 
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
@@ -138,14 +139,14 @@ const PostDetails: React.FC<Props> = props => {
     return null;
   }
 
-  const url = `/posts/edit/${props.match.params._id}`;
+  const url = `/posts/edit/${match.params._id}`;
   const currentUsername = localStorage.getItem("currentUsername");
   const { title, authorInfo, content, contentText, date, tags } = post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
   const handleDelete = () => {
     setClickedConfirm(true);
-    const { _id } = props.match.params;
+    const { _id } = match.params;
     deletePost({ variables: { _id } });
   };
 
@@ -232,7 +233,7 @@ const PostDetails: React.FC<Props> = props => {
         />
 
         {/*Disqus plugin*/}
-        <DisqusComment identifier={props.match.params._id} title={title} />
+        <DisqusComment identifier={match.params._id} title={title} />
       </div>
     </Fragment>
   );

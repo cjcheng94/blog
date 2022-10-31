@@ -11,7 +11,7 @@ import {
 import { makeStyles } from "@material-ui/core/styles";
 
 import { Search, Close } from "@material-ui/icons";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { searchOverlayVar, drawerVar } from "../api/cache";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
@@ -113,13 +113,14 @@ const hideSelf = () => {
   searchOverlayVar(false);
 };
 
-const SearchOverlay: React.FC<RouteComponentProps> = ({ history }) => {
+const SearchOverlay = () => {
   const [tagList, setTagList] = useState<string[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [mounted, setMounted] = useState<boolean>(false);
-
   const showDrawer = useReactiveVar(drawerVar);
   const classes = useStyles();
+  const history = useHistory();
+
   const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
 
   useEffect(() => {
@@ -240,4 +241,4 @@ const SearchOverlay: React.FC<RouteComponentProps> = ({ history }) => {
   );
 };
 
-export default withRouter(SearchOverlay);
+export default SearchOverlay;

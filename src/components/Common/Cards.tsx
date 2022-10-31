@@ -1,6 +1,6 @@
 import React from "react";
 import orderBy from "lodash/orderBy";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useHistory } from "react-router-dom";
 import { Post, Draft } from "PostTypes";
 import { ArticleCard, PaginationLink } from "@components";
 import { makeStyles } from "@material-ui/core/styles";
@@ -22,13 +22,12 @@ type Props = {
   type?: "post" | "draft";
   drafts?: Draft[];
   posts?: Post[];
-} & RouteComponentProps;
+};
 
-const Cards: React.FC<Props> = props => {
+const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
   const classes = useStyles();
   const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
-
-  const { history, type, posts, drafts } = props;
+  const history = useHistory();
 
   if (!posts && !drafts) {
     return null;
@@ -98,4 +97,4 @@ const Cards: React.FC<Props> = props => {
   );
 };
 
-export default withRouter(Cards);
+export default Cards;

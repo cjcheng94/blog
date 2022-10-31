@@ -1,5 +1,5 @@
 import React from "react";
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import Pagination from "@material-ui/lab/Pagination";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -9,12 +9,10 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type Props = {
-  pageCount: number;
-} & RouteComponentProps;
-
-const PaginationLink: React.FC<Props> = ({ history, location, pageCount }) => {
+const PaginationLink = ({ pageCount }: { pageCount: number }) => {
   const classes = useStyles();
+  const history = useHistory();
+  const location = useLocation();
   // Get page number from url query
   const searchParams = new URLSearchParams(location.search);
   const page = parseInt(searchParams.get("page") || "1", 10);
@@ -45,4 +43,4 @@ const PaginationLink: React.FC<Props> = ({ history, location, pageCount }) => {
   );
 };
 
-export default withRouter(PaginationLink);
+export default PaginationLink;

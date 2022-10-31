@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment, useCallback } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import {
   useQuery,
   useLazyQuery,
@@ -39,12 +39,7 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-type TParams = {
-  _id: string;
-};
-type Props = RouteComponentProps<TParams>;
-
-const DraftUpdate: React.FC<Props> = props => {
+const DraftUpdate = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [alertMessage, setAlertMessage] = useState("");
   const [title, setTitle] = useState("");
@@ -57,7 +52,10 @@ const DraftUpdate: React.FC<Props> = props => {
 
   const classes = useStyles();
 
-  const { _id } = props.match.params;
+  const history = useHistory();
+  const match = useRouteMatch<{ _id: string }>();
+
+  const { _id } = match.params;
   const isOnline = navigator.onLine;
 
   const [
@@ -140,10 +138,10 @@ const DraftUpdate: React.FC<Props> = props => {
     (alertMessage: string, destination: string) => {
       setAlertMessage(alertMessage);
       setTimeout(() => {
-        props.history.push(destination);
+        history.push(destination);
       }, 1000);
     },
-    [props.history]
+    [history]
   );
 
   // Used after create post success,
