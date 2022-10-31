@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from "react";
-import { Link, RouteComponentProps } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import {
   darkModeVar,
@@ -178,9 +178,15 @@ const userLogout: UserLogout = callback => {
 
 const getUrlQuery = (urlQuery: string) => new URLSearchParams(urlQuery);
 
-type HeaderProps = RouteComponentProps;
+const Header = () => {
+  const history = useHistory();
+  const location = useLocation();
 
-const Header: React.FC<HeaderProps> = ({ history, location }) => {
+  const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
+  const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
+  const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
+  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
+
   const getInitialTagIds = () => {
     if (location.pathname === "/posts/tags") {
       const urlQuery = getUrlQuery(location.search);
@@ -190,10 +196,6 @@ const Header: React.FC<HeaderProps> = ({ history, location }) => {
     return [];
   };
 
-  const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
-  const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
-  const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
-  const [anchorEl, setAnchorEl] = useState<Element | null>(null);
   const [selectedTagIds, setSelectedTagIds] =
     useState<string[]>(getInitialTagIds);
 

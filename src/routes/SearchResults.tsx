@@ -1,5 +1,5 @@
 import React, { useEffect, Fragment } from "react";
-import { RouteComponentProps } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
@@ -10,9 +10,6 @@ import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { Tag, SearchResult, Post } from "PostTypes";
 import { useGetUrlParams } from "@utils";
-
-type TParams = { searchTerm: string };
-type Props = RouteComponentProps<TParams>;
 
 const useStyles = makeStyles(theme => ({
   tagsRow: {
@@ -30,10 +27,11 @@ const useStyles = makeStyles(theme => ({
   }
 }));
 
-const SearchResults: React.FC<Props> = props => {
+const SearchResults = () => {
   const classes = useStyles();
+  const location = useLocation();
   // Get Search params from URL query
-  const { searchTerm, tagIds } = useGetUrlParams(props.location.search);
+  const { searchTerm, tagIds } = useGetUrlParams(location.search);
 
   const hasTags = tagIds.length > 0;
   const hasSearchTerm = !!searchTerm && searchTerm.length > 0;
