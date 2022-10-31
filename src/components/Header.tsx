@@ -52,6 +52,7 @@ import {
 import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
+import { useCallback } from "react";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -219,30 +220,6 @@ const Header = () => {
     }
   }, [location.pathname]);
 
-  useEffect(() => {
-    // Go to PostsByTags page and pass selected tagIds in query string
-    const handleSearch = () => {
-      const searchParams = new URLSearchParams();
-      selectedTagIds.forEach(tagId => {
-        searchParams.append("tagIds", tagId);
-      });
-      const queryString = searchParams.toString();
-      const postsByTagsUrl = `/posts/tags?${queryString}`;
-      history.push(postsByTagsUrl);
-    };
-
-    // There are selected tags, go to postsByTags page
-    if (selectedTagIds.length > 0) {
-      handleSearch();
-      return;
-    }
-
-    // Return to index page when no tags are selected AND we're in /tags route (prevent going to homepage on page refresh)
-    if (location.pathname === "/posts/tags") {
-      history.push("/");
-    }
-  }, [history, location.pathname, selectedTagIds]);
-
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
 
@@ -273,13 +250,31 @@ const Header = () => {
     userLogout(logoutCallback);
   };
 
-  const handleTagSelect = (tagId: string) => (e: React.MouseEvent) => {
-    setSelectedTagIds(prevList => {
-      if (prevList.includes(tagId)) {
-        return prevList.filter(id => id !== tagId);
-      }
-      return [...prevList, tagId];
+  // Go to PostsByTags page and pass selected tagIds in query string
+  const handleSearch = (selectedTagIds: string[]) => {
+    const searchParams = new URLSearchParams();
+    selectedTagIds.forEach(tagId => {
+      searchParams.append("tagIds", tagId);
     });
+    const queryString = searchParams.toString();
+    const postsByTagsUrl = `/posts/tags?${queryString}`;
+    history.push(postsByTagsUrl);
+  };
+
+  const handleTagSelect = (e: React.MouseEvent, tagId: string) => {
+    const newSelectedTags = selectedTagIds.includes(tagId)
+      ? selectedTagIds.filter(id => tagId !== id)
+      : [...selectedTagIds, tagId];
+
+    setSelectedTagIds(newSelectedTags);
+
+    if (newSelectedTags.length > 0) {
+      // There are selected tags, go to postsByTags page
+      handleSearch(newSelectedTags);
+    } else {
+      // Un-selected all tags, go back to home page
+      history.push("/");
+    }
   };
 
   const isTagSelected = (tagId: string) => selectedTagIds.includes(tagId);
@@ -293,25 +288,29 @@ const Header = () => {
     return "";
   };
 
-  const renderTags = () => {
-    if (getTagsLoading || !getTagsData?.tags) return;
-    return getTagsData.tags.map(tag => (
-      <ListItem
-        button
-        key={tag._id}
-        title={tag.name}
-        onClick={handleTagSelect(tag._id)}
-        selected={isTagSelected(tag._id)}
-      >
-        <ListItemIcon className={classes.listIcons}>
-          <Label />
-        </ListItemIcon>
-        <ListItemText
-          primary={tag.name}
-          primaryTypographyProps={{ className: classes.listText }}
-        />
-      </ListItem>
-    ));
+  const TagList = () => {
+    if (getTagsLoading || !getTagsData?.tags) return null;
+    return (
+      <List>
+        {getTagsData.tags.map(tag => (
+          <ListItem
+            button
+            key={tag._id}
+            title={tag.name}
+            onClick={e => handleTagSelect(e, tag._id)}
+            selected={isTagSelected(tag._id)}
+          >
+            <ListItemIcon className={classes.listIcons}>
+              <Label />
+            </ListItemIcon>
+            <ListItemText
+              primary={tag.name}
+              primaryTypographyProps={{ className: classes.listText }}
+            />
+          </ListItem>
+        ))}
+      </List>
+    );
   };
 
   const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
@@ -474,7 +473,7 @@ const Header = () => {
           </ListItem>
         </List>
         <Divider />
-        <List>{renderTags()}</List>
+        <TagList />
       </Drawer>
       <Snackbar
         anchorOrigin={{
