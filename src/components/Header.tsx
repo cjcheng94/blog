@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import {
@@ -212,13 +212,6 @@ const Header = () => {
     error: getTagsError,
     data: getTagsData
   } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
-
-  useEffect(() => {
-    // Reset selected tags when user goes back to index page
-    if (location.pathname === "/") {
-      setSelectedTagIds([]);
-    }
-  }, [location.pathname]);
 
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
