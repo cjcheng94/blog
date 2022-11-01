@@ -1,14 +1,10 @@
 import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import {
-  useQuery,
-  useLazyQuery,
-  useMutation,
-  useApolloClient
-} from "@apollo/client";
+import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import debounce from "lodash/debounce";
-import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
+import { TextField, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSnackbar } from "notistack";
 
 import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
@@ -17,7 +13,6 @@ import {
   CREATE_NEW_POST,
   GET_USER_DRAFTS,
   GET_DRAFT_BY_ID,
-  GET_DRAFT_BY_POSTID,
   UPDATE_DRAFT,
   DELETE_DRAFT,
   GET_CACHED_DRAFT_FRAGMENT
@@ -41,7 +36,6 @@ const useStyles = makeStyles(theme => ({
 
 const DraftUpdate = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
   const [title, setTitle] = useState("");
   const [content, setRichData] = useState("");
   const [plainText, setPlainText] = useState("");
@@ -54,6 +48,8 @@ const DraftUpdate = () => {
 
   const history = useHistory();
   const match = useRouteMatch<{ _id: string }>();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { _id } = match.params;
   const isOnline = navigator.onLine;
@@ -78,16 +74,6 @@ const DraftUpdate = () => {
   } = useQuery(GET_DRAFT_BY_ID, {
     variables: { _id }
   });
-
-  const [
-    getDraftByPostId,
-    {
-      loading: getDraftByPostIdLoading,
-      error: getDraftByPostIdError,
-      data: getDraftByPostIdData,
-      called: getDraftByPostIdCalled
-    }
-  ] = useLazyQuery(GET_DRAFT_BY_POSTID);
 
   const [
     updateDraft,
@@ -136,12 +122,12 @@ const DraftUpdate = () => {
 
   const alertAndRedirect = useCallback(
     (alertMessage: string, destination: string) => {
-      setAlertMessage(alertMessage);
+      enqueueSnackbar(alertMessage);
       setTimeout(() => {
         history.push(destination);
       }, 1000);
     },
-    [history]
+    [enqueueSnackbar, history]
   );
 
   // Used after create post success,
@@ -384,21 +370,6 @@ const DraftUpdate = () => {
         isDisabled={false}
         formId="update-form"
         type="submit"
-      />
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={!!alertMessage}
-        autoHideDuration={3000}
-        onClose={() => {
-          setAlertMessage("");
-        }}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={<span id="message-id">{alertMessage}</span>}
       />
     </Fragment>
   );

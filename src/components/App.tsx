@@ -14,7 +14,8 @@ import {
   Main,
   InstallAlert,
   SearchOverlay,
-  AccountDialog
+  AccountDialog,
+  ServiceWorker
 } from "@components";
 import {
   darkModeVar,
@@ -22,7 +23,7 @@ import {
   accountDialogTypeVar
 } from "../api/cache";
 import { checkLocalStorageAuth, handleLocalStorageAuthDeletion } from "@utils";
-import { useRegisterSW } from "virtual:pwa-register/react";
+import { SnackbarProvider } from "notistack";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -68,29 +69,6 @@ const App: React.FC = () => {
   const classes = useStyles();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
-
-  const {
-    offlineReady: [offlineReady, setOfflineReady],
-    needRefresh: [needRefresh, setNeedRefresh],
-    updateServiceWorker
-  } = useRegisterSW({
-    onRegisteredSW(swUrl, registration) {
-      console.log(`Service Worker at: ${swUrl}`);
-      // @ts-expect-error just ignore
-      if (reloadSW === "true") {
-        registration &&
-          setInterval(() => {
-            console.log("Checking for sw update");
-            registration.update();
-          }, 20000 /* 20s for testing purposes */);
-      } else {
-        console.log("SW Registered: " + registration);
-      }
-    },
-    onRegisterError(error) {
-      console.log("SW registration error", error);
-    }
-  });
 
   const getDefaultTheme = (mode: ThemeType) =>
     createTheme({
@@ -268,45 +246,48 @@ const App: React.FC = () => {
 
   return (
     <MuiThemeProvider theme={customTheme}>
-      <CssBaseline />
-      <div className={classes.root}>
-        <Route component={Header} />
-        {showSearchOverlay && <SearchOverlay />}
-        {!!accountDialogType && <AccountDialog type={accountDialogType} />}
-        <Main />
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={showAlert}
-          autoHideDuration={2000}
-          onClose={() => {
-            setShowAlert(false);
-            dequeueAlert();
-          }}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">{alertMessage}</span>}
-        />
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={!isOnline}
-          message="Offline"
-        />
-        <InstallAlert
-          open={showInstallSnackbar}
-          onHide={() => {
-            setShowInstallSnackbar(false);
-            dequeueAlert();
-          }}
-          onInstallClick={installHandler}
-        />
-      </div>
+      <SnackbarProvider>
+        <CssBaseline />
+        <ServiceWorker />
+        <div className={classes.root}>
+          <Route component={Header} />
+          {showSearchOverlay && <SearchOverlay />}
+          {!!accountDialogType && <AccountDialog type={accountDialogType} />}
+          <Main />
+          <Snackbar
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left"
+            }}
+            open={showAlert}
+            autoHideDuration={2000}
+            onClose={() => {
+              setShowAlert(false);
+              dequeueAlert();
+            }}
+            ContentProps={{
+              "aria-describedby": "message-id"
+            }}
+            message={<span id="message-id">{alertMessage}</span>}
+          />
+          <Snackbar
+            anchorOrigin={{
+              vertical: "bottom",
+              horizontal: "left"
+            }}
+            open={!isOnline}
+            message="Offline"
+          />
+          <InstallAlert
+            open={showInstallSnackbar}
+            onHide={() => {
+              setShowInstallSnackbar(false);
+              dequeueAlert();
+            }}
+            onInstallClick={installHandler}
+          />
+        </div>
+      </SnackbarProvider>
     </MuiThemeProvider>
   );
 };
