@@ -52,6 +52,9 @@ export default defineConfig({
       filename: "service-worker.ts",
       devOptions: {
         enabled: true
+      },
+      workbox: {
+        cleanupOutdatedCaches: true
       }
     }),
     splitVendorChunkPlugin(),

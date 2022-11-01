@@ -22,6 +22,7 @@ import {
   accountDialogTypeVar
 } from "../api/cache";
 import { checkLocalStorageAuth, handleLocalStorageAuthDeletion } from "@utils";
+import { useRegisterSW } from "virtual:pwa-register/react";
 
 const useStyles = makeStyles(theme => {
   return {
@@ -67,6 +68,29 @@ const App: React.FC = () => {
   const classes = useStyles();
 
   const prefersDarkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  const {
+    offlineReady: [offlineReady, setOfflineReady],
+    needRefresh: [needRefresh, setNeedRefresh],
+    updateServiceWorker
+  } = useRegisterSW({
+    onRegisteredSW(swUrl, registration) {
+      console.log(`Service Worker at: ${swUrl}`);
+      // @ts-expect-error just ignore
+      if (reloadSW === "true") {
+        registration &&
+          setInterval(() => {
+            console.log("Checking for sw update");
+            registration.update();
+          }, 20000 /* 20s for testing purposes */);
+      } else {
+        console.log("SW Registered: " + registration);
+      }
+    },
+    onRegisterError(error) {
+      console.log("SW registration error", error);
+    }
+  });
 
   const getDefaultTheme = (mode: ThemeType) =>
     createTheme({
