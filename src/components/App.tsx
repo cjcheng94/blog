@@ -8,14 +8,13 @@ import {
   createTheme,
   MuiThemeProvider
 } from "@material-ui/core/styles";
-import * as registerServiceWorker from "../registerServiceWorker";
 import {
   Header,
   Main,
   InstallAlert,
   SearchOverlay,
   AccountDialog,
-  ServiceWorker
+  ServiceWorkerAlerts
 } from "@components";
 import {
   darkModeVar,
@@ -169,26 +168,6 @@ const App: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    registerServiceWorker.register({
-      onSuccess: () => {
-        enqueueAlert({
-          type: "generic",
-          message: "Content is cached for offline use"
-        });
-      },
-      onUpdate: () => {
-        // Alert user new version available
-        enqueueAlert({
-          type: "generic",
-          message:
-            "New content is available and will be used when all " +
-            "tabs for this page are closed."
-        });
-      }
-    });
-  }, []);
-
-  useEffect(() => {
     // Persist auth from local storage
     checkLocalStorageAuth();
 
@@ -248,7 +227,7 @@ const App: React.FC = () => {
     <MuiThemeProvider theme={customTheme}>
       <SnackbarProvider>
         <CssBaseline />
-        <ServiceWorker />
+        <ServiceWorkerAlerts />
         <div className={classes.root}>
           <Route component={Header} />
           {showSearchOverlay && <SearchOverlay />}

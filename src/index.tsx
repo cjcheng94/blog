@@ -20,7 +20,6 @@ import {
   draftErrorVar,
   imageMapVar
 } from "./api/cache";
-import * as registerServiceWorker from "./registerServiceWorker";
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_BACKEND_URL
@@ -94,8 +93,6 @@ const client = new ApolloClient({
     }
   })
 });
-
-registerServiceWorker.register();
 
 ReactDOM.render(
   <ApolloProvider client={client}>

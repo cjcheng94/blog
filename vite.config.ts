@@ -7,7 +7,8 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   build: {
-    outDir: "build"
+    outDir: "build",
+    sourcemap: true
   },
   server: {
     port: 3000
@@ -52,9 +53,6 @@ export default defineConfig({
       filename: "service-worker.ts",
       devOptions: {
         enabled: true
-      },
-      workbox: {
-        cleanupOutdatedCaches: true
       }
     }),
     splitVendorChunkPlugin(),
