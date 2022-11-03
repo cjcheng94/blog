@@ -1,15 +1,8 @@
 import React, { useState, Fragment } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
-import {
-  darkModeVar,
-  searchOverlayVar,
-  drawerVar,
-  loadingVar,
-  sortLatestFirstVar,
-  accountDialogTypeVar,
-  isAuthedVar
-} from "../api/cache";
+import { useSnackbar } from "notistack";
+import { makeStyles } from "@material-ui/core/styles";
 import {
   Tooltip,
   AppBar,
@@ -17,7 +10,6 @@ import {
   Typography,
   IconButton,
   LinearProgress,
-  Snackbar,
   Menu,
   MenuList,
   MenuItem,
@@ -29,7 +21,6 @@ import {
   ListItemIcon,
   useScrollTrigger
 } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
 import {
   Edit,
   Label,
@@ -44,6 +35,15 @@ import {
   Drafts as DraftIcon
 } from "@material-ui/icons";
 import {
+  darkModeVar,
+  searchOverlayVar,
+  drawerVar,
+  loadingVar,
+  sortLatestFirstVar,
+  accountDialogTypeVar,
+  isAuthedVar
+} from "../api/cache";
+import {
   CustomDialog,
   EditTagDialog,
   ErrorAlert,
@@ -52,7 +52,6 @@ import {
 import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
-import { useCallback } from "react";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -183,7 +182,6 @@ const Header = () => {
   const history = useHistory();
   const location = useLocation();
 
-  const [showLogoutAlert, setShowLogoutAlert] = useState<boolean>(false);
   const [showCustomDialog, setShowCustomDialog] = useState<boolean>(false);
   const [showEditTagDialog, setShowEditTagDialog] = useState<boolean>(false);
   const [anchorEl, setAnchorEl] = useState<Element | null>(null);
@@ -205,6 +203,8 @@ const Header = () => {
   const showDrawer = useReactiveVar(drawerVar);
   const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
   const isAuthenticated = useReactiveVar(isAuthedVar);
+
+  const { enqueueSnackbar } = useSnackbar();
 
   // Get all tags to render searched tags
   const {
@@ -234,7 +234,7 @@ const Header = () => {
 
     const logoutCallback = () => {
       setShowCustomDialog(false);
-      setShowLogoutAlert(true);
+      enqueueSnackbar("Logout successful");
       setTimeout(() => {
         history.push("/");
       }, 1000);
@@ -468,19 +468,6 @@ const Header = () => {
         <Divider />
         <TagList />
       </Drawer>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={showLogoutAlert}
-        autoHideDuration={4000}
-        onClose={() => setShowLogoutAlert(false)}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={<span id="message-id">Logout successful</span>}
-      />
       <CustomDialog
         dialogTitle="Log Out?"
         open={showCustomDialog}

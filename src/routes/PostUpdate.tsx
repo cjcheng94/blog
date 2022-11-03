@@ -2,8 +2,9 @@ import React, { useState, useEffect, useCallback, Fragment } from "react";
 import { Link, useRouteMatch, useHistory } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import debounce from "lodash/debounce";
-import { Snackbar, TextField, Button, Typography } from "@material-ui/core";
+import { TextField, Button, Typography } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSnackbar } from "notistack";
 
 import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
@@ -60,6 +61,8 @@ const PostUpdate = () => {
 
   const history = useHistory();
   const match = useRouteMatch<{ _id: string }>();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const { _id: postId } = match.params;
   const isOnline = navigator.onLine;
@@ -223,26 +226,20 @@ const PostUpdate = () => {
     postId
   ]);
 
-  const alertAndRedirect = useCallback(
-    (alertMessage: string, destination: string) => {
-      setAlertMessage(alertMessage);
-      setTimeout(() => {
-        history.push(destination);
-      }, 1000);
-    },
-    [history]
-  );
-
   // Update success
   useEffect(() => {
     if (updatePostCalled && updatePostData) {
       deleteDraft({ variables: { _id: draftId } });
-      alertAndRedirect("Update successful", "/");
+      enqueueSnackbar("Update successful");
+      setTimeout(() => {
+        history.push("/");
+      }, 1000);
     }
   }, [
-    alertAndRedirect,
     deleteDraft,
     draftId,
+    enqueueSnackbar,
+    history,
     updatePostCalled,
     updatePostData
   ]);
@@ -409,21 +406,6 @@ const PostUpdate = () => {
         isDisabled={false}
         formId="update-form"
         type="submit"
-      />
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={!!alertMessage}
-        autoHideDuration={3000}
-        onClose={() => {
-          setAlertMessage("");
-        }}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={<span id="message-id">{alertMessage}</span>}
       />
     </Fragment>
   );

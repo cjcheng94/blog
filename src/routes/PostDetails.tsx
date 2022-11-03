@@ -13,8 +13,9 @@ import {
   GET_ALL_POSTS,
   GET_CACHED_POST_FRAGMENT
 } from "../api/gqlDocuments";
-import { Snackbar, Typography, Divider, Button } from "@material-ui/core";
+import { Typography, Divider, Button } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSnackbar } from "notistack";
 
 import {
   DisqusComment,
@@ -62,12 +63,13 @@ const useStyles = makeStyles(theme => ({
 
 const PostDetails = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
   const classes = useStyles();
 
   const match = useRouteMatch<{ _id: string }>();
   const history = useHistory();
+
+  const { enqueueSnackbar } = useSnackbar();
 
   const isOnline = navigator.onLine;
 
@@ -108,13 +110,13 @@ const PostDetails = () => {
 
   useEffect(() => {
     if (deletePostCalled && deletePostData) {
-      setShowAlert(true);
+      enqueueSnackbar("Post deleted");
       setShowCustomDialog(false);
       setTimeout(() => {
         history.push("/");
       }, 1000);
     }
-  }, [deletePostCalled, deletePostData, history]);
+  }, [deletePostCalled, deletePostData, enqueueSnackbar, history]);
 
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
@@ -215,23 +217,6 @@ const PostDetails = () => {
           handleConfirm={handleDelete}
           isDisabled={clickedConfirm}
         />
-
-        <Snackbar
-          anchorOrigin={{
-            vertical: "bottom",
-            horizontal: "left"
-          }}
-          open={showAlert}
-          autoHideDuration={3000}
-          onClose={() => {
-            setShowAlert(false);
-          }}
-          ContentProps={{
-            "aria-describedby": "message-id"
-          }}
-          message={<span id="message-id">Post deleted</span>}
-        />
-
         {/*Disqus plugin*/}
         <DisqusComment identifier={match.params._id} title={title} />
       </div>

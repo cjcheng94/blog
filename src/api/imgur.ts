@@ -27,7 +27,7 @@ export const uploadImage = async (
 
     success = responseData.success;
     link = responseData.data.link;
-    errorMessage = success ? "" : responseData.data.error.message;
+    errorMessage = success ? "" : responseData.data.error;
   } catch (err) {
     success = false;
     link = "";

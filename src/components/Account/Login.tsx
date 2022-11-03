@@ -1,7 +1,9 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Snackbar, Button, Typography, TextField } from "@material-ui/core";
+import { Button, Typography, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSnackbar } from "notistack";
+
 import { USER_LOGIN } from "../../api/gqlDocuments";
 import { loadingVar } from "../../api/cache";
 import { saveAuth } from "@utils";
@@ -42,12 +44,15 @@ type Props = {
 };
 
 const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
-  const [showAlert, setShowAlert] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [usernameErrorMessage, setUsernameErrorMessage] = useState("");
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
+
   const classes = useStyles();
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const [userLogin, { loading, error, data, called }] =
     useLazyQuery(USER_LOGIN);
 
@@ -66,10 +71,10 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
     if (called && data) {
       const { token, username, userId } = data.userLogin;
       saveAuth({ token, username, userId });
-      setShowAlert(true);
+      enqueueSnackbar("Login successful!");
       setTimeout(() => onSuccess(), 1000);
     }
-  }, [called, data, onSuccess]);
+  }, [called, data, enqueueSnackbar, onSuccess]);
 
   useEffect(() => {
     loadingVar(loading);
@@ -105,76 +110,60 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
   };
 
   return (
-    <div>
-      <div className={classes.wrapper}>
-        <Typography variant="h3" align="center">
-          Log in
-        </Typography>
+    <div className={classes.wrapper}>
+      <Typography variant="h3" align="center">
+        Log in
+      </Typography>
 
-        <form onSubmit={handleSubmit}>
-          <TextField
-            value={username}
-            onChange={e => {
-              setUsername(e.target.value);
-            }}
-            error={!!usernameErrorMessage}
-            label={"Username"}
-            type={"text"}
-            helperText={usernameErrorMessage}
-            margin="normal"
-            fullWidth
-          />
-          <TextField
-            value={password}
-            onChange={e => {
-              setPassword(e.target.value);
-            }}
-            error={!!passwordErrorMessage}
-            label={"Password"}
-            type={"password"}
-            helperText={passwordErrorMessage}
-            margin="normal"
-            fullWidth
-          />
+      <form onSubmit={handleSubmit}>
+        <TextField
+          value={username}
+          onChange={e => {
+            setUsername(e.target.value);
+          }}
+          error={!!usernameErrorMessage}
+          label={"Username"}
+          type={"text"}
+          helperText={usernameErrorMessage}
+          margin="normal"
+          fullWidth
+        />
+        <TextField
+          value={password}
+          onChange={e => {
+            setPassword(e.target.value);
+          }}
+          error={!!passwordErrorMessage}
+          label={"Password"}
+          type={"password"}
+          helperText={passwordErrorMessage}
+          margin="normal"
+          fullWidth
+        />
 
-          <div className={classes.bottomMessage}>
-            <div className={classes.errorMessage}>{getErrorMessage()}</div>
-          </div>
+        <div className={classes.bottomMessage}>
+          <div className={classes.errorMessage}>{getErrorMessage()}</div>
+        </div>
 
-          <div className={classes.bottomMessage}>
-            <span>Don&#39;t have an account? </span>
-            <span className={classes.buttonText} onClick={goToSignup}>
-              Sign up
-            </span>
-          </div>
+        <div className={classes.bottomMessage}>
+          <span>Don&#39;t have an account? </span>
+          <span className={classes.buttonText} onClick={goToSignup}>
+            Sign up
+          </span>
+        </div>
 
-          <div className={classes.buttonContainer}>
-            <Button onClick={onCancel}>Cancel</Button>
-            <Button
-              disabled={loading}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Log In
-            </Button>
-          </div>
-        </form>
-      </div>
-
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={showAlert}
-        autoHideDuration={3000}
-        onClose={() => setShowAlert(false)}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={<span id="message-id">Login successful!</span>}
-      />
+        <div className={classes.buttonContainer}>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button
+            disabled={loading}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
+            Log In
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };

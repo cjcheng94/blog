@@ -73,16 +73,13 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  useScrollTrigger,
-  Snackbar
+  useScrollTrigger
 } from "@material-ui/core";
 import ToggleButton from "@material-ui/lab/ToggleButton";
-import Alert from "@material-ui/lab/Alert";
 import { makeStyles, withStyles } from "@material-ui/core/styles";
+import { useSnackbar } from "notistack";
 
-import { useMutation } from "@apollo/client";
 import { uploadImage } from "../../../api/imgur";
-import { CREATE_IMAGE } from "../../../api/gqlDocuments";
 
 const useStyles = makeStyles(theme => ({
   controls: {
@@ -133,9 +130,6 @@ const useStyles = makeStyles(theme => ({
   },
   invisibleInput: {
     display: "none"
-  },
-  alert: {
-    top: 80
   }
 }));
 
@@ -460,12 +454,9 @@ const ToolbarPlugin = () => {
   const [canUndo, setCanUndo] = useState(false);
   const [canRedo, setCanRedo] = useState(false);
 
-  const [showAlert, setShowAlert] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
-
   const classes = useStyles();
 
-  const [createImage] = useMutation(CREATE_IMAGE);
+  const { enqueueSnackbar } = useSnackbar();
 
   const trigger = useScrollTrigger();
 
@@ -598,19 +589,6 @@ const ToolbarPlugin = () => {
     [activeEditor]
   );
 
-  const setMessageAndShowAlert = (message: string) => {
-    setShowAlert(true);
-    setAlertMessage(message);
-  };
-
-  const closeAlert = (event?: React.SyntheticEvent, reason?: string) => {
-    if (reason === "clickaway") {
-      return;
-    }
-    setShowAlert(false);
-    setAlertMessage("");
-  };
-
   const handleImageInputChange = (
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -626,7 +604,7 @@ const ToolbarPlugin = () => {
         });
         return;
       }
-      setMessageAndShowAlert(errorMessage);
+      enqueueSnackbar(errorMessage, { variant: "error" });
     };
 
     if (event.target.files) {
@@ -638,7 +616,7 @@ const ToolbarPlugin = () => {
 
       // File size limit of 5 MB
       if (file.size > 5 * 1024 * 1024) {
-        setMessageAndShowAlert("File size exceeded 5MB limit");
+        enqueueSnackbar("File size exceeded 5MB limit", { variant: "warning" });
       } else {
         handleImage(file);
       }
@@ -789,17 +767,6 @@ const ToolbarPlugin = () => {
           />
         </>
       )}
-      <Snackbar
-        className={classes.alert}
-        open={showAlert}
-        autoHideDuration={5000}
-        onClose={closeAlert}
-        anchorOrigin={{ vertical: "top", horizontal: "center" }}
-      >
-        <Alert severity="error" variant="filled" onClose={closeAlert}>
-          {alertMessage}
-        </Alert>
-      </Snackbar>
     </Paper>
   );
 };
