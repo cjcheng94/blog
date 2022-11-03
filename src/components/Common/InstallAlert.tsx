@@ -1,13 +1,7 @@
-import React from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Snackbar, Button, IconButton } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { Close } from "@material-ui/icons";
-
-type Props = {
-  open: boolean;
-  onHide: () => void;
-  onInstallClick: () => void;
-};
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.type === "dark";
@@ -27,11 +21,69 @@ const useStyles = makeStyles(theme => {
   };
 });
 
-const InstallAlert: React.FC<Props> = ({ open, onHide, onInstallClick }) => {
+const InstallAlert = () => {
+  const [showInstallSnackbar, setShowInstallSnackbar] =
+    useState<boolean>(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<
+    BeforeInstallPromptEvent | undefined
+  >(undefined);
   const classes = useStyles();
+
+  const onAppInstalled = useCallback(() => {
+    // Hide the custom install alert if it's currently up
+    if (showInstallSnackbar) {
+      setShowInstallSnackbar(false);
+    }
+    // Clear the deferredPrompt so it can be garbage collected
+    setDeferredPrompt(undefined);
+    // Optionally, send analytics event to indicate successful install
+    console.log("PWA was installed");
+  }, [showInstallSnackbar]);
+
+  const onBeforeInstallPrompt = (e: BeforeInstallPromptEvent) => {
+    console.log("before install fired");
+
+    // Prevent the default prompt from showing
+    e.preventDefault();
+    // Stash the event so we can trigger it latter
+    setDeferredPrompt(e);
+
+    // Show custom install alert
+    setShowInstallSnackbar(true);
+  };
+
+  const onHide = () => {
+    setShowInstallSnackbar(false);
+  };
+
+  const installHandler = async () => {
+    if (!deferredPrompt) {
+      return;
+    }
+    // Trigger the install prompt
+    deferredPrompt.prompt();
+    // Get the user choice
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log(`User response to the install prompt: ${outcome}`);
+    // Hide custom install alert
+    setShowInstallSnackbar(false);
+    // We've used the prompt, and can't use it again, throw it away
+    setDeferredPrompt(undefined);
+  };
+
+  useEffect(() => {
+    window.addEventListener("appinstalled", onAppInstalled);
+    window.addEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+
+    return () => {
+      window.removeEventListener("appinstalled", onAppInstalled);
+      window.removeEventListener("beforeinstallprompt", onBeforeInstallPrompt);
+    };
+  }, [onAppInstalled]);
+
   return (
     <Snackbar
-      open={open}
+      open={showInstallSnackbar}
       className={classes.root}
       onClose={onHide}
       anchorOrigin={{
@@ -51,7 +103,7 @@ const InstallAlert: React.FC<Props> = ({ open, onHide, onInstallClick }) => {
           <Button
             className={classes.installBtn}
             aria-haspopup="true"
-            onClick={onInstallClick}
+            onClick={installHandler}
           >
             Install
           </Button>

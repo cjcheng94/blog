@@ -8,7 +8,6 @@ import React, {
 import { useMutation, useReactiveVar } from "@apollo/client";
 import { Link, useHistory } from "react-router-dom";
 import {
-  Snackbar,
   TextField,
   Button,
   Typography,
@@ -17,6 +16,7 @@ import {
 } from "@material-ui/core";
 import { Close } from "@material-ui/icons";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSnackbar } from "notistack";
 
 import debounce from "lodash/debounce";
 
@@ -59,7 +59,6 @@ const showAccountDialog = (type: "login" | "signup") => {
 
 const PostNew = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
-  const [showAlert, setShowAlert] = useState(false);
   const [title, setTitle] = useState("");
   const [richData, setRichData] = useState("");
   const [plainText, setPlainText] = useState("");
@@ -67,9 +66,10 @@ const PostNew = () => {
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
-  const [showExploreMessage, setShowExploreMessage] = useState(true);
 
   const history = useHistory();
+
+  const { enqueueSnackbar, closeSnackbar } = useSnackbar();
 
   const [
     createNewPost,
@@ -196,8 +196,39 @@ const PostNew = () => {
     // Promp user to login if they aren't already
     if (!isAuthenticated) {
       showAccountDialog("login");
+
+      const exploreMessage = (
+        <div>
+          <div>
+            As this is a personal blog, I have disabled new user registration,
+          </div>
+          <div>but you can still explore the editor 😉</div>
+        </div>
+      );
+
+      const exploreSnackbarAction = (snackbarId: string) => (
+        <>
+          <IconButton
+            size="small"
+            aria-label="close"
+            color="inherit"
+            onClick={() => closeSnackbar(snackbarId)}
+          >
+            <Close />
+          </IconButton>
+        </>
+      );
+
+      enqueueSnackbar(exploreMessage, {
+        key: "exploreSnackbar",
+        action: exploreSnackbarAction,
+        autoHideDuration: 7 * 1000
+      });
     }
-  }, [isAuthenticated]);
+    return () => {
+      closeSnackbar("exploreSnackbar");
+    };
+  }, [closeSnackbar, enqueueSnackbar, isAuthenticated]);
 
   // Clear error messages when user enters text
   useEffect(() => {
@@ -218,7 +249,7 @@ const PostNew = () => {
       }
 
       // Show success message and redirect to homepage
-      setShowAlert(true);
+      enqueueSnackbar("Create new post successfull");
       setTimeout(() => history.push("/"), 1000);
     }
   }, [
@@ -226,6 +257,7 @@ const PostNew = () => {
     createNewPostData,
     createdDraftId,
     deleteDraft,
+    enqueueSnackbar,
     history
   ]);
 
@@ -287,17 +319,6 @@ const PostNew = () => {
       return [...prevIds, tag._id];
     });
   }, []);
-
-  const handleExploreMessageClose = (
-    event: React.SyntheticEvent<any, Event>,
-    reason?: string
-  ) => {
-    if (reason === "clickaway") {
-      return;
-    }
-
-    setShowExploreMessage(false);
-  };
 
   const renderSubmitOrLoginButton = () => {
     if (isAuthenticated) {
@@ -381,49 +402,6 @@ const PostNew = () => {
         isDisabled={false}
         formId="create-form"
         type="submit"
-      />
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={showAlert}
-        autoHideDuration={4000}
-        onClose={() => {
-          setShowAlert(false);
-        }}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={<span id="message-id">Create new post successfull!</span>}
-      />
-      <Snackbar
-        anchorOrigin={{
-          vertical: "top",
-          horizontal: "center"
-        }}
-        open={!isAuthenticated && showExploreMessage}
-        onClose={handleExploreMessageClose}
-        message={
-          <>
-            <div>
-              As this is a personal blog, I have disabled new user registration,
-            </div>
-            <div>but you can still explore the editor 😉</div>
-          </>
-        }
-        action={
-          <>
-            <IconButton
-              size="small"
-              aria-label="close"
-              color="inherit"
-              onClick={handleExploreMessageClose}
-            >
-              <Close />
-            </IconButton>
-          </>
-        }
       />
     </Fragment>
   );

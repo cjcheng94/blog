@@ -1,7 +1,8 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Snackbar, Button, Typography, TextField } from "@material-ui/core";
+import { Button, Typography, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
+import { useSnackbar } from "notistack";
 
 import { USER_SIGNUP } from "../../api/gqlDocuments";
 import { loadingVar } from "../../api/cache";
@@ -42,7 +43,6 @@ type Props = {
 };
 
 const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
-  const [showAlert, setShowAlert] = useState(false);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -50,7 +50,11 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
   const [passwordErrorMessage, setPasswordErrorMessage] = useState("");
   const [confirmPasswordErrorMessage, setConfirmPasswordErrorMessage] =
     useState("");
+
   const classes = useStyles();
+
+  const { enqueueSnackbar } = useSnackbar();
+
   const [userSignup, { loading, error, data, called }] =
     useLazyQuery(USER_SIGNUP);
 
@@ -70,12 +74,12 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
   useEffect(() => {
     // Called Api and successfully signed up
     if (called && data) {
-      setShowAlert(true);
+      enqueueSnackbar("Sign up successful!");
       setTimeout(() => {
         onSuccess();
       }, 1000);
     }
-  }, [called, data, onSuccess]);
+  }, [called, data, enqueueSnackbar, onSuccess]);
 
   useEffect(() => {
     loadingVar(loading);
@@ -117,87 +121,72 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
   };
 
   return (
-    <div>
-      <div className={classes.wrapper}>
-        <Typography variant="h3" align="center">
-          Sign up
-        </Typography>
+    <div className={classes.wrapper}>
+      <Typography variant="h3" align="center">
+        Sign up
+      </Typography>
 
-        <form onSubmit={handleSubmit}>
-          <TextField
-            value={username}
-            onChange={e => {
-              setUsername(e.target.value);
-            }}
-            error={!!usernameErrorMessage}
-            label={"Username"}
-            type={"text"}
-            helperText={usernameErrorMessage}
-            margin="normal"
-            fullWidth
-          />
-          <TextField
-            value={password}
-            onChange={e => {
-              setPassword(e.target.value);
-            }}
-            error={!!passwordErrorMessage}
-            label={"Password"}
-            type={"password"}
-            helperText={passwordErrorMessage}
-            margin="normal"
-            fullWidth
-          />
-          <TextField
-            value={confirmPassword}
-            onChange={e => {
-              setConfirmPassword(e.target.value);
-            }}
-            error={!!confirmPasswordErrorMessage}
-            label={"Confirm password"}
-            type={"password"}
-            helperText={confirmPasswordErrorMessage}
-            margin="normal"
-            fullWidth
-          />
+      <form onSubmit={handleSubmit}>
+        <TextField
+          value={username}
+          onChange={e => {
+            setUsername(e.target.value);
+          }}
+          error={!!usernameErrorMessage}
+          label={"Username"}
+          type={"text"}
+          helperText={usernameErrorMessage}
+          margin="normal"
+          fullWidth
+        />
+        <TextField
+          value={password}
+          onChange={e => {
+            setPassword(e.target.value);
+          }}
+          error={!!passwordErrorMessage}
+          label={"Password"}
+          type={"password"}
+          helperText={passwordErrorMessage}
+          margin="normal"
+          fullWidth
+        />
+        <TextField
+          value={confirmPassword}
+          onChange={e => {
+            setConfirmPassword(e.target.value);
+          }}
+          error={!!confirmPasswordErrorMessage}
+          label={"Confirm password"}
+          type={"password"}
+          helperText={confirmPasswordErrorMessage}
+          margin="normal"
+          fullWidth
+        />
 
-          <div className={classes.bottomMessage}>
-            <span className={classes.errorMessage}>{getErrorMessage()}</span>
-          </div>
+        <div className={classes.bottomMessage}>
+          <span className={classes.errorMessage}>{getErrorMessage()}</span>
+        </div>
 
-          <div className={classes.bottomMessage}>
-            <span>Already have an account? </span>
-            <span className={classes.loginText} onClick={goToLogin}>
-              Log in
-            </span>
-          </div>
+        <div className={classes.bottomMessage}>
+          <span>Already have an account? </span>
+          <span className={classes.loginText} onClick={goToLogin}>
+            Log in
+          </span>
+        </div>
 
-          <div className={classes.buttonContainer}>
-            <Button onClick={onCancel}>Cancel</Button>
-            <Button
-              disabled={loading}
-              variant="contained"
-              color="primary"
-              type="submit"
-            >
-              Sign Up
-            </Button>
-          </div>
-        </form>
-      </div>
-      <Snackbar
-        anchorOrigin={{
-          vertical: "bottom",
-          horizontal: "left"
-        }}
-        open={showAlert}
-        autoHideDuration={3000}
-        onClose={() => setShowAlert(false)}
-        ContentProps={{
-          "aria-describedby": "message-id"
-        }}
-        message={<span id="message-id">Sign up successful!</span>}
-      />
+        <div className={classes.buttonContainer}>
+          <Button onClick={onCancel}>Cancel</Button>
+          <Button
+            disabled={loading}
+            variant="contained"
+            color="primary"
+            type="submit"
+          >
+            Sign Up
+          </Button>
+        </div>
+      </form>
     </div>
   );
 };
