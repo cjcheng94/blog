@@ -7,6 +7,7 @@ import { makeStyles } from "@material-ui/core/styles";
 import { useSnackbar } from "notistack";
 
 import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
+import { useNavigatorOnline } from "@utils";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
 import {
   GET_ALL_POSTS,
@@ -64,8 +65,9 @@ const PostUpdate = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
+  const isOnline = useNavigatorOnline();
+
   const { _id: postId } = match.params;
-  const isOnline = navigator.onLine;
 
   const {
     loading: getPostLoading,

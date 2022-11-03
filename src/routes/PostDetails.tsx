@@ -27,6 +27,7 @@ import {
 } from "@components";
 import { loadingVar, isAuthedVar } from "../api/cache";
 import { Post, GetPostVars, DeletePostVars } from "PostTypes";
+import { useNavigatorOnline } from "@utils";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -71,7 +72,7 @@ const PostDetails = () => {
 
   const { enqueueSnackbar } = useSnackbar();
 
-  const isOnline = navigator.onLine;
+  const isOnline = useNavigatorOnline();
 
   // Get post from server
   const {
