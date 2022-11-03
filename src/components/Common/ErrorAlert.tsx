@@ -9,6 +9,7 @@ import {
   DialogTitle,
   Slide
 } from "@material-ui/core";
+import { useNavigatorOnline } from "@utils";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children?: React.ReactElement<any, any> },
@@ -24,7 +25,8 @@ type ErrorAlertProps = {
 const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
   const [isOpen, setIsOpen] = useState(true);
 
-  const isOnline = navigator.onLine;
+  const isOnline = useNavigatorOnline();
+
   const offlineMessage =
     "Oops, you're in offline mode, please try again when you have an Internet connection";
   const errorMessage = isOnline ? error?.message : offlineMessage;
