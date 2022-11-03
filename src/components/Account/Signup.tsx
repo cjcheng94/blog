@@ -3,6 +3,7 @@ import { useLazyQuery } from "@apollo/client";
 import { Button, Typography, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useSnackbar } from "notistack";
+import { useNavigatorOnline } from "@utils";
 
 import { USER_SIGNUP } from "../../api/gqlDocuments";
 import { loadingVar } from "../../api/cache";
@@ -54,6 +55,8 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
   const classes = useStyles();
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const isOnline = useNavigatorOnline();
 
   const [userSignup, { loading, error, data, called }] =
     useLazyQuery(USER_SIGNUP);
@@ -110,7 +113,6 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
   };
 
   const getErrorMessage = () => {
-    const isOnline = navigator.onLine;
     if (isOnline && error) {
       return error?.message;
     }

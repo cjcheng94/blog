@@ -6,7 +6,7 @@ import { useSnackbar } from "notistack";
 
 import { USER_LOGIN } from "../../api/gqlDocuments";
 import { loadingVar } from "../../api/cache";
-import { saveAuth } from "@utils";
+import { saveAuth, useNavigatorOnline } from "@utils";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -52,6 +52,8 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
   const classes = useStyles();
 
   const { enqueueSnackbar } = useSnackbar();
+
+  const isOnline = useNavigatorOnline();
 
   const [userLogin, { loading, error, data, called }] =
     useLazyQuery(USER_LOGIN);
@@ -99,7 +101,6 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
   };
 
   const getErrorMessage = () => {
-    const isOnline = navigator.onLine;
     if (isOnline && error) {
       return error?.message;
     }
