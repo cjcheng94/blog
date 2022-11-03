@@ -85,7 +85,6 @@ const InstallAlert = () => {
     <Snackbar
       open={showInstallSnackbar}
       className={classes.root}
-      onClose={onHide}
       anchorOrigin={{
         vertical: "bottom",
         horizontal: "right"
