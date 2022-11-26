@@ -66,6 +66,9 @@ const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
   const cards = paginatedArticles.map(article => {
     const { _id, title, contentText, tags } = article;
 
+    const thumbnailUrl =
+      "thumbnailUrl" in article ? article.thumbnailUrl : undefined;
+
     const authorInfo = "authorInfo" in article ? article.authorInfo : undefined;
 
     let url = `/posts/detail/${_id}`;
@@ -82,6 +85,7 @@ const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
         contentText={contentText}
         tags={tags}
         authorInfo={authorInfo}
+        thumbnailUrl={thumbnailUrl}
         onClick={() => {
           history.push(url);
         }}

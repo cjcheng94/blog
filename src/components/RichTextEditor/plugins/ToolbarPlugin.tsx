@@ -108,6 +108,11 @@ const useStyles = makeStyles(theme => ({
         margin: "4px"
       }
   },
+  controlButton: {
+    border: "none",
+    margin: "4px",
+    color: theme.palette.text.secondary
+  },
   controlsSlideUp: {
     top: 16
   },
@@ -439,7 +444,75 @@ const LinkEditor = ({ editor }: { editor: LexicalEditor }) => {
   );
 };
 
-const ToolbarPlugin = () => {
+const ImageMenu = ({
+  handleImageInputChange
+}: {
+  handleImageInputChange: (
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: "thumbnail" | "image"
+  ) => void;
+}) => {
+  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const classes = useStyles();
+
+  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  return (
+    <>
+      <ToggleButton
+        size="small"
+        value="image"
+        aria-label="Image"
+        component="span"
+        onClick={handleClick}
+        className={classes.controlButton}
+      >
+        <ImageIcon />
+      </ToggleButton>
+      <Menu
+        id="simple-menu"
+        anchorEl={anchorEl}
+        keepMounted
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <label>
+          <MenuItem onClick={handleClose}>Thumbnail</MenuItem>
+          <input
+            type="file"
+            accept="image/*"
+            className={classes.invisibleInput}
+            onChange={e => {
+              handleImageInputChange(e, "thumbnail");
+            }}
+          />
+        </label>
+        <label>
+          <MenuItem onClick={handleClose}>Image</MenuItem>
+          <input
+            type="file"
+            accept="image/*"
+            className={classes.invisibleInput}
+            onChange={e => {
+              handleImageInputChange(e, "image");
+            }}
+          />
+        </label>
+      </Menu>
+    </>
+  );
+};
+
+const ToolbarPlugin = ({
+  onThumbnailUpload
+}: {
+  onThumbnailUpload?: (thumbnailUrl: string) => void;
+}) => {
   const [editor] = useLexicalComposerContext();
   const [activeEditor, setActiveEditor] = useState(editor);
   const [blockType, setBlockType] = useState<BlockType>("paragraph");
@@ -590,18 +663,22 @@ const ToolbarPlugin = () => {
   );
 
   const handleImageInputChange = (
-    event: React.ChangeEvent<HTMLInputElement>
+    event: React.ChangeEvent<HTMLInputElement>,
+    type: "thumbnail" | "image"
   ) => {
     const handleImage = async (file: File) => {
       const { success, link, errorMessage } = await uploadImage(file);
-      console.log({ success, link, errorMessage });
-
       if (success) {
         insertImage({
           altText: "my alt text",
           src: link,
           showCaption: true
         });
+
+        if (type === "thumbnail" && onThumbnailUpload) {
+          onThumbnailUpload(link);
+        }
+
         return;
       }
       enqueueSnackbar(errorMessage, { variant: "error" });
@@ -737,16 +814,7 @@ const ToolbarPlugin = () => {
             orientation="vertical"
             className={classes.divider}
           />
-          <label htmlFor="image-input">
-            <ToggleButton
-              size="small"
-              value="image"
-              aria-label="Image"
-              component="span"
-            >
-              <ImageIcon />
-            </ToggleButton>
-          </label>
+          <ImageMenu handleImageInputChange={handleImageInputChange} />
           <ToggleButton
             size="small"
             value="link"
@@ -758,13 +826,6 @@ const ToolbarPlugin = () => {
             <InsertLinkIcon />
           </ToggleButton>
           {isLink && <LinkEditor editor={activeEditor} />}
-          <input
-            id="image-input"
-            type="file"
-            accept="image/*"
-            className={classes.invisibleInput}
-            onChange={handleImageInputChange}
-          />
         </>
       )}
     </Paper>

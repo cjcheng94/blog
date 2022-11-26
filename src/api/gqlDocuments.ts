@@ -115,12 +115,14 @@ export const CREATE_NEW_POST = gql`
     $content: String!
     $contentText: String!
     $tagIds: [ID]!
+    $thumbnailUrl: String
   ) {
     createPost(
       title: $title
       content: $content
       contentText: $contentText
       tagIds: $tagIds
+      thumbnailUrl: $thumbnailUrl
     ) {
       _id
       title

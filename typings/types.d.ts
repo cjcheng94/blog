@@ -23,6 +23,7 @@ declare module "PostTypes" {
     title: string;
     tagIds: string[];
     tags: Tag[];
+    thumbnailUrl: string;
     authorInfo: {
       _id: string;
       username: string;
@@ -61,6 +62,7 @@ declare module "PostTypes" {
     title: string;
     content: string;
     tagIds: [string];
+    thumbnailUrl?: string;
   }
 
   export interface UpdatePostVars {
@@ -68,6 +70,7 @@ declare module "PostTypes" {
     title?: string;
     content?: string;
     tagIds?: [string];
+    thumbnailUrl?: string;
   }
 
   export interface SearchtVars {
