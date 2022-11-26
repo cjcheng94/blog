@@ -30,6 +30,7 @@ export const GET_ALL_POSTS = gql`
       contentText
       date
       tagIds
+      thumbnailUrl
       tags {
         _id
         name
@@ -51,6 +52,7 @@ export const GET_CURRENT_POST = gql`
       contentText
       date
       tagIds
+      thumbnailUrl
       tags {
         _id
         name
@@ -72,6 +74,7 @@ export const GET_USER_POSTS = gql`
       contentText
       date
       tagIds
+      thumbnailUrl
       tags {
         _id
         name
@@ -93,6 +96,7 @@ export const GET_POSTS_BY_TAGS = gql`
       contentText
       date
       tagIds
+      thumbnailUrl
       tags {
         _id
         name
@@ -124,6 +128,7 @@ export const CREATE_NEW_POST = gql`
       contentText
       date
       tagIds
+      thumbnailUrl
       tags {
         _id
         name
@@ -157,6 +162,7 @@ export const UPDATE_POST = gql`
       contentText
       date
       tagIds
+      thumbnailUrl
       tags {
         _id
         name
@@ -187,6 +193,7 @@ export const SEARCH = gql`
       contentText
       date
       tagIds
+      thumbnailUrl
       tags {
         _id
         name
@@ -422,6 +429,7 @@ export const GET_CACHED_POST_FRAGMENT = gql`
     contentText
     date
     tagIds
+    thumbnailUrl
     tags {
       _id
       name
