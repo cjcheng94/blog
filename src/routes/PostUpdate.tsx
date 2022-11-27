@@ -19,6 +19,7 @@ import {
   UPDATE_DRAFT,
   DELETE_DRAFT
 } from "../api/gqlDocuments";
+import { uploadImage } from "../api/imgur";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {
@@ -33,6 +34,19 @@ const useStyles = makeStyles(theme => ({
     "& input": {
       fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
     }
+  },
+  thumbnailButton: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
+  },
+  input: {
+    display: "none"
+  },
+  thumbnail: {
+    display: "block",
+    margin: "auto",
+    marginBottom: theme.spacing(1),
+    maxWidth: "100%"
   }
 }));
 
@@ -48,10 +62,10 @@ type DraftVariables = {
 const PostUpdate = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showApplyDraftDialog, setShowApplyDraftDialog] = useState(false);
-  const [alertMessage, setAlertMessage] = useState("");
   const [title, setTitle] = useState("");
   const [content, setRichData] = useState("");
   const [plainText, setPlainText] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -139,11 +153,13 @@ const PostUpdate = () => {
   // Use post data to initialize our form
   useEffect(() => {
     if (getPostCalled && getPostData) {
-      const { title, content, contentText, tagIds } = getPostData.getPostById;
+      const { title, content, contentText, tagIds, thumbnailUrl } =
+        getPostData.getPostById;
       setTitle(title);
       setRichData(content);
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
+      setThumbnailUrl(thumbnailUrl);
     }
   }, [getPostCalled, getPostData]);
 
@@ -296,6 +312,7 @@ const PostUpdate = () => {
           _id: postId,
           title,
           content,
+          thumbnailUrl,
           contentText: plainText,
           tagIds: selectedTagIds
         }
@@ -328,6 +345,37 @@ const PostUpdate = () => {
       return [...prevIds, tag._id];
     });
   }, []);
+
+  const handleImageInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const handleImage = async (file: File) => {
+      const { success, link, errorMessage } = await uploadImage(file);
+      if (success) {
+        setThumbnailUrl(link);
+        return;
+      }
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    };
+
+    if (event.target.files) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+      // File size limit of 5 MB
+      if (file.size > 5 * 1024 * 1024) {
+        enqueueSnackbar("File size exceeded 5MB limit", {
+          variant: "warning"
+        });
+      } else {
+        handleImage(file);
+      }
+    }
+    // reset input value, otherwise repeated upload of the same image won't trigger
+    // change event
+    event.target.value = "";
+  };
 
   const applyDraft = () => {
     const { title, content, contentText, tagIds } =
@@ -367,6 +415,20 @@ const PostUpdate = () => {
           fullWidth
         />
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
+        <label>
+          <Button className={classes.thumbnailButton} component="span">
+            Upload thumbnail
+          </Button>
+          <input
+            type="file"
+            accept="image/*"
+            className={classes.input}
+            onChange={handleImageInputChange}
+          />
+        </label>
+        {thumbnailUrl && (
+          <img src={thumbnailUrl} className={classes.thumbnail} />
+        )}
         {renderContentField()}
         <Button
           className={classes.button}
