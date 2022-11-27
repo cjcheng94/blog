@@ -59,6 +59,12 @@ const useStyles = makeStyles(theme => ({
   },
   title: {
     fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
+  },
+  thumbnail: {
+    display: "block",
+    margin: "auto",
+    marginBottom: theme.spacing(1),
+    maxWidth: "100%"
   }
 }));
 
@@ -144,7 +150,8 @@ const PostDetails = () => {
 
   const url = `/posts/edit/${match.params._id}`;
   const currentUsername = localStorage.getItem("currentUsername");
-  const { title, authorInfo, content, contentText, date, tags } = post;
+  const { title, authorInfo, content, contentText, date, tags, thumbnailUrl } =
+    post;
   const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
 
   const handleDelete = () => {
@@ -181,6 +188,9 @@ const PostDetails = () => {
 
         <div className={classes.tagRow}>{displayTags}</div>
         <Divider className={classes.divider} />
+        {thumbnailUrl && (
+          <img src={thumbnailUrl} className={classes.thumbnail} />
+        )}
         <Editor
           readOnly={true}
           initialContent={content}
