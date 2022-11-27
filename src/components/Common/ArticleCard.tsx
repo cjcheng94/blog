@@ -1,21 +1,16 @@
 import React, { useMemo } from "react";
 import { Tag } from "PostTypes";
 import { DisplayTag } from "@components";
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Typography,
-  Theme
-} from "@material-ui/core";
+import { Card, CardMedia, Typography, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
   return {
     card: {
+      position: "relative",
       width: "100%",
-      height: 214
+      height: 290
     },
     cardButton: {
       width: "100%",
@@ -24,37 +19,37 @@ const useStyles = makeStyles((theme: Theme) => {
       flexDirection: "column",
       justifyContent: "space-between",
       alignItems: "flex-start",
+      cursor: "pointer",
       padding: theme.spacing(2)
     },
-    cardContent: {
-      padding: 0,
-      overflow: "hidden",
-      marginBottom: theme.spacing(2)
-    },
+
     title: {
-      display: "inline",
-      paddingLeft: 2,
-      paddingRight: 4,
+      display: "inline-block",
       fontWeight: 600,
-      backgroundColor: isDarkTheme ? "hsl(230,0%,20%)" : "hsl(230,100%,94%);",
-      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
-    },
-    author: {
-      margin: "8px 0",
-      fontSize: "0.8em",
-      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
+      fontSize: "4em",
+      fontFamily: " Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
+      [theme.breakpoints.down("sm")]: {
+        fontSize: "3em"
+      }
     },
     content: {
       display: "-webkit-box",
       "-webkit-line-clamp": 3,
       "-webkit-box-orient": "vertical",
-      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
+      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
+      overflow: "hidden"
+    },
+    thumbnailedContent: {
+      color: "#000",
+      backgroundColor: "rgba(255, 255, 255, 0.3)",
+      backdropFilter: "blur(2px)"
     },
     tagsContainer: {
       display: "flex",
       flexWrap: "nowrap",
       overflow: "hidden",
-      flexShrink: 0
+      flexShrink: 0,
+      zIndex: 1
     },
     tagText: {
       ...theme.typography.button,
@@ -62,6 +57,21 @@ const useStyles = makeStyles((theme: Theme) => {
       fontWeight: 700,
       lineHeight: 1,
       paddingRight: 4
+    },
+    media: {
+      width: "100%",
+      height: "100%",
+      filter: "blur(2px)",
+      position: "absolute",
+      top: 0
+    },
+    invertedTitleBackground: {
+      width: "100%",
+      height: "100%",
+      backgroundClip: "text",
+      "-webkit-background-clip": "text",
+      color: "transparent",
+      filter: "invert(1)"
     }
   };
 });
@@ -73,6 +83,7 @@ type Props = {
   tags: Tag[];
   authorInfo?: any;
   onClick: () => void;
+  thumbnailUrl?: string;
 };
 
 const getTruncatedTitle = (title: string, limit: number) => {
@@ -99,10 +110,10 @@ const getTruncatedTitle = (title: string, limit: number) => {
 };
 
 const ArticleCard: React.FC<Props> = props => {
-  const { _id, title, contentText, tags, authorInfo, onClick } = props;
+  const { _id, title, contentText, tags, authorInfo, onClick, thumbnailUrl } =
+    props;
   const classes = useStyles();
 
-  // TODO: apply ellipses to overflowed tags
   const renderTags = (tags: Tag[]) => (
     <>
       {tags
@@ -114,24 +125,43 @@ const ArticleCard: React.FC<Props> = props => {
 
   const memoizedTags = useMemo(() => renderTags(tags), [tags]);
 
-  return (
+  const contentClass = `${classes.content} ${classes.thumbnailedContent}`;
+  const invertedClass = `${classes.cardButton} ${classes.invertedTitleBackground}`;
+
+  // The card's background image is blurred, i.e. the first CardMedia,
+  // but I want the title to be both inverted and NOT BLURRED,
+  // so the second CardMedia is used as a non-blurred background for the title to clip
+
+  const thumbnailedCard = (
     <Card className={classes.card}>
-      <CardActionArea className={classes.cardButton} onClick={onClick}>
-        <CardContent className={classes.cardContent}>
-          <Typography variant="h5" className={classes.title} title={title}>
-            {getTruncatedTitle(title, 32)}
-          </Typography>
-          {authorInfo && (
-            <Typography className={classes.author}>
-              By {authorInfo.username}
-            </Typography>
-          )}
-          <Typography className={classes.content}>{contentText}</Typography>
-        </CardContent>
+      <CardMedia image={thumbnailUrl} className={classes.media} />
+      <CardMedia
+        image={thumbnailUrl}
+        onClick={onClick}
+        className={invertedClass}
+      >
+        <Typography variant="h5" className={classes.title} title={title}>
+          {getTruncatedTitle(title, 32)}
+        </Typography>
+        <Typography className={contentClass}>{contentText}</Typography>
         <div className={classes.tagsContainer}>{memoizedTags}</div>
-      </CardActionArea>
+      </CardMedia>
     </Card>
   );
+
+  const plainCard = (
+    <Card className={classes.card}>
+      <div className={classes.cardButton} onClick={onClick}>
+        <Typography variant="h5" className={classes.title} title={title}>
+          {getTruncatedTitle(title, 32)}
+        </Typography>
+        <Typography className={classes.content}>{contentText}</Typography>
+        <div className={classes.tagsContainer}>{memoizedTags}</div>
+      </div>
+    </Card>
+  );
+
+  return thumbnailUrl ? thumbnailedCard : plainCard;
 };
 
 export default ArticleCard;

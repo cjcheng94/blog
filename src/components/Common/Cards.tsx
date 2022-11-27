@@ -11,10 +11,7 @@ const useStyles = makeStyles(theme => ({
   cardsContainer: {
     display: "grid",
     gap: 24,
-    gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-    [theme.breakpoints.down("sm")]: {
-      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
-    }
+    gridTemplateColumns: "repeat(auto-fit, minmax(420px, 1fr))"
   }
 }));
 
@@ -66,6 +63,9 @@ const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
   const cards = paginatedArticles.map(article => {
     const { _id, title, contentText, tags } = article;
 
+    const thumbnailUrl =
+      "thumbnailUrl" in article ? article.thumbnailUrl : undefined;
+
     const authorInfo = "authorInfo" in article ? article.authorInfo : undefined;
 
     let url = `/posts/detail/${_id}`;
@@ -82,6 +82,7 @@ const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
         contentText={contentText}
         tags={tags}
         authorInfo={authorInfo}
+        thumbnailUrl={thumbnailUrl}
         onClick={() => {
           history.push(url);
         }}
