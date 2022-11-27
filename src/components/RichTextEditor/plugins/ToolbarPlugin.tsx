@@ -594,7 +594,6 @@ const ToolbarPlugin = () => {
   ) => {
     const handleImage = async (file: File) => {
       const { success, link, errorMessage } = await uploadImage(file);
-      console.log({ success, link, errorMessage });
 
       if (success) {
         insertImage({

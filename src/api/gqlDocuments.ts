@@ -150,6 +150,7 @@ export const UPDATE_POST = gql`
     $content: String!
     $contentText: String!
     $tagIds: [ID]!
+    $thumbnailUrl: String
   ) {
     updatePost(
       _id: $_id
@@ -157,6 +158,7 @@ export const UPDATE_POST = gql`
       content: $content
       contentText: $contentText
       tagIds: $tagIds
+      thumbnailUrl: $thumbnailUrl
     ) {
       _id
       title

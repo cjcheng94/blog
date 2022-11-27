@@ -36,6 +36,7 @@ import {
   isAuthedVar
 } from "../api/cache";
 import useCleanup from "../utils/useCleanup";
+import { uploadImage } from "../api/imgur";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
@@ -50,6 +51,19 @@ const useStyles = makeStyles(theme => ({
     "& input": {
       fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
     }
+  },
+  thumbnailButton: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
+  },
+  input: {
+    display: "none"
+  },
+  thumbnail: {
+    display: "block",
+    margin: "auto",
+    marginBottom: theme.spacing(1),
+    maxWidth: "100%"
   }
 }));
 
@@ -322,6 +336,37 @@ const PostNew = () => {
     });
   }, []);
 
+  const handleImageInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const handleImage = async (file: File) => {
+      const { success, link, errorMessage } = await uploadImage(file);
+      if (success) {
+        setThumbnailUrl(link);
+        return;
+      }
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    };
+
+    if (event.target.files) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+      // File size limit of 5 MB
+      if (file.size > 5 * 1024 * 1024) {
+        enqueueSnackbar("File size exceeded 5MB limit", {
+          variant: "warning"
+        });
+      } else {
+        handleImage(file);
+      }
+    }
+    // reset input value, otherwise repeated upload of the same image won't trigger
+    // change event
+    event.target.value = "";
+  };
+
   const renderSubmitOrLoginButton = () => {
     if (isAuthenticated) {
       return (
@@ -377,6 +422,20 @@ const PostNew = () => {
           fullWidth
         />
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
+        <label>
+          <Button className={classes.thumbnailButton} component="span">
+            Upload thumbnail
+          </Button>
+          <input
+            type="file"
+            accept="image/*"
+            className={classes.input}
+            onChange={handleImageInputChange}
+          />
+        </label>
+        {thumbnailUrl && (
+          <img src={thumbnailUrl} className={classes.thumbnail} />
+        )}
         <Editor
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
