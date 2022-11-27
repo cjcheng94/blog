@@ -22,7 +22,6 @@ const useStyles = makeStyles((theme: Theme) => {
       cursor: "pointer",
       padding: theme.spacing(2)
     },
-
     title: {
       display: "inline-block",
       fontWeight: 600,
@@ -41,8 +40,9 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     thumbnailedContent: {
       color: "#000",
-      backgroundColor: "rgba(255, 255, 255, 0.3)",
-      backdropFilter: "blur(2px)"
+      backgroundColor: "rgba(255, 255, 255, 0.1)",
+      backdropFilter: "invert(1) blur(5px)",
+      "-webkit-backdrop-filter": "invert(1) blur(5px)"
     },
     tagsContainer: {
       display: "flex",
