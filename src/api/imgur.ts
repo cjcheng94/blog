@@ -27,7 +27,13 @@ export const uploadImage = async (
 
     success = responseData.success;
     link = responseData.data.link;
-    errorMessage = success ? "" : responseData.data.error;
+    // Imgur's errors are asymmetrical, we have to do some defensive coding here
+    errorMessage = success
+      ? ""
+      : typeof responseData.data?.error === "string"
+      ? responseData.data?.error
+      : responseData.data?.error?.message ||
+        "An error occurred while uploading the image";
   } catch (err) {
     success = false;
     link = "";

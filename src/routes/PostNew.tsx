@@ -62,6 +62,7 @@ const PostNew = () => {
   const [title, setTitle] = useState("");
   const [richData, setRichData] = useState("");
   const [plainText, setPlainText] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
@@ -303,6 +304,7 @@ const PostNew = () => {
       createNewPost({
         variables: {
           title,
+          thumbnailUrl,
           content: richData,
           contentText: plainText,
           tagIds: selectedTagIds
@@ -379,6 +381,7 @@ const PostNew = () => {
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
+          onThumbnailUpload={setThumbnailUrl}
         />
         <FormHelperText error>{contentErrorMessage}</FormHelperText>
         {renderSubmitOrLoginButton()}
