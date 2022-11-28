@@ -51,6 +51,9 @@ const useStyles = makeStyles((theme: Theme) => {
       flexShrink: 0,
       zIndex: 1
     },
+    thumbnailedTags: {
+      filter: "invert(1)"
+    },
     tagText: {
       ...theme.typography.button,
       color: theme.palette.text.hint,
@@ -127,6 +130,7 @@ const ArticleCard: React.FC<Props> = props => {
 
   const contentClass = `${classes.content} ${classes.thumbnailedContent}`;
   const invertedClass = `${classes.cardButton} ${classes.invertedTitleBackground}`;
+  const tagsClass = `${classes.tagsContainer} ${classes.thumbnailedTags}`;
 
   // The card's background image is blurred, i.e. the first CardMedia,
   // but I want the title to be both inverted and NOT BLURRED,
@@ -144,7 +148,7 @@ const ArticleCard: React.FC<Props> = props => {
           {getTruncatedTitle(title, 32)}
         </Typography>
         <Typography className={contentClass}>{contentText}</Typography>
-        <div className={classes.tagsContainer}>{memoizedTags}</div>
+        <div className={tagsClass}>{memoizedTags}</div>
       </CardMedia>
     </Card>
   );
