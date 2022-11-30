@@ -50,7 +50,6 @@ type EditorProps = {
   setContentEmpty?: (isEmpty: boolean) => void;
   onTextContentChange?: (data: string) => void;
   onRichTextTextChange?: (data: string) => void;
-  onThumbnailUpload?: (thumbnailUrl: string) => void;
 };
 
 const Editor: React.FC<EditorProps> = props => {
@@ -60,8 +59,7 @@ const Editor: React.FC<EditorProps> = props => {
     initialPlainText,
     setContentEmpty,
     onTextContentChange,
-    onRichTextTextChange,
-    onThumbnailUpload
+    onRichTextTextChange
   } = props;
 
   const { historyState } = useSharedHistoryContext();
@@ -113,7 +111,7 @@ const Editor: React.FC<EditorProps> = props => {
     <div className={`myEditor ${darkModeClass}`}>
       <LexicalComposer initialConfig={initialConfig}>
         <SharedHistoryContext>
-          {!readOnly && <ToolbarPlugin onThumbnailUpload={onThumbnailUpload} />}
+          {!readOnly && <ToolbarPlugin />}
           <RichTextPlugin
             contentEditable={<ContentEditable />}
             placeholder={<div>Enter some text...</div>}
