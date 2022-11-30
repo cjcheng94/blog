@@ -1,10 +1,10 @@
-import React, { useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Tag } from "PostTypes";
-import { DisplayTag } from "@components";
+import { DisplayTag, InvertedTitle } from "@components";
 import { Card, CardMedia, Typography, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 
-const useStyles = makeStyles((theme: Theme) => {
+const useStyles = makeStyles<Theme, { filter: string }>((theme: Theme) => {
   const isDarkTheme = theme.palette.type === "dark";
   return {
     card: {
@@ -39,10 +39,10 @@ const useStyles = makeStyles((theme: Theme) => {
       overflow: "hidden"
     },
     thumbnailedContent: {
-      color: "#000",
-      backgroundColor: "rgba(255, 255, 255, 0.1)",
-      backdropFilter: "invert(1) blur(5px)",
-      "-webkit-backdrop-filter": "invert(1) blur(5px)"
+      color: "#fff",
+      backgroundColor: "rgba(0, 0, 0, 0.2)",
+      backdropFilter: "blur(5px)",
+      "-webkit-backdrop-filter": "blur(5px)"
     },
     tagsContainer: {
       display: "flex",
@@ -50,9 +50,6 @@ const useStyles = makeStyles((theme: Theme) => {
       overflow: "hidden",
       flexShrink: 0,
       zIndex: 1
-    },
-    thumbnailedTags: {
-      filter: "invert(1)"
     },
     tagText: {
       ...theme.typography.button,
@@ -64,17 +61,13 @@ const useStyles = makeStyles((theme: Theme) => {
     media: {
       width: "100%",
       height: "100%",
-      filter: "blur(2px)",
       position: "absolute",
-      top: 0
-    },
-    invertedTitleBackground: {
-      width: "100%",
-      height: "100%",
-      backgroundClip: "text",
-      "-webkit-background-clip": "text",
-      color: "transparent",
-      filter: "invert(1)"
+      top: 0,
+      filter: ({ filter }) => filter,
+      transition: theme.transitions.create("filter", {
+        easing: theme.transitions.easing.sharp,
+        duration: theme.transitions.duration.shortest
+      })
     }
   };
 });
@@ -113,9 +106,10 @@ const getTruncatedTitle = (title: string, limit: number) => {
 };
 
 const ArticleCard: React.FC<Props> = props => {
+  const [isHovered, setIsHovered] = useState(false);
+  const classes = useStyles({ filter: isHovered ? "unset" : "blur(3px)" });
   const { _id, title, contentText, tags, authorInfo, onClick, thumbnailUrl } =
     props;
-  const classes = useStyles();
 
   const renderTags = (tags: Tag[]) => (
     <>
@@ -129,27 +123,26 @@ const ArticleCard: React.FC<Props> = props => {
   const memoizedTags = useMemo(() => renderTags(tags), [tags]);
 
   const contentClass = `${classes.content} ${classes.thumbnailedContent}`;
-  const invertedClass = `${classes.cardButton} ${classes.invertedTitleBackground}`;
-  const tagsClass = `${classes.tagsContainer} ${classes.thumbnailedTags}`;
-
-  // The card's background image is blurred, i.e. the first CardMedia,
-  // but I want the title to be both inverted and NOT BLURRED,
-  // so the second CardMedia is used as a non-blurred background for the title to clip
 
   const thumbnailedCard = (
-    <Card className={classes.card}>
+    <Card
+      className={classes.card}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
+    >
       <CardMedia image={thumbnailUrl} className={classes.media} />
-      <CardMedia
-        image={thumbnailUrl}
-        onClick={onClick}
-        className={invertedClass}
-      >
-        <Typography variant="h5" className={classes.title} title={title}>
-          {getTruncatedTitle(title, 32)}
-        </Typography>
+      <div onClick={onClick} className={classes.cardButton}>
+        <InvertedTitle
+          text={getTruncatedTitle(title, 32)}
+          imageUrl={thumbnailUrl as string}
+        />
         <Typography className={contentClass}>{contentText}</Typography>
-        <div className={tagsClass}>{memoizedTags}</div>
-      </CardMedia>
+        <div className={classes.tagsContainer}>{memoizedTags}</div>
+      </div>
     </Card>
   );
 
