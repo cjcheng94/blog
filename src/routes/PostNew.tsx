@@ -440,7 +440,6 @@ const PostNew = () => {
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
-          onThumbnailUpload={setThumbnailUrl}
         />
         <FormHelperText error>{contentErrorMessage}</FormHelperText>
         {renderSubmitOrLoginButton()}
