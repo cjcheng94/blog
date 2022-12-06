@@ -15,6 +15,9 @@ const useStyles = makeStyles<Theme, { loadedUrl: string | null; text: string }>(
       fontWeight: 600,
       fontSize: "4em",
       color: "transparent", // used to prop up space
+      wordBreak: "break-word",
+      padding: theme.spacing(2),
+      paddingBottom: 0,
       "&::before": {
         position: "absolute",
         top: 0,

@@ -26,6 +26,7 @@ const useStyles = makeStyles<Theme, { filter?: string }>((theme: Theme) => ({
   },
   title: {
     display: "inline-block",
+    wordBreak: "break-word",
     fontWeight: 600,
     fontSize: "4em",
     fontFamily: " Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
@@ -100,13 +101,16 @@ const getTruncatedTitle = (title: string, limit: number) => {
   }
 
   const wordsArr = title.split(" ");
+  let truncatedTitle = "";
 
-  let truncatedTitle = wordsArr.reduce((title, curWord, i) => {
-    if (title.length > limit) {
-      return title;
+  wordsArr.every(word => {
+    let titleWithAnotherWord = truncatedTitle + word + " ";
+    if (titleWithAnotherWord.length > limit) {
+      return false;
     }
-    return title + curWord + " ";
-  }, "");
+    truncatedTitle = titleWithAnotherWord;
+    return true;
+  });
 
   truncatedTitle = truncatedTitle.trimEnd();
 
