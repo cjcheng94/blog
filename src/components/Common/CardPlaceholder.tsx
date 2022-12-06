@@ -16,7 +16,10 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     card: {
       width: "100%",
-      height: 214
+      height: 294,
+      [theme.breakpoints.down("sm")]: {
+        height: 260
+      }
     },
     cardButton: {
       width: "100%",
