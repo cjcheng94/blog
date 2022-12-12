@@ -63,11 +63,11 @@ const useStyles = makeStyles(theme => {
     },
     brand: {
       fontFamily: "Notable, sans-serif",
-      fontSize: "2.4em",
+      fontSize: "2.4rem",
       textDecorationLine: "none",
-      marginTop: -16,
-      textShadow:
-        "0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
+      marginTop: "-11px"
+      // textShadow:
+      //   "0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
     },
     //A transparent place holder for progress bar,
     //avoids page jumping issues
@@ -94,8 +94,11 @@ const useStyles = makeStyles(theme => {
       justifyContent: "flex-end"
     },
     appBar: {
-      color: "#fff",
-      backgroundColor: isDarkTheme ? "#333" : theme.palette.primary.main,
+      backgroundColor: isDarkTheme
+        ? "rgba(51,51,51,0.65)"
+        : "rgba(255,255,255,0.65)",
+      backdropFilter: "blur(12px)",
+      boxShadow: "none",
       transition: theme.transitions.create(
         ["margin", "width", "transform", "boxShadow"],
         {
@@ -331,7 +334,7 @@ const Header = () => {
   return (
     <Fragment>
       {getTagsError && <ErrorAlert error={getTagsError} />}
-      <AppBar position="sticky" className={appBarClass}>
+      <AppBar position="sticky" color="inherit" className={appBarClass}>
         <Toolbar className={classes.toolBar}>
           <div className={classes.centerAligned}>
             <IconButton
@@ -345,6 +348,7 @@ const Header = () => {
             </IconButton>
             <Typography
               color="inherit"
+              variant="h4"
               className={classes.brand}
               component={Link}
               to="/"
