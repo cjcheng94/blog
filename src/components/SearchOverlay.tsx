@@ -28,8 +28,6 @@ const useStyles = makeStyles(theme => ({
     bottom: 0,
     height: "100vh",
     zIndex: 2,
-    display: "flex",
-    flexDirection: "column",
     marginLeft: 0,
     transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.sharp,
@@ -46,7 +44,7 @@ const useStyles = makeStyles(theme => ({
       marginLeft: 0
     }
   },
-  toolbarSpacer: theme.mixins.toolbar,
+
   content: {
     width: "100%",
     height: "100%",
@@ -62,6 +60,7 @@ const useStyles = makeStyles(theme => ({
   },
   paper: {
     position: "relative",
+    top: "64px",
     padding: 32,
     width: "80%",
     margin: "auto",
@@ -201,7 +200,7 @@ const SearchOverlay = () => {
 
   return (
     <div className={wrapperClass}>
-      <div className={classes.toolbarSpacer}></div>
+      {/* <div className={classes.toolbarSpacer}></div> */}
       <div className={contentClass}>
         <ClickAwayListener onClickAway={hideSelf}>
           <Paper className={classes.paper} elevation={3}>

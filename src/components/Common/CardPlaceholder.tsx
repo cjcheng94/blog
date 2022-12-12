@@ -16,7 +16,10 @@ const useStyles = makeStyles((theme: Theme) => {
     },
     card: {
       width: "100%",
-      height: 214
+      height: 294,
+      [theme.breakpoints.down("sm")]: {
+        height: 260
+      }
     },
     cardButton: {
       width: "100%",
@@ -26,8 +29,8 @@ const useStyles = makeStyles((theme: Theme) => {
       height: "100%"
     },
     title: {
-      height: 28,
-      width: 150,
+      height: "40px",
+      width: "70%",
       backgroundColor: isDarkTheme ? "hsl(230,0%,20%)" : "hsl(230,100%,94%);"
     },
     author: {
@@ -40,7 +43,10 @@ const useStyles = makeStyles((theme: Theme) => {
       marginBottom: 6,
       height: 16,
       width: "100%",
-      backgroundColor: textColor
+      backgroundColor: textColor,
+      "&:nth-child(3)": {
+        marginTop: 32
+      }
     }
   };
 });
