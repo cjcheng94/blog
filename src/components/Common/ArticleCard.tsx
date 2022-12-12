@@ -5,7 +5,7 @@ import { Card, CardMedia, Typography, Theme } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import { useLoadImage } from "@utils";
 
-const useStyles = makeStyles<Theme, { filter?: string }>((theme: Theme) => ({
+const useStyles = makeStyles((theme: Theme) => ({
   card: {
     position: "relative",
     width: "100%",
@@ -73,11 +73,7 @@ const useStyles = makeStyles<Theme, { filter?: string }>((theme: Theme) => ({
     height: "100%",
     position: "absolute",
     top: 0,
-    filter: ({ filter }) => filter,
-    transition: theme.transitions.create("filter", {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.shortest
-    })
+    filter: "blur(3px)"
   },
   fallbackMedia: {
     background:
@@ -133,8 +129,7 @@ const renderTags = (tags: Tag[]) => (
 const ThumbnailedCard = (props: Props) => {
   const { title, contentText, tags, onClick, thumbnailUrl } = props;
 
-  const [isHovered, setIsHovered] = useState(false);
-  const classes = useStyles({ filter: isHovered ? "none" : "blur(3px)" });
+  const classes = useStyles();
   const loadedThumbnailUrl = useLoadImage(thumbnailUrl as string);
 
   const memoizedTags = useMemo(() => renderTags(tags), [tags]);
@@ -143,16 +138,7 @@ const ThumbnailedCard = (props: Props) => {
   const fallbackMediaClass = `${classes.media} ${classes.fallbackMedia}`;
 
   return (
-    <Card
-      onClick={onClick}
-      className={classes.card}
-      onMouseEnter={() => {
-        setIsHovered(true);
-      }}
-      onMouseLeave={() => {
-        setIsHovered(false);
-      }}
-    >
+    <Card onClick={onClick} className={classes.card}>
       {loadedThumbnailUrl ? (
         <CardMedia image={loadedThumbnailUrl} className={classes.media} />
       ) : (
@@ -171,7 +157,7 @@ const ThumbnailedCard = (props: Props) => {
 };
 
 const PlainCard = (props: Props) => {
-  const classes = useStyles({});
+  const classes = useStyles();
   const { title, contentText, tags, onClick } = props;
 
   const memoizedTags = useMemo(() => renderTags(tags), [tags]);
