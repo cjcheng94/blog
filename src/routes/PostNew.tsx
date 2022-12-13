@@ -13,9 +13,9 @@ import {
   Typography,
   FormHelperText,
   IconButton
-} from "@material-ui/core";
-import { Close } from "@material-ui/icons";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import { Close } from "@mui/icons-material";
+import makeStyles from "@mui/styles/makeStyles";
 import { useSnackbar } from "notistack";
 
 import debounce from "lodash/debounce";
@@ -409,16 +409,17 @@ const PostNew = () => {
         onSubmit={handleSubmit}
       >
         <TextField
+          variant="standard"
+          margin="normal"
+          type="text"
+          label="title"
           className={classes.title}
           value={title}
           onChange={e => {
             setTitle(e.target.value);
           }}
-          label={"title"}
           helperText={titleErrorMessage}
           error={!!titleErrorMessage}
-          margin="normal"
-          type="text"
           fullWidth
         />
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />

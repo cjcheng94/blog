@@ -2,8 +2,8 @@ import React, { useState, useEffect, Fragment, useCallback } from "react";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import debounce from "lodash/debounce";
-import { TextField, Button, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { TextField, Button, Typography } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from "notistack";
 
 import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
