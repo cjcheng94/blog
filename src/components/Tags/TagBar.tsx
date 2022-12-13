@@ -1,6 +1,6 @@
 import React from "react";
-import { Chip, CircularProgress } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Chip, CircularProgress } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { useQuery, useMutation } from "@apollo/client";
 import { NewTagInput } from "@components";
@@ -82,7 +82,7 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
             label={tag.name}
             className={classes.tags}
             color={isSelected(tag._id) ? "primary" : "default"}
-            variant={isSelected(tag._id) ? "default" : "outlined"}
+            variant={isSelected(tag._id) ? "filled" : "outlined"}
             onClick={handleTagChange(tag)}
           />
         )
