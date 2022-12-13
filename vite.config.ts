@@ -38,7 +38,9 @@ export default defineConfig({
               modules: [
                 "@material-ui/lab",
                 "@material-ui/core",
-                "@material-ui/icons"
+                "@material-ui/icons",
+                "@mui/material",
+                "@mui/icons-material"
               ]
             }
           ]
