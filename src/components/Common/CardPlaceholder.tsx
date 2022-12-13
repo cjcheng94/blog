@@ -1,23 +1,23 @@
 import React from "react";
-import { Card, CardActionArea, CardContent, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardActionArea, CardContent, Theme } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles((theme: Theme) => {
-  const isDarkTheme = theme.palette.type === "dark";
+  const isDarkTheme = theme.palette.mode === "dark";
   const textColor = isDarkTheme ? "#616161" : "#F0F0F0";
   return {
     cardsContainer: {
       display: "grid",
       gap: 24,
       gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down('md')]: {
         gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
       }
     },
     card: {
       width: "100%",
       height: 294,
-      [theme.breakpoints.down("sm")]: {
+      [theme.breakpoints.down('md')]: {
         height: 260
       }
     },

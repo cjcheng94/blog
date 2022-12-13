@@ -1,8 +1,8 @@
 import React, { useState, useMemo } from "react";
 import { Tag } from "PostTypes";
 import { DisplayTag, InvertedTitle } from "@components";
-import { Card, CardMedia, Typography, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Card, CardMedia, Typography, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { useLoadImage } from "@utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -11,7 +11,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: "100%",
     cursor: "pointer",
     height: 294,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       height: 260
     }
   },
@@ -32,13 +32,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontFamily: " Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
     margin: theme.spacing(2),
     marginBottom: 0,
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down("md")]: {
       fontSize: "3em"
     }
   },
   content: {
     width: "calc(100% - 32px)",
-    margin: `0 ${theme.spacing(2)}px`,
+    margin: `0 ${theme.spacing(2)}`,
     padding: "1px 5px",
     borderRadius: 4,
     overflow: "hidden",
@@ -60,13 +60,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     display: "flex",
     flexWrap: "nowrap",
     overflow: "hidden"
-  },
-  tagText: {
-    ...theme.typography.button,
-    color: theme.palette.text.hint,
-    fontWeight: 700,
-    lineHeight: 1,
-    paddingRight: 4
   },
   media: {
     width: "100%",

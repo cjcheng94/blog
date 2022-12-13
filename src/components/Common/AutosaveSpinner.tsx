@@ -1,7 +1,7 @@
 import React from "react";
-import { CloudDone, Sync, SyncProblem } from "@material-ui/icons";
-import { IconButton, Tooltip } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { CloudDone, Sync, SyncProblem } from "@mui/icons-material";
+import { IconButton, Tooltip } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
 import { useReactiveVar } from "@apollo/client";
 import { draftUpdatingVar, draftErrorVar } from "../../api/cache";
@@ -32,7 +32,7 @@ const AutosaveSpinner = () => {
     if (draftUpdating) {
       return (
         <Tooltip title="saving to draft">
-          <Sync />
+          <Sync classes={{ root: classes.spinner }} />
         </Tooltip>
       );
     }
@@ -57,9 +57,9 @@ const AutosaveSpinner = () => {
       aria-haspopup="true"
       color="inherit"
       classes={{
-        root: classes.root,
-        label: draftUpdating ? classes.spinner : ""
+        root: classes.root
       }}
+      size="large"
     >
       {renderIcon()}
     </IconButton>

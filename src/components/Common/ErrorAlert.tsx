@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
-import { TransitionProps } from "@material-ui/core/transitions";
+import { TransitionProps } from "@mui/material/transitions";
 import {
   Button,
   Dialog,
@@ -8,14 +8,14 @@ import {
   DialogContent,
   DialogTitle,
   Slide
-} from "@material-ui/core";
+} from "@mui/material";
 import { useNavigatorOnline } from "@utils";
 
 const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & { children?: React.ReactElement<any, any> },
+  props: TransitionProps & { children: React.ReactElement<any, any> },
   ref: React.Ref<unknown>
 ) {
-  return <Slide direction="up" {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 type ErrorAlertProps = {
