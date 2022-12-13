@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from "react";
-import { Snackbar, Button, IconButton } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Close } from "@material-ui/icons";
+import { Snackbar, Button, IconButton } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
+import { Close } from "@mui/icons-material";
 
 const useStyles = makeStyles(theme => {
-  const isDarkTheme = theme.palette.type === "dark";
+  const isDarkTheme = theme.palette.mode === "dark";
   const gradient = `linear-gradient(45deg, ${theme.palette.primary.dark} 30%, ${theme.palette.primary.light} 90%)`;
   const background = isDarkTheme ? "#fff" : gradient;
   return {
@@ -106,7 +106,12 @@ const InstallAlert = () => {
           >
             Install
           </Button>
-          <IconButton aria-label="close" color="inherit" onClick={onHide}>
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            onClick={onHide}
+            size="large"
+          >
             <Close />
           </IconButton>
         </>

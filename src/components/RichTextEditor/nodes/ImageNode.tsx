@@ -33,7 +33,7 @@ import * as React from "react";
 import { useCallback, useEffect, useRef, Suspense } from "react";
 
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from '@mui/styles/makeStyles';
 
 const useStyles = makeStyles(theme => ({
   contentEditable: {

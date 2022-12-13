@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Button, Typography, TextField } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Typography, TextField } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 import { useSnackbar } from "notistack";
 
 import { USER_LOGIN } from "../../api/gqlDocuments";
@@ -118,6 +118,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
 
       <form onSubmit={handleSubmit}>
         <TextField
+          variant="standard"
           value={username}
           onChange={e => {
             setUsername(e.target.value);
@@ -130,6 +131,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
           fullWidth
         />
         <TextField
+          variant="standard"
           value={password}
           onChange={e => {
             setPassword(e.target.value);

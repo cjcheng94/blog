@@ -13,8 +13,8 @@ import {
   GET_ALL_POSTS,
   GET_CACHED_POST_FRAGMENT
 } from "../api/gqlDocuments";
-import { Typography, Divider, Button } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Typography, Divider, Button } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from "notistack";
 
 import {

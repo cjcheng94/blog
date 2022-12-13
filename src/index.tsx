@@ -20,6 +20,12 @@ import {
   draftErrorVar,
   imageMapVar
 } from "./api/cache";
+import {
+  createTheme,
+  ThemeProvider,
+  Theme,
+  StyledEngineProvider
+} from "@mui/material/styles";
 
 const httpLink = createHttpLink({
   uri: import.meta.env.VITE_BACKEND_URL
@@ -95,12 +101,14 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <Router>
-      <React.StrictMode>
-        <App />
-      </React.StrictMode>
-    </Router>
-  </ApolloProvider>,
+  <StyledEngineProvider injectFirst>
+    <ApolloProvider client={client}>
+      <Router>
+        <React.StrictMode>
+          <App />
+        </React.StrictMode>
+      </Router>
+    </ApolloProvider>
+  </StyledEngineProvider>,
   document.getElementById("root") as HTMLElement
 );

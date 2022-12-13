@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Edit } from "@material-ui/icons";
-import { Fab, Tooltip, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Edit } from "@mui/icons-material";
+import { Fab, Tooltip, Theme } from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles((theme: Theme) => ({
   fab: {
@@ -19,9 +19,11 @@ const NewPostButton: React.FC = () => {
       <Fab
         color="secondary"
         aria-label="new post"
-        className={classes.fab}
         component={Link}
         to="/posts/new"
+        classes={{
+          root: classes.fab
+        }}
       >
         <Edit />
       </Fab>
