@@ -3,12 +3,8 @@ import { Route } from "react-router-dom";
 import { indigo, pink, red } from "@mui/material/colors";
 import { useReactiveVar } from "@apollo/client";
 import { CssBaseline, useMediaQuery, adaptV4Theme } from "@mui/material";
-import {
-  createTheme,
-  ThemeProvider,
-  Theme,
-  StyledEngineProvider
-} from "@mui/material/styles";
+import { createTheme, ThemeProvider } from "@mui/material/styles";
+
 import makeStyles from "@mui/styles/makeStyles";
 import {
   Header,
@@ -35,9 +31,6 @@ const useStyles = makeStyles(theme => {
       figure: {
         margin: 0
       }
-    },
-    root: {
-      fontFamily: "Notable, Roboto, sans-serif"
     }
   };
 });
@@ -99,6 +92,15 @@ const App: React.FC = () => {
   const theme = createTheme({
     palette: {
       mode: userDarkModeSetting ? "dark" : "light"
+    },
+    components: {
+      MuiCssBaseline: {
+        styleOverrides: `
+          body {
+            font-size: 0.875rem;
+          }
+        `
+      }
     }
   });
 
@@ -119,23 +121,19 @@ const App: React.FC = () => {
   }, [prefersDarkMode]);
 
   return (
-    // <StyledEngineProvider injectFirst>
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <SnackbarProvider>
         <ServiceWorkerAlerts />
         <InstallAlert />
-        <div
-        // className={classes.root}
-        >
-          <Route component={Header} />
-          {showSearchOverlay && <SearchOverlay />}
-          {!!accountDialogType && <AccountDialog type={accountDialogType} />}
-          <Main />
-        </div>
+        {/* <div className={classes.root}> */}
+        <Route component={Header} />
+        {showSearchOverlay && <SearchOverlay />}
+        {!!accountDialogType && <AccountDialog type={accountDialogType} />}
+        <Main />
+        {/* </div> */}
       </SnackbarProvider>
     </ThemeProvider>
-    // </StyledEngineProvider>
   );
 };
 

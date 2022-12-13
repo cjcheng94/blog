@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { useSnackbar } from "notistack";
-import { IconButton, Button } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+import { IconButton, Button } from "@mui/material";
+import { Close } from "@mui/icons-material";
 import { useRegisterSW } from "virtual:pwa-register/react";
 import { pwaInfo } from "virtual:pwa-info";
 import { useNavigatorOnline } from "@utils";

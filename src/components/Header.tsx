@@ -2,7 +2,7 @@ import React, { useState, Fragment } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { useSnackbar } from "notistack";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import {
   Tooltip,
   AppBar,
@@ -20,7 +20,7 @@ import {
   ListItemText,
   ListItemIcon,
   useScrollTrigger
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   Edit,
   Label,
@@ -33,7 +33,7 @@ import {
   LibraryBooks,
   Menu as MenuIcon,
   Drafts as DraftIcon
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import {
   darkModeVar,
   searchOverlayVar,
@@ -54,7 +54,7 @@ import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => {
-  const isDarkTheme = theme.palette.type === "dark";
+  const isDarkTheme = theme.palette.mode === "dark";
   const drawerWidth = 240;
 
   return {
@@ -82,7 +82,7 @@ const useStyles = makeStyles(theme => {
     },
     drawerPaper: {
       width: drawerWidth,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         width: "100%"
       }
     },
@@ -110,7 +110,7 @@ const useStyles = makeStyles(theme => {
     appBarShift: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         width: "initial",
         marginLeft: 0
       }
@@ -118,7 +118,7 @@ const useStyles = makeStyles(theme => {
     appBarSlideUp: {
       boxShadow: "none",
       transform: "translateY(-64px)",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         transform: "translateY(-56px)"
       }
     },
@@ -131,7 +131,7 @@ const useStyles = makeStyles(theme => {
     },
     hideXsUp: {
       display: "none",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         display: "initial"
       }
     },
@@ -343,6 +343,7 @@ const Header = () => {
               onClick={setShowDrawer(true)}
               edge="start"
               className={menuButtonClass}
+              size="large"
             >
               <MenuIcon />
             </IconButton>
@@ -364,6 +365,7 @@ const Header = () => {
                 aria-haspopup="true"
                 color="inherit"
                 onClick={toggleSearchOverlay}
+                size="large"
               >
                 <Search />
               </IconButton>
@@ -373,6 +375,7 @@ const Header = () => {
                 aria-haspopup="true"
                 color="inherit"
                 onClick={toggleDarkMode}
+                size="large"
               >
                 <Brightness4 />
               </IconButton>
@@ -383,6 +386,7 @@ const Header = () => {
                   aria-haspopup="true"
                   color="inherit"
                   onClick={showMenu}
+                  size="large"
                 >
                   <AccountCircle />
                 </IconButton>
@@ -395,7 +399,7 @@ const Header = () => {
               >
                 {isAuthenticated ? (
                   <MenuList>
-                    <MenuItem button={false}>
+                    <MenuItem>
                       <AccountCircle className={classes.menuIcon} />
                       <span>{currentUsername}</span>
                     </MenuItem>
@@ -450,7 +454,7 @@ const Header = () => {
         }}
       >
         <div className={classes.drawerHeader}>
-          <IconButton onClick={setShowDrawer(false)}>
+          <IconButton onClick={setShowDrawer(false)} size="large">
             <ChevronLeft />
           </IconButton>
         </div>
