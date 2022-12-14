@@ -109,6 +109,11 @@ const useStyles = makeStyles(theme => ({
         margin: "4px"
       }
   },
+  historyButton: {
+    "&.Mui-disabled": {
+      border: "none"
+    }
+  },
   controlsSlideUp: {
     top: 16
   },
@@ -641,6 +646,7 @@ const ToolbarPlugin = () => {
         onMouseDown={preventDefault}
         onClick={handleUndo}
         disabled={!canUndo}
+        className={classes.historyButton}
       >
         <UndoIcon />
       </ToggleButton>
@@ -651,6 +657,7 @@ const ToolbarPlugin = () => {
         onMouseDown={preventDefault}
         onClick={handleRedo}
         disabled={!canRedo}
+        className={classes.historyButton}
       >
         <RedoIcon />
       </ToggleButton>
