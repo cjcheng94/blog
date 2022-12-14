@@ -1,12 +1,11 @@
 import React from "react";
-
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(theme => ({
   tag: {
     ...theme.typography.button,
     color: theme.palette.primary.main,
-    backgroundColor: "rgba(0,0,0,0.1)",
+    backgroundColor: theme.palette.action.selected,
     fontWeight: 700,
     lineHeight: 1,
     marginRight: 4,
