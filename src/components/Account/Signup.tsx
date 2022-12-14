@@ -1,7 +1,7 @@
 import React, { useState, useEffect, FormEvent } from "react";
 import { useLazyQuery } from "@apollo/client";
-import { Button, Typography, TextField } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { Button, Typography, TextField } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 import { useSnackbar } from "notistack";
 import { useNavigatorOnline } from "@utils";
 
@@ -130,6 +130,7 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
 
       <form onSubmit={handleSubmit}>
         <TextField
+          variant="standard"
           value={username}
           onChange={e => {
             setUsername(e.target.value);
@@ -139,9 +140,9 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
           type={"text"}
           helperText={usernameErrorMessage}
           margin="normal"
-          fullWidth
-        />
+          fullWidth />
         <TextField
+          variant="standard"
           value={password}
           onChange={e => {
             setPassword(e.target.value);
@@ -151,9 +152,9 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
           type={"password"}
           helperText={passwordErrorMessage}
           margin="normal"
-          fullWidth
-        />
+          fullWidth />
         <TextField
+          variant="standard"
           value={confirmPassword}
           onChange={e => {
             setConfirmPassword(e.target.value);
@@ -163,8 +164,7 @@ const Signup: React.FC<Props> = ({ onSuccess, onCancel, goToLogin }) => {
           type={"password"}
           helperText={confirmPasswordErrorMessage}
           margin="normal"
-          fullWidth
-        />
+          fullWidth />
 
         <div className={classes.bottomMessage}>
           <span className={classes.errorMessage}>{getErrorMessage()}</span>

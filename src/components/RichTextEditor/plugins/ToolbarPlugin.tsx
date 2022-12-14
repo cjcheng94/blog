@@ -60,7 +60,7 @@ import {
   Title as TitleIcon,
   Undo as UndoIcon,
   Redo as RedoIcon
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import {
   Button,
   Divider,
@@ -74,9 +74,10 @@ import {
   InputAdornment,
   IconButton,
   useScrollTrigger
-} from "@material-ui/core";
-import ToggleButton from "@material-ui/lab/ToggleButton";
-import { makeStyles, withStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import ToggleButton from "@mui/material/ToggleButton";
+import makeStyles from "@mui/styles/makeStyles";
+import withStyles from "@mui/styles/withStyles";
 import { useSnackbar } from "notistack";
 
 import { uploadImage } from "../../../api/imgur";
@@ -107,6 +108,11 @@ const useStyles = makeStyles(theme => ({
       {
         margin: "4px"
       }
+  },
+  historyButton: {
+    "&.Mui-disabled": {
+      border: "none"
+    }
   },
   controlsSlideUp: {
     top: 16
@@ -427,7 +433,7 @@ const LinkEditor = ({ editor }: { editor: LexicalEditor }) => {
           InputProps={{
             endAdornment: (
               <InputAdornment position="start">
-                <IconButton onClick={insertLink}>
+                <IconButton onClick={insertLink} size="large">
                   <CheckIcon />
                 </IconButton>
               </InputAdornment>
@@ -562,9 +568,11 @@ const ToolbarPlugin = () => {
     [activeEditor, selectedElementKey]
   );
 
-  const handleInlineStyleToggle = (e: React.MouseEvent<HTMLButtonElement>) => {
-    const formatType = e.currentTarget.value as FormatType;
-    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, formatType);
+  const handleInlineStyleToggle = (
+    e: React.MouseEvent<HTMLElement>,
+    value: FormatType
+  ) => {
+    activeEditor.dispatchCommand(FORMAT_TEXT_COMMAND, value);
   };
 
   const handleUndo = () => {
@@ -638,6 +646,7 @@ const ToolbarPlugin = () => {
         onMouseDown={preventDefault}
         onClick={handleUndo}
         disabled={!canUndo}
+        className={classes.historyButton}
       >
         <UndoIcon />
       </ToggleButton>
@@ -648,6 +657,7 @@ const ToolbarPlugin = () => {
         onMouseDown={preventDefault}
         onClick={handleRedo}
         disabled={!canRedo}
+        className={classes.historyButton}
       >
         <RedoIcon />
       </ToggleButton>

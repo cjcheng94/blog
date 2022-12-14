@@ -7,10 +7,10 @@ import {
   IconButton,
   Button,
   LinearProgress
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
-import { Search, Close } from "@material-ui/icons";
+import { Search, Close } from "@mui/icons-material";
 import { useHistory } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { searchOverlayVar, drawerVar } from "../api/cache";
@@ -40,7 +40,7 @@ const useStyles = makeStyles(theme => ({
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen
     }),
-    [theme.breakpoints.down("xs")]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0
     }
   },
@@ -65,9 +65,7 @@ const useStyles = makeStyles(theme => ({
     width: "80%",
     margin: "auto",
     [theme.breakpoints.down("sm")]: {
-      width: "100%"
-    },
-    [theme.breakpoints.down("xs")]: {
+      width: "100%",
       padding: 24
     }
   },
@@ -180,7 +178,7 @@ const SearchOverlay = () => {
             size="small"
             key={tag._id}
             label={tag.name}
-            variant={isTagSelected(tag._id) ? "default" : "outlined"}
+            variant={isTagSelected(tag._id) ? "filled" : "outlined"}
             color={isTagSelected(tag._id) ? "primary" : "default"}
             onClick={handleTagClick(tag._id)}
             className={classes.chip}
@@ -209,6 +207,7 @@ const SearchOverlay = () => {
               color="inherit"
               onClick={hideSelf}
               className={classes.closeButton}
+              size="large"
             >
               <Close />
             </IconButton>
@@ -219,6 +218,7 @@ const SearchOverlay = () => {
               </div>
               <TextField
                 autoFocus
+                variant="standard"
                 className={classes.input}
                 label="Search"
                 value={searchTerm}

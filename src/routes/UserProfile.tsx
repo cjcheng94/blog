@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment } from "react";
 import { useLocation, useRouteMatch } from "react-router-dom";
 import { useQuery } from "@apollo/client";
-import { Typography } from "@material-ui/core";
+import { Typography } from "@mui/material";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 import { GET_USER_POSTS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";

@@ -3,7 +3,7 @@ import orderBy from "lodash/orderBy";
 import { useHistory } from "react-router-dom";
 import { Post, Draft } from "PostTypes";
 import { ArticleCard, PaginationLink } from "@components";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from '@mui/styles/makeStyles';
 import { useReactiveVar } from "@apollo/client";
 import { sortLatestFirstVar } from "../../api/cache";
 
@@ -12,7 +12,7 @@ const useStyles = makeStyles(theme => ({
     display: "grid",
     gap: 24,
     gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-    [theme.breakpoints.down("sm")]: {
+    [theme.breakpoints.down('md')]: {
       gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
     }
   }

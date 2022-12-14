@@ -2,7 +2,7 @@ import React, { useState, Fragment } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { useSnackbar } from "notistack";
-import { makeStyles } from "@material-ui/core/styles";
+import makeStyles from "@mui/styles/makeStyles";
 import {
   Tooltip,
   AppBar,
@@ -20,7 +20,7 @@ import {
   ListItemText,
   ListItemIcon,
   useScrollTrigger
-} from "@material-ui/core";
+} from "@mui/material";
 import {
   Edit,
   Label,
@@ -33,7 +33,7 @@ import {
   LibraryBooks,
   Menu as MenuIcon,
   Drafts as DraftIcon
-} from "@material-ui/icons";
+} from "@mui/icons-material";
 import {
   darkModeVar,
   searchOverlayVar,
@@ -54,7 +54,7 @@ import { GET_ALL_TAGS } from "../api/gqlDocuments";
 import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => {
-  const isDarkTheme = theme.palette.type === "dark";
+  const isDarkTheme = theme.palette.mode === "dark";
   const drawerWidth = 240;
 
   return {
@@ -63,9 +63,20 @@ const useStyles = makeStyles(theme => {
     },
     brand: {
       fontFamily: "Notable, sans-serif",
-      fontSize: "2.4rem",
+      fontSize: "3rem",
       textDecorationLine: "none",
-      marginTop: "-11px"
+      marginTop: "-11px",
+      backgroundColor: "rgb(0,22,153)",
+      background:
+        "linear-gradient(21deg, rgba(0,22,153,1) 0%, rgba(0,99,153,1) 47%, rgba(0,240,205,1) 100%)",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+      backgroundPosition: "center",
+
+      backgroundClip: "text",
+      "-webkit-background-clip": "text",
+      color: isDarkTheme ? "inherit" : "transparent"
+
       // textShadow:
       //   "0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
     },
@@ -82,7 +93,7 @@ const useStyles = makeStyles(theme => {
     },
     drawerPaper: {
       width: drawerWidth,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         width: "100%"
       }
     },
@@ -110,7 +121,7 @@ const useStyles = makeStyles(theme => {
     appBarShift: {
       width: `calc(100% - ${drawerWidth}px)`,
       marginLeft: drawerWidth,
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         width: "initial",
         marginLeft: 0
       }
@@ -118,7 +129,7 @@ const useStyles = makeStyles(theme => {
     appBarSlideUp: {
       boxShadow: "none",
       transform: "translateY(-64px)",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         transform: "translateY(-56px)"
       }
     },
@@ -131,7 +142,7 @@ const useStyles = makeStyles(theme => {
     },
     hideXsUp: {
       display: "none",
-      [theme.breakpoints.down("xs")]: {
+      [theme.breakpoints.down("sm")]: {
         display: "initial"
       }
     },
@@ -343,6 +354,7 @@ const Header = () => {
               onClick={setShowDrawer(true)}
               edge="start"
               className={menuButtonClass}
+              size="large"
             >
               <MenuIcon />
             </IconButton>
@@ -364,6 +376,7 @@ const Header = () => {
                 aria-haspopup="true"
                 color="inherit"
                 onClick={toggleSearchOverlay}
+                size="large"
               >
                 <Search />
               </IconButton>
@@ -373,6 +386,7 @@ const Header = () => {
                 aria-haspopup="true"
                 color="inherit"
                 onClick={toggleDarkMode}
+                size="large"
               >
                 <Brightness4 />
               </IconButton>
@@ -383,6 +397,7 @@ const Header = () => {
                   aria-haspopup="true"
                   color="inherit"
                   onClick={showMenu}
+                  size="large"
                 >
                   <AccountCircle />
                 </IconButton>
@@ -395,7 +410,7 @@ const Header = () => {
               >
                 {isAuthenticated ? (
                   <MenuList>
-                    <MenuItem button={false}>
+                    <MenuItem>
                       <AccountCircle className={classes.menuIcon} />
                       <span>{currentUsername}</span>
                     </MenuItem>
@@ -450,7 +465,7 @@ const Header = () => {
         }}
       >
         <div className={classes.drawerHeader}>
-          <IconButton onClick={setShowDrawer(false)}>
+          <IconButton onClick={setShowDrawer(false)} size="large">
             <ChevronLeft />
           </IconButton>
         </div>

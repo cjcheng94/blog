@@ -8,21 +8,21 @@ import {
   Slide,
   IconButton,
   CircularProgress
-} from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+} from "@mui/material";
+import makeStyles from "@mui/styles/makeStyles";
 
-import { Label, Delete } from "@material-ui/icons";
-import { TransitionProps } from "@material-ui/core/transitions";
+import { Label, Delete } from "@mui/icons-material";
+import { TransitionProps } from "@mui/material/transitions";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_TAGS, DELETE_TAG, CREATE_TAG } from "../../api/gqlDocuments";
 import { ErrorAlert, NewTagInput } from "@components";
 import { Tag } from "PostTypes";
 
 const Transition = React.forwardRef(function Transition(
-  props: TransitionProps & { children?: React.ReactElement<any, any> },
+  props: TransitionProps & { children: React.ReactElement<any, any> },
   ref: React.Ref<unknown>
 ) {
-  return <Slide direction="up" {...props} />;
+  return <Slide direction="up" ref={ref} {...props} />;
 });
 
 const useStyles = makeStyles(theme => ({
@@ -129,6 +129,7 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
             disabled={!isHovered || deleteTagLoading}
             className={classes.iconButton}
             onClick={handleDelete(tag._id)}
+            size="large"
           >
             {isHovered ? <Delete /> : <Label />}
           </IconButton>

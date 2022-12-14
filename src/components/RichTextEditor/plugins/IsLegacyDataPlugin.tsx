@@ -2,8 +2,8 @@ import React, { useEffect } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { useInitialEffect } from "@utils";
 import { useSnackbar } from "notistack";
-import { IconButton } from "@material-ui/core";
-import { Close } from "@material-ui/icons";
+import { IconButton } from "@mui/material";
+import { Close } from "@mui/icons-material";
 
 const IsLegacyDataPlugin = ({
   initialContent

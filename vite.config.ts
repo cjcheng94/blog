@@ -7,8 +7,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   build: {
-    outDir: "build",
-    sourcemap: true
+    outDir: "build"
   },
   server: {
     port: 3000
@@ -35,11 +34,7 @@ export default defineConfig({
           [
             "babel-plugin-direct-import",
             {
-              modules: [
-                "@material-ui/lab",
-                "@material-ui/core",
-                "@material-ui/icons"
-              ]
+              modules: ["@mui/material", "@mui/icons-material"]
             }
           ]
         ]

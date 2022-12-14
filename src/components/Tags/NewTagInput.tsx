@@ -1,8 +1,8 @@
 import React, { useState } from "react";
-import { TextField, IconButton } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
+import { TextField, IconButton } from "@mui/material";
+import makeStyles from '@mui/styles/makeStyles';
 
-import { Check, Close } from "@material-ui/icons";
+import { Check, Close } from "@mui/icons-material";
 
 const useStyles = makeStyles(theme => ({
   wrapper: {
@@ -88,7 +88,7 @@ const NewTagInput: React.FC<TagRowProps> = ({
         onClick={() => {
           setShowInout(prevShow => !prevShow);
         }}
-      >
+        size="large">
         <Close />
       </IconButton>
       <div className={tagContainerClass}>
@@ -112,7 +112,7 @@ const NewTagInput: React.FC<TagRowProps> = ({
           onClick={() => {
             onSubmit(newTagName);
           }}
-        >
+          size="large">
           <Check />
         </IconButton>
       </div>
