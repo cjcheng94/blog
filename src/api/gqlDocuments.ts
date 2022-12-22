@@ -257,6 +257,7 @@ export const GET_DRAFT_BY_ID = gql`
       author
       content
       contentText
+      thumbnailUrl
       date
       tagIds
       tags {
@@ -276,6 +277,7 @@ export const GET_DRAFT_BY_POSTID = gql`
       author
       content
       contentText
+      thumbnailUrl
       date
       tagIds
       tags {
@@ -295,6 +297,7 @@ export const GET_USER_DRAFTS = gql`
       author
       content
       contentText
+      thumbnailUrl
       date
       tagIds
       tags {
@@ -310,6 +313,7 @@ export const CREATE_DRAFT = gql`
     $title: String!
     $content: String!
     $contentText: String!
+    $thumbnailUrl: String
     $tagIds: [ID]!
     $postId: ID
   ) {
@@ -317,6 +321,7 @@ export const CREATE_DRAFT = gql`
       title: $title
       content: $content
       contentText: $contentText
+      thumbnailUrl: $thumbnailUrl
       tagIds: $tagIds
       postId: $postId
     ) {
@@ -326,6 +331,7 @@ export const CREATE_DRAFT = gql`
       author
       content
       contentText
+      thumbnailUrl
       date
       tagIds
       tags {
@@ -342,6 +348,7 @@ export const UPDATE_DRAFT = gql`
     $title: String!
     $content: String!
     $contentText: String!
+    $thumbnailUrl: String
     $tagIds: [ID]!
     $postId: ID
   ) {
@@ -350,6 +357,8 @@ export const UPDATE_DRAFT = gql`
       title: $title
       content: $content
       contentText: $contentText
+      thumbnailUrl: $thumbnailUrl
+
       tagIds: $tagIds
       postId: $postId
     ) {
@@ -359,6 +368,7 @@ export const UPDATE_DRAFT = gql`
       author
       content
       contentText
+      thumbnailUrl
       date
       tagIds
       tags {
