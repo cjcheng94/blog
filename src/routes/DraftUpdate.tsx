@@ -3,12 +3,14 @@ import { Link, useHistory, useRouteMatch } from "react-router-dom";
 import { useQuery, useMutation, useApolloClient } from "@apollo/client";
 import debounce from "lodash/debounce";
 import { TextField, Button, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import { useSnackbar } from "notistack";
 
 import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
 import { useNavigatorOnline } from "@utils";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
+import { uploadImage } from "../api/imgur";
+
 import {
   GET_ALL_POSTS,
   CREATE_NEW_POST,
@@ -32,6 +34,19 @@ const useStyles = makeStyles(theme => ({
     "& input": {
       fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif"
     }
+  },
+  thumbnailButton: {
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
+  },
+  input: {
+    display: "none"
+  },
+  thumbnail: {
+    display: "block",
+    margin: "auto",
+    marginBottom: theme.spacing(1),
+    maxWidth: "100%"
   }
 }));
 
@@ -40,6 +55,7 @@ const DraftUpdate = () => {
   const [title, setTitle] = useState("");
   const [content, setRichData] = useState("");
   const [plainText, setPlainText] = useState("");
+  const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
@@ -118,6 +134,7 @@ const DraftUpdate = () => {
     title: string;
     content: string;
     contentText: string;
+    thumbnailUrl: string;
     tagIds: string[];
   };
 
@@ -158,11 +175,13 @@ const DraftUpdate = () => {
   // Use draft data to initialize our form
   useEffect(() => {
     if (getDraftCalled && getDraftData) {
-      const { title, content, contentText, tagIds } = getDraftData.getDraftById;
+      const { title, content, contentText, tagIds, thumbnailUrl } =
+        getDraftData.getDraftById;
       setTitle(title);
       setRichData(content);
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
+      setThumbnailUrl(thumbnailUrl);
     }
   }, [getDraftCalled, getDraftData, cachedDraftData]);
 
@@ -175,8 +194,9 @@ const DraftUpdate = () => {
       setRichData(content);
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
+      setThumbnailUrl(thumbnailUrl);
     }
-  }, [cachedDraftData, isOnline]);
+  }, [cachedDraftData, isOnline, thumbnailUrl]);
 
   // If user changed content, call debounced updateHandler to update draft
   useEffect(() => {
@@ -190,7 +210,8 @@ const DraftUpdate = () => {
         title,
         content,
         contentText: plainText,
-        tagIds: selectedTagIds
+        tagIds: selectedTagIds,
+        thumbnailUrl
       });
     }
   }, [
@@ -200,7 +221,8 @@ const DraftUpdate = () => {
     content,
     selectedTagIds,
     getDraftData,
-    debouncedUpdateDraft
+    debouncedUpdateDraft,
+    thumbnailUrl
   ]);
 
   // Create post success
@@ -275,6 +297,7 @@ const DraftUpdate = () => {
         variables: {
           title,
           content,
+          thumbnailUrl,
           contentText: plainText,
           tagIds: selectedTagIds
         }
@@ -296,6 +319,37 @@ const DraftUpdate = () => {
       );
     }
     return <div>Loading content...</div>;
+  };
+
+  const handleImageInputChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const handleImage = async (file: File) => {
+      const { success, link, errorMessage } = await uploadImage(file);
+      if (success) {
+        setThumbnailUrl(link);
+        return;
+      }
+      enqueueSnackbar(errorMessage, { variant: "error" });
+    };
+
+    if (event.target.files) {
+      const file = event.target.files[0];
+      if (!file) {
+        return;
+      }
+      // File size limit of 5 MB
+      if (file.size > 5 * 1024 * 1024) {
+        enqueueSnackbar("File size exceeded 5MB limit", {
+          variant: "warning"
+        });
+      } else {
+        handleImage(file);
+      }
+    }
+    // reset input value, otherwise repeated upload of the same image won't trigger
+    // change event
+    event.target.value = "";
   };
 
   const handleTagsChange = useCallback((tag: any) => {
@@ -333,6 +387,23 @@ const DraftUpdate = () => {
           fullWidth
         />
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
+        <label>
+          <Button className={classes.thumbnailButton} component="span">
+            Upload thumbnail
+          </Button>
+          <input
+            type="file"
+            accept="image/*"
+            className={classes.input}
+            onChange={handleImageInputChange}
+          />
+        </label>
+        <Button color="error" onClick={() => setThumbnailUrl("")}>
+          Remove Thumbnail
+        </Button>
+        {thumbnailUrl && (
+          <img src={thumbnailUrl} className={classes.thumbnail} />
+        )}
         {renderContentField()}
         <Button
           className={classes.button}

@@ -3,7 +3,7 @@ import { Link, useRouteMatch, useHistory } from "react-router-dom";
 import { useQuery, useMutation } from "@apollo/client";
 import debounce from "lodash/debounce";
 import { TextField, Button, Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import { useSnackbar } from "notistack";
 
 import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
@@ -56,6 +56,7 @@ type DraftVariables = {
   title: string;
   content: string;
   contentText: string;
+  thumbnailUrl: string;
   tagIds: string[];
 };
 
@@ -230,6 +231,7 @@ const PostUpdate = () => {
         postId,
         title,
         content,
+        thumbnailUrl,
         contentText: plainText,
         tagIds: selectedTagIds
       });
@@ -241,7 +243,8 @@ const PostUpdate = () => {
     selectedTagIds,
     draftId,
     debouncedUpdateDraft,
-    postId
+    postId,
+    thumbnailUrl
   ]);
 
   // Update success
@@ -378,12 +381,13 @@ const PostUpdate = () => {
   };
 
   const applyDraft = () => {
-    const { title, content, contentText, tagIds } =
+    const { title, content, contentText, tagIds, thumbnailUrl } =
       getDraftByPostIdData.getDraftByPostId;
     setTitle(title);
     setRichData(content);
     setPlainText(contentText);
     setSelectedTagIds(tagIds);
+    setThumbnailUrl(thumbnailUrl);
     setEditorKey(2);
     setShowApplyDraftDialog(false);
   };
@@ -400,7 +404,6 @@ const PostUpdate = () => {
         <Typography variant="h4" gutterBottom align="center">
           Edit Your Story
         </Typography>
-
         <TextField
           className={classes.title}
           value={title}
@@ -426,6 +429,9 @@ const PostUpdate = () => {
             onChange={handleImageInputChange}
           />
         </label>
+        <Button color="error" onClick={() => setThumbnailUrl("")}>
+          Remove Thumbnail
+        </Button>
         {thumbnailUrl && (
           <img src={thumbnailUrl} className={classes.thumbnail} />
         )}
@@ -438,7 +444,6 @@ const PostUpdate = () => {
         >
           Submit
         </Button>
-
         <Button
           className={classes.button}
           variant="contained"
