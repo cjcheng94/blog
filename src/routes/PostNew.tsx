@@ -136,6 +136,7 @@ const PostNew = () => {
     title: string;
     content: string;
     contentText: string;
+    thumbnailUrl: string;
     tagIds: string[];
   };
   const updateDraftHandler = (draftVariables: DraftVariables) => {
@@ -179,6 +180,7 @@ const PostNew = () => {
       debouncedUpdateDraft({
         _id: createdDraftId,
         title,
+        thumbnailUrl,
         content: richData,
         contentText: plainText,
         tagIds: selectedTagIds
@@ -194,7 +196,8 @@ const PostNew = () => {
     createdDraftId,
     debouncedUpdateDraft,
     createDraftLoading,
-    createDraft
+    createDraft,
+    thumbnailUrl
   ]);
 
   // Use custom hook to delete empty draft when user leaves this route
@@ -434,6 +437,9 @@ const PostNew = () => {
             onChange={handleImageInputChange}
           />
         </label>
+        <Button color="error" onClick={() => setThumbnailUrl("")}>
+          Remove Thumbnail
+        </Button>
         {thumbnailUrl && (
           <img src={thumbnailUrl} className={classes.thumbnail} />
         )}

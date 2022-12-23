@@ -404,7 +404,6 @@ const PostUpdate = () => {
         <Typography variant="h4" gutterBottom align="center">
           Edit Your Story
         </Typography>
-
         <TextField
           className={classes.title}
           value={title}
@@ -430,6 +429,9 @@ const PostUpdate = () => {
             onChange={handleImageInputChange}
           />
         </label>
+        <Button color="error" onClick={() => setThumbnailUrl("")}>
+          Remove Thumbnail
+        </Button>
         {thumbnailUrl && (
           <img src={thumbnailUrl} className={classes.thumbnail} />
         )}
@@ -442,7 +444,6 @@ const PostUpdate = () => {
         >
           Submit
         </Button>
-
         <Button
           className={classes.button}
           variant="contained"

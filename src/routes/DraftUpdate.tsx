@@ -398,6 +398,9 @@ const DraftUpdate = () => {
             onChange={handleImageInputChange}
           />
         </label>
+        <Button color="error" onClick={() => setThumbnailUrl("")}>
+          Remove Thumbnail
+        </Button>
         {thumbnailUrl && (
           <img src={thumbnailUrl} className={classes.thumbnail} />
         )}
