@@ -1,6 +1,6 @@
 import React from "react";
 import { Theme } from "@mui/material/styles";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import { Typography } from "@mui/material";
 import { useLoadImage } from "@utils";
 
@@ -12,7 +12,7 @@ type Props = {
 const useStyles = makeStyles<Theme, { loadedUrl: string | null; text: string }>(
   theme => ({
     title: {
-      fontFamily: " Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
+      fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
       fontWeight: 600,
       fontSize: "4em",
       color: "transparent", // used to prop up space
@@ -41,9 +41,9 @@ const useStyles = makeStyles<Theme, { loadedUrl: string | null; text: string }>(
         "-webkit-background-clip": "text",
         color: "transparent",
         filter: ({ loadedUrl }) =>
-          loadedUrl ? "invert(1) drop-shadow(1px 1px 0px black)" : "none"
+          loadedUrl ? "drop-shadow(1px 1px 0px black)" : "none"
       },
-      [theme.breakpoints.down('md')]: {
+      [theme.breakpoints.down("md")]: {
         fontSize: "3em"
       }
     }
