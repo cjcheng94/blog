@@ -7,7 +7,6 @@ import {
   Tooltip,
   AppBar,
   Toolbar,
-  Typography,
   IconButton,
   LinearProgress,
   Menu,
@@ -47,7 +46,8 @@ import {
   CustomDialog,
   EditTagDialog,
   ErrorAlert,
-  AutosaveSpinner
+  AutosaveSpinner,
+  Logo
 } from "@components";
 import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
@@ -60,25 +60,6 @@ const useStyles = makeStyles(theme => {
   return {
     toolBar: {
       justifyContent: "space-between"
-    },
-    brand: {
-      fontFamily: "Notable, sans-serif",
-      fontSize: "3rem",
-      textDecorationLine: "none",
-      marginTop: "-11px",
-      backgroundColor: "rgb(0,22,153)",
-      background:
-        "linear-gradient(21deg, rgba(0,22,153,1) 0%, rgba(0,99,153,1) 47%, rgba(0,240,205,1) 100%)",
-      backgroundSize: "cover",
-      backgroundRepeat: "no-repeat",
-      backgroundPosition: "center",
-
-      backgroundClip: "text",
-      "-webkit-background-clip": "text",
-      color: isDarkTheme ? "inherit" : "transparent"
-
-      // textShadow:
-      //   "0 1px 0 #ccc, 0 2px 0 #c9c9c9, 0 3px 0 #bbb,0 4px 0 #b9b9b9,0 5px 0 #aaa,0 6px 1px rgba(0,0,0,.1), 0 0 5px rgba(0,0,0,.1), 0 1px 3px rgba(0,0,0,.3), 0 3px 5px rgba(0,0,0,.2), 0 5px 10px rgba(0,0,0,.25), 0 10px 10px rgba(0,0,0,.2), 0 20px 20px rgba(0,0,0,.15)"
     },
     //A transparent place holder for progress bar,
     //avoids page jumping issues
@@ -320,7 +301,6 @@ const Header = () => {
     );
   };
 
-  const logo = window.innerWidth < 400 ? "B!" : "BLOG!";
   const sortButtonText = sortLatestFirst ? "Latest first" : "Oldest first";
 
   // trigger is true when user scrolls down, false when user scrolls up
@@ -358,15 +338,7 @@ const Header = () => {
             >
               <MenuIcon />
             </IconButton>
-            <Typography
-              color="inherit"
-              variant="h4"
-              className={classes.brand}
-              component={Link}
-              to="/"
-            >
-              {logo}
-            </Typography>
+            <Logo />
           </div>
           {/* Show different sets of buttons based on whether user is signed in or not*/}
           <div id="conditional-buttons">

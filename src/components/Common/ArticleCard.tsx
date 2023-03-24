@@ -1,9 +1,8 @@
-import React, { useState, useMemo } from "react";
+import React, { useMemo } from "react";
 import { Tag } from "PostTypes";
 import { DisplayTag, InvertedTitle } from "@components";
-import { Card, CardMedia, Typography, Theme } from "@mui/material";
+import { Card, Typography, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-import { useLoadImage } from "@utils";
 
 const useStyles = makeStyles((theme: Theme) => ({
   card: {
@@ -47,12 +46,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     "-webkit-line-clamp": 3,
     "-webkit-box-orient": "vertical"
   },
-  thumbnailedContent: {
-    color: "#fff",
-    backgroundColor: "rgba(0, 0, 0, 0.2)",
-    backdropFilter: "blur(5px)",
-    "-webkit-backdrop-filter": "blur(5px)"
-  },
   tagsContainer: {
     position: "relative",
     bottom: -16,
@@ -67,10 +60,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     position: "absolute",
     top: 0,
     filter: "blur(3px)"
-  },
-  fallbackMedia: {
-    background:
-      "radial-gradient(circle, rgba(1,65,255,0.34) -30%, rgba(0,0,0,0.06) 128%)"
   }
 }));
 
@@ -119,60 +108,29 @@ const renderTags = (tags: Tag[]) => (
   </>
 );
 
-const ThumbnailedCard = (props: Props) => {
+const ArticleCard: React.FC<Props> = props => {
   const { title, contentText, tags, onClick, thumbnailUrl } = props;
-
   const classes = useStyles();
-  const loadedThumbnailUrl = useLoadImage(thumbnailUrl as string);
-
   const memoizedTags = useMemo(() => renderTags(tags), [tags]);
-
-  const contentClass = `${classes.content} ${classes.thumbnailedContent}`;
-  const fallbackMediaClass = `${classes.media} ${classes.fallbackMedia}`;
 
   return (
     <Card onClick={onClick} className={classes.card}>
-      {loadedThumbnailUrl ? (
-        <CardMedia image={loadedThumbnailUrl} className={classes.media} />
-      ) : (
-        <div className={fallbackMediaClass} />
-      )}
       <div className={classes.cardContainer}>
-        <InvertedTitle
-          text={getTruncatedTitle(title, 32)}
-          imageUrl={thumbnailUrl as string}
-        />
-        <Typography className={contentClass}>{contentText}</Typography>
-      </div>
-      <div className={classes.tagsContainer}>{memoizedTags}</div>
-    </Card>
-  );
-};
-
-const PlainCard = (props: Props) => {
-  const classes = useStyles();
-  const { title, contentText, tags, onClick } = props;
-
-  const memoizedTags = useMemo(() => renderTags(tags), [tags]);
-
-  return (
-    <Card className={classes.card} onClick={onClick}>
-      <div className={classes.cardContainer}>
-        <Typography variant="h5" className={classes.title} title={title}>
-          {getTruncatedTitle(title, 32)}
-        </Typography>
+        {thumbnailUrl ? (
+          <InvertedTitle
+            text={getTruncatedTitle(title, 32)}
+            imageUrl={thumbnailUrl as string}
+          />
+        ) : (
+          <Typography variant="h5" className={classes.title} title={title}>
+            {getTruncatedTitle(title, 32)}
+          </Typography>
+        )}
         <Typography className={classes.content}>{contentText}</Typography>
       </div>
       <div className={classes.tagsContainer}>{memoizedTags}</div>
     </Card>
   );
 };
-
-const ArticleCard: React.FC<Props> = props =>
-  props.thumbnailUrl ? (
-    <ThumbnailedCard {...props} />
-  ) : (
-    <PlainCard {...props} />
-  );
 
 export default ArticleCard;
