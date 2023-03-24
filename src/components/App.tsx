@@ -41,7 +41,8 @@ const getCustomTheme = (mode: ThemeType) => {
             // type: mode,
             primary: { main: "#006399" },
             secondary: { main: "#67587a" },
-            error: { main: "#ba1a1a" }
+            error: { main: "#ba1a1a" },
+            background: { default: "#f7f7f7" }
           }
         : {
             // palette values for dark mode
