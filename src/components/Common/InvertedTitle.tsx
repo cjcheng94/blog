@@ -1,3 +1,14 @@
+/*
+  DEPRECATED partially
+  The card's background image is blurred, i.e. CardMedia,
+  but we want the title to be both inverted and NOT BLURRED,
+  this rules out mix-blend-mode: difference,
+  because then the title will also be blurred
+  And if we just add a second CardMedia as a container for title,
+  other children(content and tags) will also be unnecessarily affected
+  using::before pseudo element avoids these pitfalls and doesn't break the layout
+ */
+
 import React from "react";
 import { Theme } from "@mui/material/styles";
 import makeStyles from "@mui/styles/makeStyles";
@@ -49,16 +60,6 @@ const useStyles = makeStyles<Theme, { loadedUrl: string | null; text: string }>(
     }
   })
 );
-
-// The card's background image is blurred, i.e. CardMedia,
-// but we want the title to be both inverted and NOT BLURRED,
-// this rules out mix-blend-mode: difference,
-// because then the title will also be blurred
-
-// And if we just add a second CardMedia as a container for title,
-// other children(content and tags) will also be unnecessarily affected
-
-// using ::before pseudo element avoids these pitfalls and doesn't break the layout
 
 const InvertedTitle = (props: Props) => {
   const { imageUrl, text } = props;
