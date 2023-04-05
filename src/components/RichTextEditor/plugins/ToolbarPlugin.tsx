@@ -584,11 +584,11 @@ const ToolbarPlugin = () => {
 
   const insertLink = useCallback(() => {
     if (!isLink) {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
     } else {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
-  }, [editor, isLink]);
+  }, [activeEditor, isLink]);
 
   const insertImage = useCallback(
     (payload: InsertImagePayload) => {
