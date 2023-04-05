@@ -677,6 +677,8 @@ const ToolbarPlugin = () => {
 
       {blockType === "code" ? (
         <Select
+          size="small"
+          variant="standard"
           value={codeLanguage}
           onChange={onCodeLanguageSelect}
           className={classes.languageSelect}
