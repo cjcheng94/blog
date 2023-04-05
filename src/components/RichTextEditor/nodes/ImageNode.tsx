@@ -17,6 +17,7 @@ import { LexicalNestedComposer } from "@lexical/react/LexicalNestedComposer";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { useLexicalNodeSelection } from "@lexical/react/useLexicalNodeSelection";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
 import { mergeRegister } from "@lexical/utils";
 import {
   $getNodeByKey,
@@ -382,6 +383,7 @@ function ImageComponent({
                     Enter a caption...
                   </span>
                 }
+                ErrorBoundary={LexicalErrorBoundary}
               />
             </LexicalNestedComposer>
           </div>

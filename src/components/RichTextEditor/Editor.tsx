@@ -10,6 +10,8 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+
 import ImagesPlugin from "./plugins/ImagePlugin";
 
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
@@ -115,6 +117,7 @@ const Editor: React.FC<EditorProps> = props => {
           <RichTextPlugin
             contentEditable={<ContentEditable />}
             placeholder={<div>Enter some text...</div>}
+            ErrorBoundary={LexicalErrorBoundary}
           />
           <CodeHighlightPlugin />
           <ListPlugin />
