@@ -105,100 +105,6 @@ function convertImageElement(domNode: Node): null | DOMConversionOutput {
   }
   return null;
 }
-
-// // There is such an ID in the imgMap object, which means this image was
-// // just added by the user, and dosen't yet exist on the backend
-// const imgMap = imageMapVar();
-// const isLocal = Object.keys(imgMap).includes(id);
-
-// function RemoteImage({
-//   altText,
-//   imageRef,
-//   id,
-//   width,
-//   height,
-//   maxWidth
-// }: {
-//   altText: string;
-//   height: "inherit" | number;
-//   imageRef: { current: null | HTMLImageElement };
-//   maxWidth: number | string;
-//   id: string;
-//   width: "inherit" | number | string;
-// }): JSX.Element {
-//   const { loading, failed, data: imgUrl } = useGetImageUrl(id);
-
-//   if (loading) return <div>LOADING</div>;
-
-//   if (failed) return <div>ERROR</div>;
-
-//   if (imgUrl) {
-//     return (
-//       <img
-//         src={imgUrl}
-//         alt={altText}
-//         ref={imageRef}
-//         style={{
-//           height,
-//           maxWidth,
-//           width
-//         }}
-//         draggable="false"
-//       />
-//     );
-//   }
-//   return <div></div>;
-// }
-
-// function LocalImage({
-//   altText,
-//   imageRef,
-//   id,
-//   width,
-//   height,
-//   maxWidth
-// }: {
-//   altText: string;
-//   height: "inherit" | number;
-//   imageRef: { current: null | HTMLImageElement };
-//   maxWidth: number | string;
-//   id: string;
-//   width: "inherit" | number | string;
-// }): JSX.Element {
-//   const imgMap = imageMapVar();
-//   const imgArrayBuffer = imgMap[id];
-
-//   const {
-//     loading,
-//     failed,
-//     data: imgUrl
-//   } = useUploadImage({
-//     fileId: id,
-//     file: imgArrayBuffer
-//   });
-
-//   if (loading) return <div>UPLOADING</div>;
-
-//   if (failed) return <div>ERROR</div>;
-
-//   if (imgUrl) {
-//     return (
-//       <img
-//         src={imgUrl}
-//         alt={altText}
-//         ref={imageRef}
-//         style={{
-//           height,
-//           maxWidth,
-//           width
-//         }}
-//         draggable="false"
-//       />
-//     );
-//   }
-//   return <div></div>;
-// }
-
 const imageCache = new Set();
 
 function useSuspenseImage(src: string) {
@@ -273,11 +179,6 @@ function ImageComponent({
   const classes = useStyles();
 
   const parentEditorEditable = editor.isEditable();
-  const initialCaptionEditor = caption;
-
-  useEffect(() => {
-    initialCaptionEditor.setEditable(parentEditorEditable);
-  }, [initialCaptionEditor, parentEditorEditable]);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -339,27 +240,6 @@ function ImageComponent({
 
   return (
     <Suspense fallback={null}>
-      {/* <div>
-        {isLocal ? (
-          <LocalImage
-            id={id}
-            altText={altText}
-            imageRef={ref}
-            width={width}
-            height={height}
-            maxWidth={maxWidth}
-          />
-        ) : (
-          <RemoteImage
-            id={id}
-            altText={altText}
-            imageRef={ref}
-            width={width}
-            height={height}
-            maxWidth={maxWidth}
-          />
-        )}
-      </div> */}
       <div>
         <LazyImage
           src={src}
@@ -371,7 +251,7 @@ function ImageComponent({
         />
         {showCaption ? (
           <div className={classes.captionContainer}>
-            <LexicalNestedComposer initialEditor={initialCaptionEditor}>
+            <LexicalNestedComposer initialEditor={caption}>
               <LinkPlugin />
               <HistoryPlugin externalHistoryState={historyState} />
               <RichTextPlugin
