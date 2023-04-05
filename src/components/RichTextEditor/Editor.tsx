@@ -10,6 +10,9 @@ import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
+import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
+
 import ImagesPlugin from "./plugins/ImagePlugin";
 
 import { LinkPlugin } from "@lexical/react/LexicalLinkPlugin";
@@ -44,7 +47,7 @@ function onError(error: any) {
 }
 
 type EditorProps = {
-  readOnly?: boolean;
+  editable?: boolean;
   initialContent?: string;
   initialPlainText?: string;
   setContentEmpty?: (isEmpty: boolean) => void;
@@ -54,7 +57,7 @@ type EditorProps = {
 
 const Editor: React.FC<EditorProps> = props => {
   const {
-    readOnly = false,
+    editable = true,
     initialContent,
     initialPlainText,
     setContentEmpty,
@@ -90,7 +93,7 @@ const Editor: React.FC<EditorProps> = props => {
     namespace: "MyEditor",
     theme: EditorTheme,
     onError,
-    readOnly,
+    editable,
     editorState: initializeEditor,
     nodes: [
       HeadingNode,
@@ -111,10 +114,11 @@ const Editor: React.FC<EditorProps> = props => {
     <div className={`myEditor ${darkModeClass}`}>
       <LexicalComposer initialConfig={initialConfig}>
         <SharedHistoryContext>
-          {!readOnly && <ToolbarPlugin />}
+          {editable && <ToolbarPlugin />}
           <RichTextPlugin
             contentEditable={<ContentEditable />}
             placeholder={<div>Enter some text...</div>}
+            ErrorBoundary={LexicalErrorBoundary}
           />
           <CodeHighlightPlugin />
           <ListPlugin />
@@ -129,6 +133,7 @@ const Editor: React.FC<EditorProps> = props => {
           <AutoFocusPlugin />
           <IsLegacyDataPlugin initialContent={initialContent} />
           <ImagesPlugin />
+          <TabIndentationPlugin />
         </SharedHistoryContext>
       </LexicalComposer>
     </div>
