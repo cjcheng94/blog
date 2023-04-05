@@ -19,7 +19,7 @@ import {
   GridSelection,
   NodeSelection
 } from "lexical";
-import { $wrapLeafNodesInElements, $isAtNodeEnd } from "@lexical/selection";
+import { $setBlocksType, $isAtNodeEnd } from "@lexical/selection";
 import {
   $createHeadingNode,
   $createQuoteNode,
@@ -186,7 +186,7 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createParagraphNode());
+          $setBlocksType(selection, () => $createParagraphNode());
         }
       });
     }
@@ -199,7 +199,7 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createHeadingNode("h1"));
+          $setBlocksType(selection, () => $createHeadingNode("h1"));
         }
       });
     }
@@ -212,7 +212,7 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createHeadingNode("h2"));
+          $setBlocksType(selection, () => $createHeadingNode("h2"));
         }
       });
     }
@@ -243,7 +243,7 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createQuoteNode());
+          $setBlocksType(selection, () => $createQuoteNode());
         }
       });
     }
@@ -256,7 +256,7 @@ const BlockOptionsMenu: React.FC<EditorOptionsMenuProps> = ({
         const selection = $getSelection();
 
         if ($isRangeSelection(selection)) {
-          $wrapLeafNodesInElements(selection, () => $createCodeNode());
+          $setBlocksType(selection, () => $createCodeNode());
         }
       });
     }
@@ -584,11 +584,11 @@ const ToolbarPlugin = () => {
 
   const insertLink = useCallback(() => {
     if (!isLink) {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
     } else {
-      editor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
-  }, [editor, isLink]);
+  }, [activeEditor, isLink]);
 
   const insertImage = useCallback(
     (payload: InsertImagePayload) => {
@@ -677,6 +677,8 @@ const ToolbarPlugin = () => {
 
       {blockType === "code" ? (
         <Select
+          size="small"
+          variant="standard"
           value={codeLanguage}
           onChange={onCodeLanguageSelect}
           className={classes.languageSelect}
