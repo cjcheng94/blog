@@ -259,9 +259,11 @@ function ImageComponent({
                   <ContentEditable className={classes.contentEditable} />
                 }
                 placeholder={
-                  <span className={classes.placeholder}>
-                    Enter a caption...
-                  </span>
+                  parentEditorEditable ? (
+                    <span className={classes.placeholder}>
+                      Enter a caption...
+                    </span>
+                  ) : null
                 }
                 ErrorBoundary={LexicalErrorBoundary}
               />
