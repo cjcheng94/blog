@@ -11,6 +11,7 @@ import { ContentEditable } from "@lexical/react/LexicalContentEditable";
 import { HistoryPlugin } from "@lexical/react/LexicalHistoryPlugin";
 import { AutoFocusPlugin } from "@lexical/react/LexicalAutoFocusPlugin";
 import LexicalErrorBoundary from "@lexical/react/LexicalErrorBoundary";
+import { TabIndentationPlugin } from "@lexical/react/LexicalTabIndentationPlugin";
 
 import ImagesPlugin from "./plugins/ImagePlugin";
 
@@ -132,6 +133,7 @@ const Editor: React.FC<EditorProps> = props => {
           <AutoFocusPlugin />
           <IsLegacyDataPlugin initialContent={initialContent} />
           <ImagesPlugin />
+          <TabIndentationPlugin />
         </SharedHistoryContext>
       </LexicalComposer>
     </div>
