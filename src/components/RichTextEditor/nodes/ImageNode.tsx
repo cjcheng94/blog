@@ -33,7 +33,7 @@ import * as React from "react";
 import { useCallback, useEffect, useRef, Suspense } from "react";
 
 import { useSharedHistoryContext } from "../context/SharedHistoryContext";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 const useStyles = makeStyles(theme => ({
   contentEditable: {
@@ -271,12 +271,12 @@ function ImageComponent({
 
   const classes = useStyles();
 
-  const parentEditorReadOnly = editor.isReadOnly();
+  const parentEditorEditable = editor.isEditable();
   const initialCaptionEditor = caption;
 
   useEffect(() => {
-    initialCaptionEditor.setReadOnly(parentEditorReadOnly);
-  }, [initialCaptionEditor, parentEditorReadOnly]);
+    initialCaptionEditor.setEditable(parentEditorEditable);
+  }, [initialCaptionEditor, parentEditorEditable]);
 
   const onDelete = useCallback(
     (payload: KeyboardEvent) => {
@@ -385,10 +385,12 @@ function ImageComponent({
               />
             </LexicalNestedComposer>
           </div>
-        ) : parentEditorReadOnly ? null : (
-          <span className={classes.addCaptionButton} onClick={setShowCaption}>
-            add caption
-          </span>
+        ) : (
+          parentEditorEditable && (
+            <span className={classes.addCaptionButton} onClick={setShowCaption}>
+              add caption
+            </span>
+          )
         )}
       </div>
     </Suspense>

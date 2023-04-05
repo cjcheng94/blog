@@ -14,7 +14,7 @@ import {
   GET_CACHED_POST_FRAGMENT
 } from "../api/gqlDocuments";
 import { Typography, Divider, Button } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import { useSnackbar } from "notistack";
 
 import {
@@ -192,7 +192,7 @@ const PostDetails = () => {
           <img src={thumbnailUrl} className={classes.thumbnail} />
         )}
         <Editor
-          readOnly={true}
+          editable={false}
           initialContent={content}
           initialPlainText={contentText}
         />

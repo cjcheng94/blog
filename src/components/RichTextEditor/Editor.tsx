@@ -44,7 +44,7 @@ function onError(error: any) {
 }
 
 type EditorProps = {
-  readOnly?: boolean;
+  editable?: boolean;
   initialContent?: string;
   initialPlainText?: string;
   setContentEmpty?: (isEmpty: boolean) => void;
@@ -54,7 +54,7 @@ type EditorProps = {
 
 const Editor: React.FC<EditorProps> = props => {
   const {
-    readOnly = false,
+    editable = true,
     initialContent,
     initialPlainText,
     setContentEmpty,
@@ -90,7 +90,7 @@ const Editor: React.FC<EditorProps> = props => {
     namespace: "MyEditor",
     theme: EditorTheme,
     onError,
-    readOnly,
+    editable,
     editorState: initializeEditor,
     nodes: [
       HeadingNode,
@@ -111,7 +111,7 @@ const Editor: React.FC<EditorProps> = props => {
     <div className={`myEditor ${darkModeClass}`}>
       <LexicalComposer initialConfig={initialConfig}>
         <SharedHistoryContext>
-          {!readOnly && <ToolbarPlugin />}
+          {editable && <ToolbarPlugin />}
           <RichTextPlugin
             contentEditable={<ContentEditable />}
             placeholder={<div>Enter some text...</div>}
