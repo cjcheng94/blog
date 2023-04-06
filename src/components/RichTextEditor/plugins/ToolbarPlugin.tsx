@@ -401,7 +401,11 @@ const LinkEditor = ({ editor }: { editor: LexicalEditor }) => {
   }, [editor, updateLinkEditor]);
 
   const insertLink = () => {
-    editor.dispatchCommand(TOGGLE_LINK_COMMAND, linkUrl);
+    editor.dispatchCommand(TOGGLE_LINK_COMMAND, {
+      url: linkUrl,
+      target: "_blank",
+      rel: "noreferrer noopener"
+    });
   };
 
   const handleLinkKeyDown = (event: React.KeyboardEvent) => {
@@ -584,7 +588,11 @@ const ToolbarPlugin = () => {
 
   const insertLink = useCallback(() => {
     if (!isLink) {
-      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, "https://");
+      activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, {
+        url: "https://",
+        target: "_blank",
+        rel: "noreferrer noopener"
+      });
     } else {
       activeEditor.dispatchCommand(TOGGLE_LINK_COMMAND, null);
     }
