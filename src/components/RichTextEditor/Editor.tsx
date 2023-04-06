@@ -32,7 +32,8 @@ import {
   IsLegacyDataPlugin,
   EditorTheme,
   CodeHighlightPlugin,
-  OnChangePlugin
+  OnChangePlugin,
+  ClickableLinkPlugin
 } from "@components";
 import "./style.css";
 import "./prism-night-owl.css";
@@ -122,6 +123,7 @@ const Editor: React.FC<EditorProps> = props => {
           />
           <CodeHighlightPlugin />
           <ListPlugin />
+          <ClickableLinkPlugin editable={editable} />
           <LinkPlugin />
           <OnChangePlugin
             ignoreSelectionChange={true}
