@@ -6,7 +6,7 @@ import {
   useReactiveVar
 } from "@apollo/client";
 import { Link, useHistory, useRouteMatch } from "react-router-dom";
-import moment from "moment";
+
 import {
   GET_CURRENT_POST,
   DELETE_POST,
@@ -152,7 +152,11 @@ const PostDetails = () => {
   const currentUsername = localStorage.getItem("currentUsername");
   const { title, authorInfo, content, contentText, date, tags, thumbnailUrl } =
     post;
-  const postTime = moment(date).format("MMMM Do YYYY, h:mm:ss a");
+  const postTime = new Date(date!).toLocaleString("en-US", {
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
 
   const handleDelete = () => {
     setClickedConfirm(true);
