@@ -1,4 +1,9 @@
-import { defineConfig, PluginOption, splitVendorChunkPlugin } from "vite";
+import {
+  defineConfig,
+  PluginOption,
+  rollupVersion,
+  splitVendorChunkPlugin
+} from "vite";
 import react from "@vitejs/plugin-react";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
@@ -7,8 +12,24 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 export default defineConfig({
   build: {
-    outDir: "build"
+    outDir: "build",
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          react: ["react", "react-router-dom", "react-dom"],
+          mui: ["@mui/material"],
+          muiIcons: ["@mui/icons-material"],
+          muiStyles: ["@mui/styles"],
+          lexical: ["lexical"],
+          apollo: ["@apollo/client"],
+          lodash: ["lodash"],
+          graphql: ["graphql"],
+          prismjs: ["prismjs"]
+        }
+      }
+    }
   },
+
   server: {
     port: 3000
   },
@@ -51,6 +72,7 @@ export default defineConfig({
       }
     }),
     splitVendorChunkPlugin(),
+
     visualizer({ gzipSize: true }) as PluginOption
   ]
 });
