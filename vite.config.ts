@@ -1,9 +1,4 @@
-import {
-  defineConfig,
-  PluginOption,
-  rollupVersion,
-  splitVendorChunkPlugin
-} from "vite";
+import { defineConfig, PluginOption, splitVendorChunkPlugin } from "vite";
 import react from "@vitejs/plugin-react";
 import tsConfigPaths from "vite-tsconfig-paths";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
