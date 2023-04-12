@@ -1,7 +1,7 @@
-import { gql } from "@apollo/client";
+import { gql } from "../gql";
 
 // User Documents
-export const USER_LOGIN = gql`
+export const USER_LOGIN = gql(/* GraphQL */ `
   query userLogin($username: String!, $password: String!) {
     userLogin(username: $username, password: $password) {
       token
@@ -9,41 +9,47 @@ export const USER_LOGIN = gql`
       userId
     }
   }
-`;
+`);
 
-export const USER_SIGNUP = gql`
+export const USER_SIGNUP = gql(/* GraphQL */ `
   query userSignup($username: String!, $password: String!) {
-    userSignup(username: $username, password: $password) {
-      _id
-      username
-    }
+    userSignup(username: $username, password: $password)
   }
-`;
+`);
 
 // Post Documents
-export const GET_ALL_POSTS = gql`
+export const GET_ALL_POSTS = gql(/* GraphQL */ `
   query getAllPosts {
     posts {
-      _id
-      title
-      # content
-      contentText
-      date
-      tagIds
-      thumbnailUrl
-      tags {
-        _id
-        name
+      pageInfo {
+        endCursor
+        hasNextPage
       }
-      authorInfo {
-        _id
-        username
+      edges {
+        cursor
+        node {
+          _id
+          title
+          # content
+          contentText
+          date
+          tagIds
+          thumbnailUrl
+          tags {
+            _id
+            name
+          }
+          authorInfo {
+            _id
+            username
+          }
+        }
       }
     }
   }
-`;
+`);
 
-export const GET_CURRENT_POST = gql`
+export const GET_CURRENT_POST = gql(/* GraphQL */ `
   query getCurrentPost($_id: String!) {
     getPostById(_id: $_id) {
       _id
@@ -63,9 +69,9 @@ export const GET_CURRENT_POST = gql`
       }
     }
   }
-`;
+`);
 
-export const GET_USER_POSTS = gql`
+export const GET_USER_POSTS = gql(/* GraphQL */ `
   query getUserPosts($_id: String!) {
     getUserPosts(_id: $_id) {
       _id
@@ -85,9 +91,9 @@ export const GET_USER_POSTS = gql`
       }
     }
   }
-`;
+`);
 
-export const GET_POSTS_BY_TAGS = gql`
+export const GET_POSTS_BY_TAGS = gql(/* GraphQL */ `
   query getPostsByTags($tagIds: [ID]!) {
     getPostsByTags(tagIds: $tagIds) {
       _id
@@ -107,9 +113,9 @@ export const GET_POSTS_BY_TAGS = gql`
       }
     }
   }
-`;
+`);
 
-export const CREATE_NEW_POST = gql`
+export const CREATE_NEW_POST = gql(/* GraphQL */ `
   mutation createPost(
     $title: String!
     $content: String!
@@ -141,9 +147,9 @@ export const CREATE_NEW_POST = gql`
       }
     }
   }
-`;
+`);
 
-export const UPDATE_POST = gql`
+export const UPDATE_POST = gql(/* GraphQL */ `
   mutation updatePost(
     $_id: String!
     $title: String!
@@ -177,18 +183,18 @@ export const UPDATE_POST = gql`
       }
     }
   }
-`;
+`);
 
-export const DELETE_POST = gql`
+export const DELETE_POST = gql(/* GraphQL */ `
   mutation deletePost($_id: String!) {
     deletePost(_id: $_id) {
       _id
     }
   }
-`;
+`);
 
 // Search Document
-export const SEARCH = gql`
+export const SEARCH = gql(/* GraphQL */ `
   query search($searchTerm: String!, $tagIds: [ID]) {
     search(searchTerm: $searchTerm, tagIds: $tagIds) {
       _id
@@ -208,47 +214,47 @@ export const SEARCH = gql`
       }
     }
   }
-`;
+`);
 
 // Tag Documents
-export const GET_ALL_TAGS = gql`
+export const GET_ALL_TAGS = gql(/* GraphQL */ `
   query getAllTags {
     tags {
       _id
       name
     }
   }
-`;
+`);
 
-export const GET_TAG_BY_ID = gql`
+export const GET_TAG_BY_ID = gql(/* GraphQL */ `
   query getTagsById($_id: ID!) {
     tag(_id: $_id) {
       _id
       name
     }
   }
-`;
+`);
 
-export const CREATE_TAG = gql`
+export const CREATE_TAG = gql(/* GraphQL */ `
   mutation createTag($name: String!) {
     createTag(name: $name) {
       _id
       name
     }
   }
-`;
+`);
 
-export const DELETE_TAG = gql`
+export const DELETE_TAG = gql(/* GraphQL */ `
   mutation deleteTag($tagId: ID!) {
     deleteTag(tagId: $tagId) {
       _id
       name
     }
   }
-`;
+`);
 
 // Draft Documents
-export const GET_DRAFT_BY_ID = gql`
+export const GET_DRAFT_BY_ID = gql(/* GraphQL */ `
   query getDraftById($_id: String!) {
     getDraftById(_id: $_id) {
       _id
@@ -266,9 +272,9 @@ export const GET_DRAFT_BY_ID = gql`
       }
     }
   }
-`;
+`);
 
-export const GET_DRAFT_BY_POSTID = gql`
+export const GET_DRAFT_BY_POSTID = gql(/* GraphQL */ `
   query getDraftByPostId($postId: ID!) {
     getDraftByPostId(postId: $postId) {
       _id
@@ -286,9 +292,9 @@ export const GET_DRAFT_BY_POSTID = gql`
       }
     }
   }
-`;
+`);
 
-export const GET_USER_DRAFTS = gql`
+export const GET_USER_DRAFTS = gql(/* GraphQL */ `
   query getUserDrafts {
     getUserDrafts {
       _id
@@ -306,9 +312,9 @@ export const GET_USER_DRAFTS = gql`
       }
     }
   }
-`;
+`);
 
-export const CREATE_DRAFT = gql`
+export const CREATE_DRAFT = gql(/* GraphQL */ `
   mutation createDraft(
     $title: String!
     $content: String!
@@ -340,9 +346,9 @@ export const CREATE_DRAFT = gql`
       }
     }
   }
-`;
+`);
 
-export const UPDATE_DRAFT = gql`
+export const UPDATE_DRAFT = gql(/* GraphQL */ `
   mutation updateDraft(
     $_id: String!
     $title: String!
@@ -377,9 +383,9 @@ export const UPDATE_DRAFT = gql`
       }
     }
   }
-`;
+`);
 
-export const DELETE_DRAFT = gql`
+export const DELETE_DRAFT = gql(/* GraphQL */ `
   mutation deleteDraft($_id: String!) {
     deleteDraft(_id: $_id) {
       _id
@@ -395,47 +401,10 @@ export const DELETE_DRAFT = gql`
       }
     }
   }
-`;
-
-// Image Document
-export const GET_IMAGE = gql`
-  query getImage($_id: ID!) {
-    image(_id: $_id) {
-      _id
-      caption
-    }
-  }
-`;
-
-export const CREATE_IMAGE = gql`
-  mutation createImage($caption: String!) {
-    createImage(caption: $caption) {
-      _id
-      caption
-    }
-  }
-`;
-
-export const UPDATE_IMAGE = gql`
-  mutation updateImage($_id: ID!, $caption: String!) {
-    updateImage(_id: $_id, caption: $caption) {
-      _id
-      caption
-    }
-  }
-`;
-
-export const DELETE_IMAGE = gql`
-  mutation deleteImage($_id: ID!) {
-    deleteImage(_id: $_id) {
-      _id
-      caption
-    }
-  }
-`;
+`);
 
 // Local Documents
-export const GET_CACHED_POST_FRAGMENT = gql`
+export const GET_CACHED_POST_FRAGMENT = gql(/* GraphQL */ `
   fragment MyPost on Post {
     _id
     title
@@ -453,9 +422,9 @@ export const GET_CACHED_POST_FRAGMENT = gql`
       username
     }
   }
-`;
+`);
 
-export const GET_CACHED_DRAFT_FRAGMENT = gql`
+export const GET_CACHED_DRAFT_FRAGMENT = gql(/* GraphQL */ `
   fragment MyDraft on Draft {
     _id
     postId
@@ -470,4 +439,4 @@ export const GET_CACHED_DRAFT_FRAGMENT = gql`
       name
     }
   }
-`;
+`);
