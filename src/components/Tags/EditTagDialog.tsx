@@ -63,7 +63,7 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
     data,
     loading: getAllTagsLoading,
     error: getAllTagsError
-  } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  } = useQuery(GET_ALL_TAGS);
 
   // Create-tag gql mutation
   const [createTag, { loading: createTagLoading, error: createTagError }] =
@@ -120,8 +120,7 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
           }}
           onMouseLeave={() => {
             setHoveredTag("");
-          }}
-        >
+          }}>
           <IconButton
             title="Delete"
             aria-haspopup="true"
@@ -129,8 +128,7 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
             disabled={!isHovered || deleteTagLoading}
             className={classes.iconButton}
             onClick={handleDelete(tag._id)}
-            size="large"
-          >
+            size="large">
             {isHovered ? <Delete /> : <Label />}
           </IconButton>
           <div>{tag.name}</div>
@@ -148,8 +146,7 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
         TransitionComponent={Transition}
         classes={{ paperScrollPaper: classes.dialog }}
         aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
-      >
+        aria-describedby="alert-dialog-slide-description">
         <DialogTitle id="alert-dialog-slide-title">Edit Tags</DialogTitle>
         <DialogContent className={classes.content}>
           <NewTagInput

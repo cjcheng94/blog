@@ -12,9 +12,7 @@ const showAccountDialog = (type: "login" | "signup") => {
 const Drafts = () => {
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
-  const { loading, error, data } = useQuery<{
-    getUserDrafts: Draft[];
-  }>(GET_USER_DRAFTS, {
+  const { loading, error, data } = useQuery(GET_USER_DRAFTS, {
     skip: !isAuthenticated
   });
 

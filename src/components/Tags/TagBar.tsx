@@ -31,9 +31,7 @@ const TagRow: React.FC<TagRowProps> = ({ onChange, selectedTagIds }) => {
   const classes = useStyles();
 
   // Get all tags
-  const { data, loading: getAllTagsLoading } = useQuery<{ tags: Tag[] }>(
-    GET_ALL_TAGS
-  );
+  const { data, loading: getAllTagsLoading } = useQuery(GET_ALL_TAGS);
 
   // Create-tag gql mutation
   const [createTag, { loading: createTagLoading }] = useMutation(CREATE_TAG, {

@@ -85,7 +85,7 @@ const PostDetails = () => {
     loading: getPostLoading,
     error: getPostError,
     data: getPostData
-  } = useQuery<{ getPostById: Post }, GetPostVars>(GET_CURRENT_POST, {
+  } = useQuery(GET_CURRENT_POST, {
     variables: { _id: match.params._id }
   });
 
@@ -107,7 +107,7 @@ const PostDetails = () => {
       loading: deletePostLoading,
       error: deletePostError
     }
-  ] = useMutation<Post, DeletePostVars>(DELETE_POST, {
+  ] = useMutation(DELETE_POST, {
     refetchQueries: [{ query: GET_ALL_POSTS }]
   });
 
@@ -207,8 +207,7 @@ const PostDetails = () => {
               className={classes.button}
               onClick={() => setShowCustomDialog(true)}
               variant="contained"
-              color="secondary"
-            >
+              color="secondary">
               Delete
             </Button>
             <Button
@@ -216,8 +215,7 @@ const PostDetails = () => {
               component={Link}
               to={url}
               variant="contained"
-              color="primary"
-            >
+              color="primary">
               Edit
             </Button>
           </Fragment>

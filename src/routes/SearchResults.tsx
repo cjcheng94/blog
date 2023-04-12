@@ -1,7 +1,7 @@
 import React, { useEffect, Fragment } from "react";
 import { useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 import { useQuery } from "@apollo/client";
 
@@ -42,7 +42,7 @@ const SearchResults = () => {
     loading: getTagsLoading,
     error: getTagsError,
     data: getTagsData
-  } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  } = useQuery(GET_ALL_TAGS);
 
   // Execute query on url query change
   // Search term is provided, search
@@ -50,7 +50,7 @@ const SearchResults = () => {
     loading: searchLoading,
     error: searchError,
     data: searchData
-  } = useQuery<{ search: SearchResult[] }>(SEARCH, {
+  } = useQuery(SEARCH, {
     skip: !hasSearchTerm,
     variables: {
       searchTerm,
@@ -64,7 +64,7 @@ const SearchResults = () => {
     loading: getPostsByTagsLoading,
     error: getPostsByTagsError,
     data: getPostsByTagsData
-  } = useQuery<{ getPostsByTags: Post[] }>(GET_POSTS_BY_TAGS, {
+  } = useQuery(GET_POSTS_BY_TAGS, {
     skip: !tagsOnly,
     variables: {
       tagIds

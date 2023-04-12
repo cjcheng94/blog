@@ -118,7 +118,7 @@ const SearchOverlay = () => {
   const classes = useStyles();
   const history = useHistory();
 
-  const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  const { data } = useQuery(GET_ALL_TAGS);
 
   useEffect(() => {
     setMounted(true);
@@ -207,8 +207,7 @@ const SearchOverlay = () => {
               color="inherit"
               onClick={hideSelf}
               className={classes.closeButton}
-              size="large"
-            >
+              size="large">
               <Close />
             </IconButton>
 

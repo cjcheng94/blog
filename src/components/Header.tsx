@@ -206,7 +206,7 @@ const Header = () => {
     loading: getTagsLoading,
     error: getTagsError,
     data: getTagsData
-  } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  } = useQuery(GET_ALL_TAGS);
 
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
@@ -286,8 +286,7 @@ const Header = () => {
             key={tag._id}
             title={tag.name}
             onClick={e => handleTagSelect(e, tag._id)}
-            selected={isTagSelected(tag._id)}
-          >
+            selected={isTagSelected(tag._id)}>
             <ListItemIcon className={classes.listIcons}>
               <Label />
             </ListItemIcon>
@@ -334,8 +333,7 @@ const Header = () => {
               onClick={setShowDrawer(true)}
               edge="start"
               className={menuButtonClass}
-              size="large"
-            >
+              size="large">
               <MenuIcon />
             </IconButton>
             <Logo />
@@ -348,8 +346,7 @@ const Header = () => {
                 aria-haspopup="true"
                 color="inherit"
                 onClick={toggleSearchOverlay}
-                size="large"
-              >
+                size="large">
                 <Search />
               </IconButton>
             </Tooltip>
@@ -358,8 +355,7 @@ const Header = () => {
                 aria-haspopup="true"
                 color="inherit"
                 onClick={toggleDarkMode}
-                size="large"
-              >
+                size="large">
                 <Brightness4 />
               </IconButton>
             </Tooltip>
@@ -369,8 +365,7 @@ const Header = () => {
                   aria-haspopup="true"
                   color="inherit"
                   onClick={showMenu}
-                  size="large"
-                >
+                  size="large">
                   <AccountCircle />
                 </IconButton>
               </Tooltip>
@@ -378,8 +373,7 @@ const Header = () => {
                 id="simple-menu"
                 anchorEl={anchorEl}
                 open={!!anchorEl}
-                onClose={hideMenu}
-              >
+                onClose={hideMenu}>
                 {isAuthenticated ? (
                   <MenuList>
                     <MenuItem>
@@ -389,8 +383,7 @@ const Header = () => {
                     <MenuItem
                       component={Link}
                       to={getUserPath()}
-                      onClick={hideMenu}
-                    >
+                      onClick={hideMenu}>
                       <LibraryBooks className={classes.menuIcon} />
                       My Posts
                     </MenuItem>
@@ -403,8 +396,7 @@ const Header = () => {
                         setShowCustomDialog(true);
                         hideMenu();
                       }}
-                      color="inherit"
-                    >
+                      color="inherit">
                       <ExitToApp className={classes.menuIcon} />
                       Log Out
                     </MenuItem>
@@ -434,8 +426,7 @@ const Header = () => {
         open={showDrawer}
         classes={{
           paper: classes.drawerPaper
-        }}
-      >
+        }}>
         <div className={classes.drawerHeader}>
           <IconButton onClick={setShowDrawer(false)} size="large">
             <ChevronLeft />
