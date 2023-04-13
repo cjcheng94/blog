@@ -5,7 +5,7 @@ import makeStyles from "@mui/styles/makeStyles";
 import { useQuery, useMutation } from "@apollo/client";
 import { NewTagInput } from "@components";
 import { GET_ALL_TAGS, CREATE_TAG } from "../../api/gqlDocuments";
-import { Tag } from "PostTypes";
+import { Tag } from "@graphql";
 
 const useStyles = makeStyles(theme => ({
   container: {

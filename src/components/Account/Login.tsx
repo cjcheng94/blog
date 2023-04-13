@@ -161,8 +161,7 @@ const Login: React.FC<Props> = ({ onCancel, onSuccess, goToSignup }) => {
             disabled={loading}
             variant="contained"
             color="primary"
-            type="submit"
-          >
+            type="submit">
             Log In
           </Button>
         </div>

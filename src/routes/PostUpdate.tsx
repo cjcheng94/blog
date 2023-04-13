@@ -20,6 +20,7 @@ import {
   DELETE_DRAFT
 } from "../api/gqlDocuments";
 import { uploadImage } from "../api/imgur";
+import { UpdateDraftMutationVariables } from "@graphql";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {
@@ -49,16 +50,6 @@ const useStyles = makeStyles(theme => ({
     maxWidth: "100%"
   }
 }));
-
-type DraftVariables = {
-  _id: string;
-  postId: string;
-  title: string;
-  content: string;
-  contentText: string;
-  thumbnailUrl: string;
-  tagIds: string[];
-};
 
 const PostUpdate = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
@@ -155,12 +146,12 @@ const PostUpdate = () => {
   useEffect(() => {
     if (getPostCalled && getPostData) {
       const { title, content, contentText, tagIds, thumbnailUrl } =
-        getPostData.getPostById;
+        getPostData.getPostById!;
       setTitle(title);
       setRichData(content);
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
-      setThumbnailUrl(thumbnailUrl);
+      setThumbnailUrl(thumbnailUrl ?? "");
     }
   }, [getPostCalled, getPostData]);
 
@@ -170,7 +161,8 @@ const PostUpdate = () => {
       const noDraft = getDraftByPostIdError?.message === "Cannot find draft";
 
       if (noDraft && getPostData) {
-        const { title, content, contentText, tagIds } = getPostData.getPostById;
+        const { title, content, contentText, tagIds } =
+          getPostData.getPostById!;
         createDraft({
           variables: {
             postId,
@@ -201,12 +193,12 @@ const PostUpdate = () => {
 
   useEffect(() => {
     if (createDraftCalled && createDraftData) {
-      const draftId = createDraftData.createDraft._id;
+      const draftId = createDraftData.createDraft!._id;
       setDraftId(draftId);
     }
   }, [createDraftData, createDraftCalled]);
 
-  const updateDraftHandler = (draftVariables: DraftVariables) => {
+  const updateDraftHandler = (draftVariables: UpdateDraftMutationVariables) => {
     updateDraft({
       variables: draftVariables
     });
@@ -382,12 +374,12 @@ const PostUpdate = () => {
 
   const applyDraft = () => {
     const { title, content, contentText, tagIds, thumbnailUrl } =
-      getDraftByPostIdData.getDraftByPostId;
+      getDraftByPostIdData!.getDraftByPostId;
     setTitle(title);
     setRichData(content);
     setPlainText(contentText);
     setSelectedTagIds(tagIds);
-    setThumbnailUrl(thumbnailUrl);
+    setThumbnailUrl(thumbnailUrl ?? "");
     setEditorKey(2);
     setShowApplyDraftDialog(false);
   };
@@ -399,8 +391,7 @@ const PostUpdate = () => {
       <form
         id="update-form"
         className={classes.formEdit}
-        onSubmit={handleSubmit}
-      >
+        onSubmit={handleSubmit}>
         <Typography variant="h4" gutterBottom align="center">
           Edit Your Story
         </Typography>
@@ -440,8 +431,7 @@ const PostUpdate = () => {
           className={classes.button}
           onClick={handleSubmitClick}
           variant="contained"
-          color="primary"
-        >
+          color="primary">
           Submit
         </Button>
         <Button
@@ -449,8 +439,7 @@ const PostUpdate = () => {
           variant="contained"
           color="secondary"
           component={Link}
-          to="/"
-        >
+          to="/">
           Back
         </Button>
       </form>

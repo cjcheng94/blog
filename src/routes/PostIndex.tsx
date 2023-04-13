@@ -15,7 +15,11 @@ const PostIndex = () => {
     if (loading || !data?.posts) {
       return <CardPlaceholder />;
     }
-    return <Cards posts={data.posts} />;
+    // TODO: when we implemente more GraphQL Connections on the backend,
+    // let Card handle the data structure change
+    const posts = data.posts.edges.map(edge => edge.node);
+
+    return <Cards posts={posts} />;
   };
 
   return (

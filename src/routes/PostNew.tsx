@@ -37,6 +37,7 @@ import {
 } from "../api/cache";
 import useCleanup from "../utils/useCleanup";
 import { uploadImage } from "../api/imgur";
+import { UpdateDraftMutationVariables } from "@graphql";
 
 const useStyles = makeStyles(theme => ({
   formNew: {
@@ -131,15 +132,7 @@ const PostNew = () => {
   // Id of newly created draft
   const createdDraftId = createDraftData?.createDraft?._id;
 
-  type DraftVariables = {
-    _id: string;
-    title: string;
-    content: string;
-    contentText: string;
-    thumbnailUrl: string;
-    tagIds: string[];
-  };
-  const updateDraftHandler = (draftVariables: DraftVariables) => {
+  const updateDraftHandler = (draftVariables: UpdateDraftMutationVariables) => {
     updateDraft({
       variables: draftVariables
     });
@@ -230,8 +223,7 @@ const PostNew = () => {
             size="small"
             aria-label="close"
             color="inherit"
-            onClick={() => closeSnackbar(snackbarId)}
-          >
+            onClick={() => closeSnackbar(snackbarId)}>
             <Close />
           </IconButton>
         </>
@@ -378,8 +370,7 @@ const PostNew = () => {
           onClick={handleSubmitClick}
           disabled={!isAuthenticated}
           variant="contained"
-          color="primary"
-        >
+          color="primary">
           Submit
         </Button>
       );
@@ -391,8 +382,7 @@ const PostNew = () => {
           showAccountDialog("login");
         }}
         variant="contained"
-        color="primary"
-      >
+        color="primary">
         Log in
       </Button>
     );
@@ -409,8 +399,7 @@ const PostNew = () => {
       <form
         id="create-form"
         className={classes.formNew}
-        onSubmit={handleSubmit}
-      >
+        onSubmit={handleSubmit}>
         <TextField
           variant="standard"
           margin="normal"
@@ -455,8 +444,7 @@ const PostNew = () => {
           variant="contained"
           color="secondary"
           component={Link}
-          to="/"
-        >
+          to="/">
           Back
         </Button>
       </form>

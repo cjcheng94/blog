@@ -70,7 +70,7 @@ type Props = {
   tags: Tag[];
   authorInfo?: any;
   onClick: () => void;
-  thumbnailUrl?: string;
+  thumbnailUrl?: string | null;
 };
 
 const getTruncatedTitle = (title: string, limit: number) => {
