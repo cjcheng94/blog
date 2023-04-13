@@ -4,7 +4,7 @@ import { get, set, createStore } from "idb-keyval";
 const store = createStore("GraphQL-Cache", "CacheableResponses");
 
 const serializeResponse = async (response: Response) => {
-  let serializedHeaders = {};
+  let serializedHeaders: { [key: string]: string } = {};
   for (var entry of response.headers.entries()) {
     serializedHeaders[entry[0]] = entry[1];
   }

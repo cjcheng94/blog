@@ -1,14 +1,13 @@
 import React, { useEffect, Fragment } from "react";
 import { useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 
 import { useQuery } from "@apollo/client";
 
 import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
 import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
-import { Tag, SearchResult, Post } from "PostTypes";
 import { useGetUrlParams } from "@utils";
 
 const useStyles = makeStyles(theme => ({
@@ -42,7 +41,7 @@ const SearchResults = () => {
     loading: getTagsLoading,
     error: getTagsError,
     data: getTagsData
-  } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  } = useQuery(GET_ALL_TAGS);
 
   // Execute query on url query change
   // Search term is provided, search
@@ -50,10 +49,10 @@ const SearchResults = () => {
     loading: searchLoading,
     error: searchError,
     data: searchData
-  } = useQuery<{ search: SearchResult[] }>(SEARCH, {
+  } = useQuery(SEARCH, {
     skip: !hasSearchTerm,
     variables: {
-      searchTerm,
+      searchTerm: searchTerm as string,
       tagIds
     }
   });
@@ -64,7 +63,7 @@ const SearchResults = () => {
     loading: getPostsByTagsLoading,
     error: getPostsByTagsError,
     data: getPostsByTagsData
-  } = useQuery<{ getPostsByTags: Post[] }>(GET_POSTS_BY_TAGS, {
+  } = useQuery(GET_POSTS_BY_TAGS, {
     skip: !tagsOnly,
     variables: {
       tagIds

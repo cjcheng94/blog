@@ -20,6 +20,7 @@ import {
   DELETE_DRAFT,
   GET_CACHED_DRAFT_FRAGMENT
 } from "../api/gqlDocuments";
+import { UpdateDraftMutationVariables } from "@graphql";
 
 const useStyles = makeStyles(theme => ({
   formEdit: {
@@ -128,16 +129,6 @@ const DraftUpdate = () => {
     fragment: GET_CACHED_DRAFT_FRAGMENT
   });
 
-  type DraftVariables = {
-    _id: string;
-    postId: string;
-    title: string;
-    content: string;
-    contentText: string;
-    thumbnailUrl: string;
-    tagIds: string[];
-  };
-
   const alertAndRedirect = useCallback(
     (alertMessage: string, destination: string) => {
       enqueueSnackbar(alertMessage);
@@ -159,7 +150,7 @@ const DraftUpdate = () => {
     [_id, deleteDraft]
   );
 
-  const updateDraftHandler = (draftVariables: DraftVariables) => {
+  const updateDraftHandler = (draftVariables: UpdateDraftMutationVariables) => {
     updateDraft({
       variables: draftVariables
     });
@@ -181,7 +172,7 @@ const DraftUpdate = () => {
       setRichData(content);
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
-      setThumbnailUrl(thumbnailUrl);
+      setThumbnailUrl(thumbnailUrl ?? "");
     }
   }, [getDraftCalled, getDraftData, cachedDraftData]);
 
@@ -201,18 +192,20 @@ const DraftUpdate = () => {
   // If user changed content, call debounced updateHandler to update draft
   useEffect(() => {
     // Update draft
-    if (title || plainText) {
-      const { postId } = getDraftData.getDraftById;
+    if (getDraftData) {
+      if (title || plainText) {
+        const { postId } = getDraftData.getDraftById;
 
-      debouncedUpdateDraft({
-        _id,
-        postId,
-        title,
-        content,
-        contentText: plainText,
-        tagIds: selectedTagIds,
-        thumbnailUrl
-      });
+        debouncedUpdateDraft({
+          _id,
+          postId,
+          title,
+          content,
+          contentText: plainText,
+          tagIds: selectedTagIds,
+          thumbnailUrl
+        });
+      }
     }
   }, [
     _id,
@@ -367,8 +360,7 @@ const DraftUpdate = () => {
       <form
         id="update-form"
         className={classes.formEdit}
-        onSubmit={handleSubmit}
-      >
+        onSubmit={handleSubmit}>
         <Typography variant="h4" gutterBottom align="center">
           Edit Your Story
         </Typography>
@@ -409,8 +401,7 @@ const DraftUpdate = () => {
           className={classes.button}
           onClick={handleSubmitClick}
           variant="contained"
-          color="primary"
-        >
+          color="primary">
           Submit
         </Button>
         <Button
@@ -418,8 +409,7 @@ const DraftUpdate = () => {
           onClick={deleteOldDraft(true)}
           disabled={deleteDraftLoading}
           variant="contained"
-          color="secondary"
-        >
+          color="secondary">
           Delete Draft
         </Button>
         <Button
@@ -427,8 +417,7 @@ const DraftUpdate = () => {
           variant="contained"
           color="secondary"
           component={Link}
-          to="/"
-        >
+          to="/">
           Back
         </Button>
       </form>

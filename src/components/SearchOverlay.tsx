@@ -15,7 +15,6 @@ import { useHistory } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { searchOverlayVar, drawerVar } from "../api/cache";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
-import { Tag } from "PostTypes";
 
 const drawerWidth = 240;
 
@@ -118,7 +117,7 @@ const SearchOverlay = () => {
   const classes = useStyles();
   const history = useHistory();
 
-  const { data } = useQuery<{ tags: Tag[] }>(GET_ALL_TAGS);
+  const { data } = useQuery(GET_ALL_TAGS);
 
   useEffect(() => {
     setMounted(true);
@@ -207,8 +206,7 @@ const SearchOverlay = () => {
               color="inherit"
               onClick={hideSelf}
               className={classes.closeButton}
-              size="large"
-            >
+              size="large">
               <Close />
             </IconButton>
 

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "@apollo/client": "^3.3.21",
+    "@apollo/client": "^3.7.11",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
     "@lexical/react": "^0.9.1",
@@ -37,11 +37,14 @@
     "build": "vite build",
     "preview": "vite preview --host",
     "lint": "eslint src",
-    "start-preview": "npm run build && npm run preview"
+    "start-preview": "npm run build && npm run preview",
+    "generate": "graphql-codegen -w"
   },
   "devDependencies": {
     "@babel/plugin-proposal-decorators": "^7.18.10",
     "@esbuild-plugins/node-globals-polyfill": "^0.1.1",
+    "@graphql-codegen/cli": "^3.3.0",
+    "@graphql-codegen/client-preset": "^3.0.0",
     "@rollup/plugin-babel": "^5.3.1",
     "@types/crypto-js": "^4.0.2",
     "@types/lodash": "^4.14.154",
@@ -60,7 +63,7 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "rollup-plugin-visualizer": "^5.8.0",
     "source-map-explorer": "^2.5.2",
-    "typescript": "^3.8.3",
+    "typescript": "^3.9.10",
     "vite": "^3.0.9",
     "vite-plugin-pwa": "^0.13.1",
     "vite-tsconfig-paths": "^3.5.0"
