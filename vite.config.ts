@@ -4,6 +4,7 @@ import tsConfigPaths from "vite-tsconfig-paths";
 import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 import { VitePWA } from "vite-plugin-pwa";
 import { visualizer } from "rollup-plugin-visualizer";
+import { babelOptimizerPlugin } from "@graphql-codegen/client-preset";
 
 export default defineConfig({
   build: {
@@ -52,6 +53,10 @@ export default defineConfig({
             {
               modules: ["@mui/material", "@mui/icons-material"]
             }
+          ],
+          [
+            babelOptimizerPlugin,
+            { artifactDirectory: "./src/gql", gqlTagName: "gql" }
           ]
         ]
       }
@@ -67,7 +72,6 @@ export default defineConfig({
       }
     }),
     splitVendorChunkPlugin(),
-
     visualizer({ gzipSize: true }) as PluginOption
   ]
 });

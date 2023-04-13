@@ -1,9 +1,9 @@
 import React from "react";
 import orderBy from "lodash/orderBy";
 import { useHistory } from "react-router-dom";
-import { Post, Draft } from "PostTypes";
+import { Post, Draft } from "@graphql";
 import { ArticleCard, PaginationLink } from "@components";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import { useReactiveVar } from "@apollo/client";
 import { sortLatestFirstVar } from "../../api/cache";
 
@@ -12,16 +12,28 @@ const useStyles = makeStyles(theme => ({
     display: "grid",
     gap: 24,
     gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
-    [theme.breakpoints.down('md')]: {
+    [theme.breakpoints.down("md")]: {
       gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
     }
   }
 }));
 
+type GetAllPostReturnType = Pick<
+  Post,
+  | "_id"
+  | "authorInfo"
+  | "contentText"
+  | "date"
+  | "tagIds"
+  | "tags"
+  | "thumbnailUrl"
+  | "title"
+>;
+
 type Props = {
   type?: "post" | "draft";
   drafts?: Draft[];
-  posts?: Post[];
+  posts?: GetAllPostReturnType[];
 };
 
 const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
@@ -33,7 +45,7 @@ const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
     return null;
   }
 
-  let articles: Array<Post | Draft> = [];
+  let articles: Array<GetAllPostReturnType | Draft> = [];
 
   if ((!type || type === "post") && posts) {
     articles = posts;

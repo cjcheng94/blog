@@ -26,7 +26,7 @@ import {
   Editor
 } from "@components";
 import { loadingVar, isAuthedVar } from "../api/cache";
-import { Post, GetPostVars, DeletePostVars } from "PostTypes";
+import { MyPostFragment } from "@graphql";
 import { useNavigatorOnline } from "@utils";
 
 const useStyles = makeStyles(theme => ({
@@ -85,7 +85,7 @@ const PostDetails = () => {
     loading: getPostLoading,
     error: getPostError,
     data: getPostData
-  } = useQuery<{ getPostById: Post }, GetPostVars>(GET_CURRENT_POST, {
+  } = useQuery(GET_CURRENT_POST, {
     variables: { _id: match.params._id }
   });
 
@@ -94,7 +94,7 @@ const PostDetails = () => {
   // Apollo client only caches *queries*, so we have to use readFragment.
   // This allows us to read cached post data even when user only called GET_ALL_POSTS
   // and never called GET_CURRENT_POST.
-  const cachedPostData: Post | null = client.readFragment({
+  const cachedPostData: MyPostFragment | null = client.readFragment({
     id: `Post:${match.params._id}`,
     fragment: GET_CACHED_POST_FRAGMENT
   });
@@ -107,7 +107,7 @@ const PostDetails = () => {
       loading: deletePostLoading,
       error: deletePostError
     }
-  ] = useMutation<Post, DeletePostVars>(DELETE_POST, {
+  ] = useMutation(DELETE_POST, {
     refetchQueries: [{ query: GET_ALL_POSTS }]
   });
 
@@ -127,7 +127,7 @@ const PostDetails = () => {
 
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
-  let post: Post | null = null;
+  let post: MyPostFragment | null | undefined = null;
 
   if (isOnline) {
     // Hide network error when offline
@@ -207,8 +207,7 @@ const PostDetails = () => {
               className={classes.button}
               onClick={() => setShowCustomDialog(true)}
               variant="contained"
-              color="secondary"
-            >
+              color="secondary">
               Delete
             </Button>
             <Button
@@ -216,8 +215,7 @@ const PostDetails = () => {
               component={Link}
               to={url}
               variant="contained"
-              color="primary"
-            >
+              color="primary">
               Edit
             </Button>
           </Fragment>

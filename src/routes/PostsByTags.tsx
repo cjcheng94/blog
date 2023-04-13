@@ -5,7 +5,6 @@ import { useQuery } from "@apollo/client";
 import { ErrorAlert, Cards, NewPostButton } from "@components";
 import { GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
-import { Post } from "PostTypes";
 import { useGetUrlParams } from "@utils";
 
 const PostsByTags = () => {
@@ -13,13 +12,10 @@ const PostsByTags = () => {
   const { tagIds } = useGetUrlParams(location.search);
 
   // Get posts by tags
-  const { loading, error, data } = useQuery<{ getPostsByTags: Post[] }>(
-    GET_POSTS_BY_TAGS,
-    {
-      variables: { tagIds },
-      skip: tagIds.length < 1
-    }
-  );
+  const { loading, error, data } = useQuery(GET_POSTS_BY_TAGS, {
+    variables: { tagIds },
+    skip: tagIds.length < 1
+  });
 
   useEffect(() => {
     loadingVar(loading);
