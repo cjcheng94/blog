@@ -24,8 +24,8 @@ export type Draft = {
   contentText: Scalars['String'];
   date: Scalars['String'];
   postId?: Maybe<Scalars['ID']>;
-  tagIds: Array<Maybe<Scalars['ID']>>;
-  tags: Array<Maybe<Tag>>;
+  tagIds: Array<Scalars['ID']>;
+  tags: Array<Tag>;
   thumbnailUrl?: Maybe<Scalars['String']>;
   title: Scalars['String'];
 };
@@ -39,9 +39,9 @@ export type Highlight = {
 
 export type LoginResponse = {
   __typename?: 'LoginResponse';
-  token?: Maybe<Scalars['Token']>;
-  userId?: Maybe<Scalars['ID']>;
-  username?: Maybe<Scalars['String']>;
+  token: Scalars['Token'];
+  userId: Scalars['ID'];
+  username: Scalars['String'];
 };
 
 export type Mutation = {
@@ -118,8 +118,8 @@ export type MutationUpdatePostArgs = {
 
 export type PageInfo = {
   __typename?: 'PageInfo';
-  endCursor?: Maybe<Scalars['String']>;
-  hasNextPage?: Maybe<Scalars['Boolean']>;
+  endCursor: Scalars['String'];
+  hasNextPage: Scalars['Boolean'];
 };
 
 export type Post = {
@@ -130,16 +130,16 @@ export type Post = {
   content: Scalars['String'];
   contentText: Scalars['String'];
   date: Scalars['String'];
-  tagIds: Array<Maybe<Scalars['ID']>>;
-  tags: Array<Maybe<Tag>>;
+  tagIds: Array<Scalars['ID']>;
+  tags: Array<Tag>;
   thumbnailUrl?: Maybe<Scalars['String']>;
   title: Scalars['String'];
 };
 
 export type PostEdge = {
   __typename?: 'PostEdge';
-  cursor?: Maybe<Scalars['String']>;
-  node?: Maybe<Post>;
+  cursor: Scalars['String'];
+  node: Post;
 };
 
 export type PostSearchResult = {
@@ -152,34 +152,34 @@ export type PostSearchResult = {
   date: Scalars['String'];
   highlights?: Maybe<Array<Maybe<Highlight>>>;
   score?: Maybe<Scalars['Float']>;
-  tagIds: Array<Maybe<Scalars['ID']>>;
-  tags: Array<Maybe<Tag>>;
+  tagIds: Array<Scalars['ID']>;
+  tags: Array<Tag>;
   thumbnailUrl?: Maybe<Scalars['String']>;
   title: Scalars['String'];
 };
 
 export type PostsResponse = {
   __typename?: 'PostsResponse';
-  edges?: Maybe<Array<Maybe<PostEdge>>>;
-  pageInfo?: Maybe<PageInfo>;
+  edges: Array<PostEdge>;
+  pageInfo: PageInfo;
 };
 
 export type Query = {
   __typename?: 'Query';
-  getDraftById?: Maybe<Draft>;
-  getDraftByPostId?: Maybe<Draft>;
-  getPostById?: Maybe<Post>;
-  getPostsByTags?: Maybe<Array<Maybe<Post>>>;
-  getUserDrafts?: Maybe<Array<Maybe<Draft>>>;
-  getUserPosts?: Maybe<Array<Maybe<Post>>>;
-  posts?: Maybe<PostsResponse>;
-  search?: Maybe<Array<Maybe<PostSearchResult>>>;
-  tag?: Maybe<Tag>;
-  tags?: Maybe<Array<Maybe<Tag>>>;
-  user?: Maybe<User>;
-  userLogin?: Maybe<LoginResponse>;
+  getDraftById: Draft;
+  getDraftByPostId: Draft;
+  getPostById: Post;
+  getPostsByTags: Array<Post>;
+  getUserDrafts: Array<Draft>;
+  getUserPosts: Array<Post>;
+  posts: PostsResponse;
+  search: Array<PostSearchResult>;
+  tag: Tag;
+  tags: Array<Tag>;
+  user: User;
+  userLogin: LoginResponse;
   userSignup?: Maybe<Scalars['Void']>;
-  users?: Maybe<Array<Maybe<User>>>;
+  users: Array<User>;
 };
 
 
@@ -265,7 +265,7 @@ export type UserLoginQueryVariables = Exact<{
 }>;
 
 
-export type UserLoginQuery = { __typename?: 'Query', userLogin?: { __typename?: 'LoginResponse', token?: any | null, username?: string | null, userId?: string | null } | null };
+export type UserLoginQuery = { __typename?: 'Query', userLogin: { __typename?: 'LoginResponse', token: any, username: string, userId: string } };
 
 export type UserSignupQueryVariables = Exact<{
   username: Scalars['String'];
@@ -278,28 +278,28 @@ export type UserSignupQuery = { __typename?: 'Query', userSignup?: any | null };
 export type GetAllPostsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllPostsQuery = { __typename?: 'Query', posts?: { __typename?: 'PostsResponse', pageInfo?: { __typename?: 'PageInfo', endCursor?: string | null, hasNextPage?: boolean | null } | null, edges?: Array<{ __typename?: 'PostEdge', cursor?: string | null, node?: { __typename?: 'Post', _id: string, title: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } | null } | null> | null } | null };
+export type GetAllPostsQuery = { __typename?: 'Query', posts: { __typename?: 'PostsResponse', pageInfo: { __typename?: 'PageInfo', endCursor: string, hasNextPage: boolean }, edges: Array<{ __typename?: 'PostEdge', cursor: string, node: { __typename?: 'Post', _id: string, title: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } } }> } };
 
 export type GetCurrentPostQueryVariables = Exact<{
   _id: Scalars['String'];
 }>;
 
 
-export type GetCurrentPostQuery = { __typename?: 'Query', getPostById?: { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } | null };
+export type GetCurrentPostQuery = { __typename?: 'Query', getPostById: { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } } };
 
 export type GetUserPostsQueryVariables = Exact<{
   _id: Scalars['String'];
 }>;
 
 
-export type GetUserPostsQuery = { __typename?: 'Query', getUserPosts?: Array<{ __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } | null> | null };
+export type GetUserPostsQuery = { __typename?: 'Query', getUserPosts: Array<{ __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } }> };
 
 export type GetPostsByTagsQueryVariables = Exact<{
   tagIds: Array<InputMaybe<Scalars['ID']>> | InputMaybe<Scalars['ID']>;
 }>;
 
 
-export type GetPostsByTagsQuery = { __typename?: 'Query', getPostsByTags?: Array<{ __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } | null> | null };
+export type GetPostsByTagsQuery = { __typename?: 'Query', getPostsByTags: Array<{ __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } }> };
 
 export type CreatePostMutationVariables = Exact<{
   title: Scalars['String'];
@@ -310,7 +310,7 @@ export type CreatePostMutationVariables = Exact<{
 }>;
 
 
-export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } };
+export type CreatePostMutation = { __typename?: 'Mutation', createPost: { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } } };
 
 export type UpdatePostMutationVariables = Exact<{
   _id: Scalars['String'];
@@ -322,7 +322,7 @@ export type UpdatePostMutationVariables = Exact<{
 }>;
 
 
-export type UpdatePostMutation = { __typename?: 'Mutation', updatePost?: { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } | null };
+export type UpdatePostMutation = { __typename?: 'Mutation', updatePost?: { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } } | null };
 
 export type DeletePostMutationVariables = Exact<{
   _id: Scalars['String'];
@@ -337,19 +337,19 @@ export type SearchQueryVariables = Exact<{
 }>;
 
 
-export type SearchQuery = { __typename?: 'Query', search?: Array<{ __typename?: 'PostSearchResult', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } | null> | null };
+export type SearchQuery = { __typename?: 'Query', search: Array<{ __typename?: 'PostSearchResult', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } }> };
 
 export type GetAllTagsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetAllTagsQuery = { __typename?: 'Query', tags?: Array<{ __typename?: 'Tag', _id: string, name: string } | null> | null };
+export type GetAllTagsQuery = { __typename?: 'Query', tags: Array<{ __typename?: 'Tag', _id: string, name: string }> };
 
 export type GetTagsByIdQueryVariables = Exact<{
   _id: Scalars['ID'];
 }>;
 
 
-export type GetTagsByIdQuery = { __typename?: 'Query', tag?: { __typename?: 'Tag', _id: string, name: string } | null };
+export type GetTagsByIdQuery = { __typename?: 'Query', tag: { __typename?: 'Tag', _id: string, name: string } };
 
 export type CreateTagMutationVariables = Exact<{
   name: Scalars['String'];
@@ -370,19 +370,19 @@ export type GetDraftByIdQueryVariables = Exact<{
 }>;
 
 
-export type GetDraftByIdQuery = { __typename?: 'Query', getDraftById?: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string | null>, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null> } | null };
+export type GetDraftByIdQuery = { __typename?: 'Query', getDraftById: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string>, tags: Array<{ __typename?: 'Tag', _id: string, name: string }> } };
 
 export type GetDraftByPostIdQueryVariables = Exact<{
   postId: Scalars['ID'];
 }>;
 
 
-export type GetDraftByPostIdQuery = { __typename?: 'Query', getDraftByPostId?: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string | null>, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null> } | null };
+export type GetDraftByPostIdQuery = { __typename?: 'Query', getDraftByPostId: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string>, tags: Array<{ __typename?: 'Tag', _id: string, name: string }> } };
 
 export type GetUserDraftsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetUserDraftsQuery = { __typename?: 'Query', getUserDrafts?: Array<{ __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string | null>, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null> } | null> | null };
+export type GetUserDraftsQuery = { __typename?: 'Query', getUserDrafts: Array<{ __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string>, tags: Array<{ __typename?: 'Tag', _id: string, name: string }> }> };
 
 export type CreateDraftMutationVariables = Exact<{
   title: Scalars['String'];
@@ -394,7 +394,7 @@ export type CreateDraftMutationVariables = Exact<{
 }>;
 
 
-export type CreateDraftMutation = { __typename?: 'Mutation', createDraft?: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string | null>, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null> } | null };
+export type CreateDraftMutation = { __typename?: 'Mutation', createDraft?: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string>, tags: Array<{ __typename?: 'Tag', _id: string, name: string }> } | null };
 
 export type UpdateDraftMutationVariables = Exact<{
   _id: Scalars['String'];
@@ -407,18 +407,18 @@ export type UpdateDraftMutationVariables = Exact<{
 }>;
 
 
-export type UpdateDraftMutation = { __typename?: 'Mutation', updateDraft?: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string | null>, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null> } | null };
+export type UpdateDraftMutation = { __typename?: 'Mutation', updateDraft?: { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, thumbnailUrl?: string | null, date: string, tagIds: Array<string>, tags: Array<{ __typename?: 'Tag', _id: string, name: string }> } | null };
 
 export type DeleteDraftMutationVariables = Exact<{
   _id: Scalars['String'];
 }>;
 
 
-export type DeleteDraftMutation = { __typename?: 'Mutation', deleteDraft?: { __typename?: 'Draft', _id: string, title: string, author: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null> } | null };
+export type DeleteDraftMutation = { __typename?: 'Mutation', deleteDraft?: { __typename?: 'Draft', _id: string, title: string, author: string, content: string, contentText: string, date: string, tagIds: Array<string>, tags: Array<{ __typename?: 'Tag', _id: string, name: string }> } | null };
 
-export type MyPostFragment = { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null>, authorInfo: { __typename?: 'User', _id: string, username: string } } & { ' $fragmentName'?: 'MyPostFragment' };
+export type MyPostFragment = { __typename?: 'Post', _id: string, title: string, content: string, contentText: string, date: string, tagIds: Array<string>, thumbnailUrl?: string | null, tags: Array<{ __typename?: 'Tag', _id: string, name: string }>, authorInfo: { __typename?: 'User', _id: string, username: string } } & { ' $fragmentName'?: 'MyPostFragment' };
 
-export type MyDraftFragment = { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, date: string, tagIds: Array<string | null>, tags: Array<{ __typename?: 'Tag', _id: string, name: string } | null> } & { ' $fragmentName'?: 'MyDraftFragment' };
+export type MyDraftFragment = { __typename?: 'Draft', _id: string, postId?: string | null, title: string, author: string, content: string, contentText: string, date: string, tagIds: Array<string>, tags: Array<{ __typename?: 'Tag', _id: string, name: string }> } & { ' $fragmentName'?: 'MyDraftFragment' };
 
 export const MyPostFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyPost"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Post"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"contentText"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"tagIds"}},{"kind":"Field","name":{"kind":"Name","value":"thumbnailUrl"}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}},{"kind":"Field","name":{"kind":"Name","value":"authorInfo"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"username"}}]}}]}}]} as unknown as DocumentNode<MyPostFragment, unknown>;
 export const MyDraftFragmentDoc = {"kind":"Document","definitions":[{"kind":"FragmentDefinition","name":{"kind":"Name","value":"MyDraft"},"typeCondition":{"kind":"NamedType","name":{"kind":"Name","value":"Draft"}},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"postId"}},{"kind":"Field","name":{"kind":"Name","value":"title"}},{"kind":"Field","name":{"kind":"Name","value":"author"}},{"kind":"Field","name":{"kind":"Name","value":"content"}},{"kind":"Field","name":{"kind":"Name","value":"contentText"}},{"kind":"Field","name":{"kind":"Name","value":"date"}},{"kind":"Field","name":{"kind":"Name","value":"tagIds"}},{"kind":"Field","name":{"kind":"Name","value":"tags"},"selectionSet":{"kind":"SelectionSet","selections":[{"kind":"Field","name":{"kind":"Name","value":"_id"}},{"kind":"Field","name":{"kind":"Name","value":"name"}}]}}]}}]} as unknown as DocumentNode<MyDraftFragment, unknown>;

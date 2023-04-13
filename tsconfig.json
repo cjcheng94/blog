@@ -17,11 +17,13 @@
     "strictNullChecks": true,
     "allowSyntheticDefaultImports": true,
     "experimentalDecorators": true,
+    "skipLibCheck": true,
     "baseUrl": "./src",
     "paths": {
       "@components": ["components"],
       "@routes": ["routes"],
-      "@utils": ["utils"]
+      "@utils": ["utils"],
+      "@graphql": ["gql/graphql.ts"]
     },
     "types": [
       "vite/client",
