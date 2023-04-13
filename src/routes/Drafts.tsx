@@ -3,7 +3,6 @@ import { useQuery, useReactiveVar } from "@apollo/client";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 import { GET_USER_DRAFTS } from "../api/gqlDocuments";
 import { loadingVar, accountDialogTypeVar, isAuthedVar } from "../api/cache";
-import { Draft } from "PostTypes";
 
 const showAccountDialog = (type: "login" | "signup") => {
   accountDialogTypeVar(type);

@@ -16,7 +16,6 @@ import { TransitionProps } from "@mui/material/transitions";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_TAGS, DELETE_TAG, CREATE_TAG } from "../../api/gqlDocuments";
 import { ErrorAlert, NewTagInput } from "@components";
-import { Tag } from "PostTypes";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<any, any> },

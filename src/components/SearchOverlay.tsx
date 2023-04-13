@@ -15,7 +15,6 @@ import { useHistory } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { searchOverlayVar, drawerVar } from "../api/cache";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
-import { Tag } from "PostTypes";
 
 const drawerWidth = 240;
 

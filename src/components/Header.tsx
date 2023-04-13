@@ -51,7 +51,6 @@ import {
 } from "@components";
 import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
-import { Tag } from "PostTypes";
 
 const useStyles = makeStyles(theme => {
   const isDarkTheme = theme.palette.mode === "dark";

@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { Tag } from "PostTypes";
+import { Tag } from "@graphql";
 import { DisplayTag, InvertedTitle } from "@components";
 import { Card, Typography, Theme } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
