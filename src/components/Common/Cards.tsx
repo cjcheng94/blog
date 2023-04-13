@@ -1,11 +1,9 @@
 import React from "react";
-import orderBy from "lodash/orderBy";
 import { useHistory } from "react-router-dom";
 import { Post, Draft } from "@graphql";
-import { ArticleCard, PaginationLink } from "@components";
+import { ArticleCard } from "@components";
 import makeStyles from "@mui/styles/makeStyles";
-import { useReactiveVar } from "@apollo/client";
-import { sortLatestFirstVar } from "../../api/cache";
+import { Button } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   cardsContainer: {
@@ -34,11 +32,18 @@ type Props = {
   type?: "post" | "draft";
   drafts?: Draft[];
   posts?: GetAllPostReturnType[];
+  fetchMore?: () => void;
+  hasNextPage?: boolean;
 };
 
-const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
+const Cards: React.FC<Props> = ({
+  type,
+  posts,
+  drafts,
+  fetchMore,
+  hasNextPage
+}) => {
   const classes = useStyles();
-  const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
   const history = useHistory();
 
   if (!posts && !drafts) {
@@ -53,29 +58,7 @@ const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
     articles = drafts;
   }
 
-  //Sort posts by time based on props.latestFirst
-  const order = sortLatestFirst ? "desc" : "asc";
-  const orderedArticles = orderBy(articles, ["date"], [order]);
-
-  // Get the current page number form url query
-  const searchParams = new URLSearchParams(location.search);
-  const currentPage = parseInt(searchParams.get("page") || "1", 10);
-
-  // TODO: Dynamically calculate the appropriate limit based on window size
-  // Number of items for each page
-  const paginationLimit = 20;
-
-  // Current items to show
-  const paginatedArticles = orderedArticles.slice(
-    (currentPage - 1) * paginationLimit,
-    (currentPage - 1) * paginationLimit + paginationLimit
-  );
-
-  // Show pagination when number of items exceeds the limit
-  const pageCount = Math.ceil(articles.length / paginationLimit);
-  const showPagination = pageCount > 1;
-
-  const cards = paginatedArticles.map(article => {
+  const cards = articles.map(article => {
     const { _id, title, contentText, tags } = article;
 
     const thumbnailUrl =
@@ -108,7 +91,7 @@ const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
   return (
     <div>
       <div className={classes.cardsContainer}>{cards}</div>
-      {showPagination && <PaginationLink pageCount={pageCount} />}
+      {hasNextPage && <Button onClick={fetchMore}>Load More</Button>}
     </div>
   );
 };

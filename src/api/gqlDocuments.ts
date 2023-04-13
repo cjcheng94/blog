@@ -19,8 +19,8 @@ export const USER_SIGNUP = gql(/* GraphQL */ `
 
 // Post Documents
 export const GET_ALL_POSTS = gql(/* GraphQL */ `
-  query getAllPosts {
-    posts {
+  query getAllPosts($first: Int = 10, $after: String) {
+    posts(first: $first, after: $after) {
       pageInfo {
         endCursor
         hasNextPage
