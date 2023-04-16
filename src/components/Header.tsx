@@ -18,6 +18,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  ListItemButton,
   useScrollTrigger
 } from "@mui/material";
 import {
@@ -27,7 +28,6 @@ import {
   Brightness4,
   AccountCircle,
   ChevronLeft,
-  Sort,
   ExitToApp,
   LibraryBooks,
   Menu as MenuIcon,
@@ -38,7 +38,6 @@ import {
   searchOverlayVar,
   drawerVar,
   loadingVar,
-  sortLatestFirstVar,
   accountDialogTypeVar,
   isAuthedVar
 } from "../api/cache";
@@ -47,7 +46,8 @@ import {
   EditTagDialog,
   ErrorAlert,
   AutosaveSpinner,
-  Logo
+  Logo,
+  SortLatestListItem
 } from "@components";
 import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
@@ -126,10 +126,6 @@ const useStyles = makeStyles(theme => {
         display: "initial"
       }
     },
-    listIcons: {
-      minWidth: "initial",
-      marginRight: theme.spacing(1)
-    },
     listText: {
       overflow: "hidden",
       textOverflow: "ellipsis",
@@ -144,11 +140,6 @@ const useStyles = makeStyles(theme => {
 const toggleDarkMode = () => {
   const prevIsDarkMode = darkModeVar();
   darkModeVar(!prevIsDarkMode);
-};
-
-const toggleSorting = () => {
-  const prevLatestFirst = sortLatestFirstVar();
-  sortLatestFirstVar(!prevLatestFirst);
 };
 
 const toggleSearchOverlay = () => {
@@ -195,7 +186,6 @@ const Header = () => {
   const classes = useStyles();
   const isLoading = useReactiveVar(loadingVar);
   const showDrawer = useReactiveVar(drawerVar);
-  const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -280,26 +270,23 @@ const Header = () => {
     return (
       <List>
         {getTagsData.tags.map(tag => (
-          <ListItem
-            button
+          <ListItemButton
             key={tag._id}
             title={tag.name}
             onClick={e => handleTagSelect(e, tag._id)}
             selected={isTagSelected(tag._id)}>
-            <ListItemIcon className={classes.listIcons}>
+            <ListItemIcon>
               <Label />
             </ListItemIcon>
             <ListItemText
               primary={tag.name}
               primaryTypographyProps={{ className: classes.listText }}
             />
-          </ListItem>
+          </ListItemButton>
         ))}
       </List>
     );
   };
-
-  const sortButtonText = sortLatestFirst ? "Latest first" : "Oldest first";
 
   // trigger is true when user scrolls down, false when user scrolls up
   const trigger = useScrollTrigger();
@@ -433,18 +420,13 @@ const Header = () => {
         </div>
         <Divider />
         <List>
-          <ListItem button onClick={() => setShowEditTagDialog(true)}>
-            <ListItemIcon className={classes.listIcons}>
+          <ListItemButton onClick={() => setShowEditTagDialog(true)}>
+            <ListItemIcon>
               <Edit />
             </ListItemIcon>
             <ListItemText primary="Edit tags" />
-          </ListItem>
-          <ListItem button onClick={toggleSorting}>
-            <ListItemIcon className={classes.listIcons}>
-              <Sort />
-            </ListItemIcon>
-            <ListItemText primary={sortButtonText} />
-          </ListItem>
+          </ListItemButton>
+          <SortLatestListItem />
         </List>
         <Divider />
         <TagList />

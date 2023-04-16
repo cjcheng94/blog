@@ -9,6 +9,7 @@ import {
   createHttpLink
 } from "@apollo/client";
 import { setContext } from "@apollo/client/link/context";
+import { relayStylePagination } from "@apollo/client/utilities";
 import {
   darkModeVar,
   loadingVar,
@@ -95,7 +96,8 @@ const client = new ApolloClient({
             read() {
               return imageMapVar();
             }
-          }
+          },
+          posts: relayStylePagination()
         }
       }
     }

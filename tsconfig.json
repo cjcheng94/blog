@@ -23,6 +23,7 @@
       "@components": ["components"],
       "@routes": ["routes"],
       "@utils": ["utils"],
+      "@context": ["context"],
       "@graphql": ["gql/graphql.ts"]
     },
     "types": [
