@@ -18,6 +18,7 @@ import {
   ListItem,
   ListItemText,
   ListItemIcon,
+  ListItemButton,
   useScrollTrigger
 } from "@mui/material";
 import {
@@ -27,7 +28,6 @@ import {
   Brightness4,
   AccountCircle,
   ChevronLeft,
-  Sort,
   ExitToApp,
   LibraryBooks,
   Menu as MenuIcon,
@@ -47,7 +47,8 @@ import {
   EditTagDialog,
   ErrorAlert,
   AutosaveSpinner,
-  Logo
+  Logo,
+  SortLatestListItem
 } from "@components";
 import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
@@ -125,10 +126,6 @@ const useStyles = makeStyles(theme => {
       [theme.breakpoints.down("sm")]: {
         display: "initial"
       }
-    },
-    listIcons: {
-      minWidth: "initial",
-      marginRight: theme.spacing(1)
     },
     listText: {
       overflow: "hidden",
@@ -280,20 +277,19 @@ const Header = () => {
     return (
       <List>
         {getTagsData.tags.map(tag => (
-          <ListItem
-            button
+          <ListItemButton
             key={tag._id}
             title={tag.name}
             onClick={e => handleTagSelect(e, tag._id)}
             selected={isTagSelected(tag._id)}>
-            <ListItemIcon className={classes.listIcons}>
+            <ListItemIcon>
               <Label />
             </ListItemIcon>
             <ListItemText
               primary={tag.name}
               primaryTypographyProps={{ className: classes.listText }}
             />
-          </ListItem>
+          </ListItemButton>
         ))}
       </List>
     );
@@ -433,18 +429,13 @@ const Header = () => {
         </div>
         <Divider />
         <List>
-          <ListItem button onClick={() => setShowEditTagDialog(true)}>
-            <ListItemIcon className={classes.listIcons}>
+          <ListItemButton onClick={() => setShowEditTagDialog(true)}>
+            <ListItemIcon>
               <Edit />
             </ListItemIcon>
             <ListItemText primary="Edit tags" />
-          </ListItem>
-          <ListItem button onClick={toggleSorting}>
-            <ListItemIcon className={classes.listIcons}>
-              <Sort />
-            </ListItemIcon>
-            <ListItemText primary={sortButtonText} />
-          </ListItem>
+          </ListItemButton>
+          <SortLatestListItem />
         </List>
         <Divider />
         <TagList />

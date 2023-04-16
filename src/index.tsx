@@ -29,9 +29,10 @@ import {
 } from "@mui/material/styles";
 
 const httpLink = createHttpLink({
-  uri: import.meta.env.DEV
-    ? import.meta.env.VITE_BACKEND_CYCLIC_URL
-    : import.meta.env.VITE_BACKEND_RAILWAY_URL
+  uri: "https://cjsblog.cyclic.app"
+  // uri: import.meta.env.DEV
+  //   ? import.meta.env.VITE_BACKEND_CYCLIC_URL
+  //   : import.meta.env.VITE_BACKEND_RAILWAY_URL
 });
 
 const authLink = setContext((_, { headers }) => {

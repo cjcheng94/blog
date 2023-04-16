@@ -3,7 +3,6 @@ import { useHistory } from "react-router-dom";
 import { Post, Draft } from "@graphql";
 import { ArticleCard } from "@components";
 import makeStyles from "@mui/styles/makeStyles";
-import { Button } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   cardsContainer: {
@@ -91,7 +90,7 @@ const Cards: React.FC<Props> = ({
   return (
     <div>
       <div className={classes.cardsContainer}>{cards}</div>
-      {hasNextPage && <Button onClick={fetchMore}>Load More</Button>}
+      {/* {hasNextPage && <Button onClick={fetchMore}>Load More</Button>} */}
     </div>
   );
 };
