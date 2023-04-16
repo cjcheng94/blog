@@ -1,11 +1,11 @@
-import React, { Fragment, useEffect, useContext } from "react";
-import { useQuery, useReactiveVar } from "@apollo/client";
+import React, { useState, Fragment, useEffect, useContext } from "react";
+import { useQuery, useReactiveVar, NetworkStatus } from "@apollo/client";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
 import { Button } from "@mui/material";
 import { GET_ALL_POSTS } from "../api/gqlDocuments";
 import { SortingContext } from "@context";
 import { loadingVar, sortLatestFirstVar } from "../api/cache";
-import { GetAllPostsQuery } from "@graphql";
+import { GetAllPostsQuery, Post } from "@graphql";
 
 const queryVariables = (
   latestFirst: boolean = true,
@@ -22,17 +22,31 @@ const queryVariables = (
         before: cursor
       };
 
+type GetAllPostReturnType = Pick<
+  Post,
+  | "_id"
+  | "authorInfo"
+  | "contentText"
+  | "date"
+  | "tagIds"
+  | "tags"
+  | "thumbnailUrl"
+  | "title"
+>;
+
 const PostIndex = () => {
+  const [sortedPosts, setSortedPosts] = useState<GetAllPostReturnType[]>([]);
   const sortLatest = useReactiveVar(sortLatestFirstVar);
-
-  const { loading, error, data, fetchMore, refetch } = useQuery(GET_ALL_POSTS, {
-    variables: {
-      first: 10
-    },
-    notifyOnNetworkStatusChange: true
-  });
-
   const { updateRefetchFn } = useContext(SortingContext);
+  const { loading, error, data, fetchMore, refetch, called } = useQuery(
+    GET_ALL_POSTS,
+    {
+      variables: {
+        first: 10
+      },
+      notifyOnNetworkStatusChange: true
+    }
+  );
 
   useEffect(() => {
     loadingVar(loading);
@@ -44,25 +58,45 @@ const PostIndex = () => {
     }
   }, [refetch, updateRefetchFn]);
 
+  // We need to sort chunks of posts by date if the user uses backward pagination,
+  // this is because GraphQL Connections dictates that data returned via backwards pagination
+  // must be the same order as data returned via forward pagination.
+  useEffect(() => {
+    // Reset displayed posts when user toggles sorting switch,
+    // this prevents stale posts being sorted immediately after the swich is toggled
+    // which is very jarring. If not for this quirk, we can just sort posts in render
+    setSortedPosts([]);
+
+    if (!data || loading) {
+      return;
+    }
+
+    const posts = data.posts.edges.map(edge => edge.node);
+
+    if (sortLatest) {
+      setSortedPosts(posts);
+      return;
+    }
+    // Only sort data if it's backward paginated
+    setSortedPosts(
+      [...posts].sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
+    );
+  }, [data, sortLatest, loading]);
+
   const renderCards = () => {
-    if (!data?.posts) {
+    if (!data?.posts || sortedPosts.length < 1) {
       return <CardPlaceholder />;
     }
 
-    const posts = data?.posts.edges.map(edge => edge.node);
-
     const { startCursor, endCursor, hasPreviousPage, hasNextPage } =
       data?.posts.pageInfo;
-
-    const sortedPosts = sortLatest
-      ? posts
-      : posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
 
     const canFetchMore =
       (sortLatest && hasNextPage) || (!sortLatest && hasPreviousPage);
 
     const fetchMorePosts = () => {
       const cursor = sortLatest ? endCursor : startCursor;
+
       fetchMore<GetAllPostsQuery, ReturnType<typeof queryVariables>>({
         variables: queryVariables(sortLatest, 10, cursor)
       });
