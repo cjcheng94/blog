@@ -2,6 +2,7 @@ import React, { useState, useContext } from "react";
 import { ListItem, ListItemIcon, ListItemText, Switch } from "@mui/material";
 import { Sort } from "@mui/icons-material";
 import { SortingContext } from "@context";
+import { sortLatestFirstVar } from "../../api/cache";
 
 const SortLatestListItem = () => {
   const [checked, setChecked] = useState(true);
@@ -12,6 +13,7 @@ const SortLatestListItem = () => {
     checked: boolean
   ) => {
     setChecked(checked);
+    sortLatestFirstVar(checked);
 
     const variables = checked
       ? {

@@ -38,7 +38,6 @@ import {
   searchOverlayVar,
   drawerVar,
   loadingVar,
-  sortLatestFirstVar,
   accountDialogTypeVar,
   isAuthedVar
 } from "../api/cache";
@@ -143,11 +142,6 @@ const toggleDarkMode = () => {
   darkModeVar(!prevIsDarkMode);
 };
 
-const toggleSorting = () => {
-  const prevLatestFirst = sortLatestFirstVar();
-  sortLatestFirstVar(!prevLatestFirst);
-};
-
 const toggleSearchOverlay = () => {
   const prevShowSearchOverlay = searchOverlayVar();
   searchOverlayVar(!prevShowSearchOverlay);
@@ -192,7 +186,6 @@ const Header = () => {
   const classes = useStyles();
   const isLoading = useReactiveVar(loadingVar);
   const showDrawer = useReactiveVar(drawerVar);
-  const sortLatestFirst = useReactiveVar(sortLatestFirstVar);
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
   const { enqueueSnackbar } = useSnackbar();
@@ -294,8 +287,6 @@ const Header = () => {
       </List>
     );
   };
-
-  const sortButtonText = sortLatestFirst ? "Latest first" : "Oldest first";
 
   // trigger is true when user scrolls down, false when user scrolls up
   const trigger = useScrollTrigger();
