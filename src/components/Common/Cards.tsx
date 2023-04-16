@@ -31,17 +31,9 @@ type Props = {
   type?: "post" | "draft";
   drafts?: Draft[];
   posts?: GetAllPostReturnType[];
-  fetchMore?: () => void;
-  hasNextPage?: boolean;
 };
 
-const Cards: React.FC<Props> = ({
-  type,
-  posts,
-  drafts,
-  fetchMore,
-  hasNextPage
-}) => {
+const Cards: React.FC<Props> = ({ type, posts, drafts }) => {
   const classes = useStyles();
   const history = useHistory();
 
@@ -87,12 +79,7 @@ const Cards: React.FC<Props> = ({
     );
   });
 
-  return (
-    <div>
-      <div className={classes.cardsContainer}>{cards}</div>
-      {/* {hasNextPage && <Button onClick={fetchMore}>Load More</Button>} */}
-    </div>
-  );
+  return <div className={classes.cardsContainer}>{cards}</div>;
 };
 
 export default Cards;

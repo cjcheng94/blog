@@ -1,11 +1,30 @@
 import React, { Fragment, useEffect, useContext } from "react";
-import { useQuery } from "@apollo/client";
+import { useQuery, useReactiveVar } from "@apollo/client";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
+import { Button } from "@mui/material";
 import { GET_ALL_POSTS } from "../api/gqlDocuments";
-import { loadingVar } from "../api/cache";
 import { SortingContext } from "@context";
+import { loadingVar, sortLatestFirstVar } from "../api/cache";
+import { GetAllPostsQuery } from "@graphql";
+
+const queryVariables = (
+  latestFirst: boolean = true,
+  count?: number,
+  cursor?: string
+) =>
+  latestFirst
+    ? {
+        first: count,
+        after: cursor
+      }
+    : {
+        last: count,
+        before: cursor
+      };
 
 const PostIndex = () => {
+  const sortLatest = useReactiveVar(sortLatestFirstVar);
+
   const { loading, error, data, fetchMore, refetch } = useQuery(GET_ALL_POSTS, {
     variables: {
       first: 10
@@ -29,33 +48,39 @@ const PostIndex = () => {
     if (!data?.posts) {
       return <CardPlaceholder />;
     }
-    // TODO: when we implemente more GraphQL Connections on the backend,
-    // let Card handle the data structure change
-    const posts = data.posts.edges.map(edge => edge.node);
 
-    const { endCursor, hasNextPage } = data.posts.pageInfo;
+    const posts = data?.posts.edges.map(edge => edge.node);
+
+    const { startCursor, endCursor, hasPreviousPage, hasNextPage } =
+      data?.posts.pageInfo;
+
+    const sortedPosts = sortLatest
+      ? posts
+      : posts.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
+
+    const canFetchMore =
+      (sortLatest && hasNextPage) || (!sortLatest && hasPreviousPage);
+
+    const fetchMorePosts = () => {
+      const cursor = sortLatest ? endCursor : startCursor;
+      fetchMore<GetAllPostsQuery, ReturnType<typeof queryVariables>>({
+        variables: queryVariables(sortLatest, 10, cursor)
+      });
+    };
 
     return (
-      <Cards
-        posts={posts}
-        hasNextPage={hasNextPage}
-        fetchMore={() => {
-          fetchMore({
-            variables: {
-              first: 10,
-              after: endCursor
-            }
-          });
-        }}
-      />
+      <>
+        <Cards posts={sortedPosts} />
+        {canFetchMore && <Button onClick={fetchMorePosts}>Fetch More</Button>}
+      </>
     );
   };
 
   return (
     <Fragment>
       {error && <ErrorAlert error={error} />}
-      {renderCards()}
       <NewPostButton />
+      {renderCards()}
     </Fragment>
   );
 };
