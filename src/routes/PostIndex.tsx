@@ -1,11 +1,29 @@
-import React, { useState, Fragment, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useQuery, useReactiveVar, NetworkStatus } from "@apollo/client";
-import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
+import {
+  ErrorAlert,
+  CardPlaceholder,
+  NewPostButton,
+  ArticleCard
+} from "@components";
 import { loadingVar, sortLatestFirstVar } from "../api/cache";
 import { GET_ALL_POSTS } from "../api/gqlDocuments";
 import { GetAllPostsQuery, Post } from "@graphql";
+import { useHistory } from "react-router-dom";
 import { SortingContext } from "@context";
+import makeStyles from "@mui/styles/makeStyles";
 import { Button } from "@mui/material";
+
+const useStyles = makeStyles(theme => ({
+  cardsContainer: {
+    display: "grid",
+    gap: 24,
+    gridTemplateColumns: "repeat(auto-fit, minmax(400px, 1fr))",
+    [theme.breakpoints.down("md")]: {
+      gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
+    }
+  }
+}));
 
 const queryVariables = (
   latestFirst: boolean = true,
@@ -36,10 +54,11 @@ type GetAllPostReturnType = Pick<
 
 const PostIndex = () => {
   const [sortedPosts, setSortedPosts] = useState<GetAllPostReturnType[]>([]);
+  const { updateRefetchFn } = useContext(SortingContext);
 
   const sortLatest = useReactiveVar(sortLatestFirstVar);
-
-  const { updateRefetchFn } = useContext(SortingContext);
+  const history = useHistory();
+  const classes = useStyles();
 
   const { loading, error, data, fetchMore, refetch, networkStatus } = useQuery(
     GET_ALL_POSTS,
@@ -56,7 +75,6 @@ const PostIndex = () => {
   const isRefetching = networkStatus === NetworkStatus.setVariables;
 
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore;
-  console.log(isFetchingMore);
 
   useEffect(() => {
     loadingVar(loading);
@@ -96,46 +114,65 @@ const PostIndex = () => {
     );
   }, [data, isRefetching, loading, sortLatest]);
 
-  const renderCards = () => {
-    if (!data?.posts || sortedPosts.length < 1) {
-      return <CardPlaceholder />;
-    }
-
-    const { startCursor, endCursor, hasPreviousPage, hasNextPage } =
-      data?.posts.pageInfo;
-
-    const canFetchMore =
-      (sortLatest && hasNextPage) || (!sortLatest && hasPreviousPage);
-
-    const fetchMorePosts = () => {
-      const cursor = sortLatest ? endCursor : startCursor;
-
-      fetchMore<GetAllPostsQuery, ReturnType<typeof queryVariables>>({
-        variables: queryVariables(sortLatest, 10, cursor)
-      });
-    };
-
+  if (!data?.posts) {
     return (
       <>
-        <Cards posts={sortedPosts} />
-        {canFetchMore && (
-          <Button
-            variant="contained"
-            disabled={isFetchingMore}
-            onClick={fetchMorePosts}>
-            More posts
-          </Button>
-        )}
+        {error && <ErrorAlert error={error} />}
+        <NewPostButton />
+        <CardPlaceholder />
       </>
     );
+  }
+
+  const { startCursor, endCursor, hasPreviousPage, hasNextPage } =
+    data?.posts.pageInfo;
+
+  const canFetchMore =
+    (sortLatest && hasNextPage) || (!sortLatest && hasPreviousPage);
+
+  const fetchMorePosts = () => {
+    const cursor = sortLatest ? endCursor : startCursor;
+
+    fetchMore<GetAllPostsQuery, ReturnType<typeof queryVariables>>({
+      variables: queryVariables(sortLatest, 10, cursor)
+    });
   };
 
+  const cards = sortedPosts.map(post => {
+    const { _id, title, contentText, tags } = post;
+
+    const url = `/posts/detail/${_id}`;
+
+    return (
+      <ArticleCard
+        _id={_id}
+        key={_id}
+        title={title}
+        contentText={contentText}
+        tags={tags}
+        authorInfo={post?.authorInfo}
+        thumbnailUrl={post?.thumbnailUrl}
+        onClick={() => {
+          history.push(url);
+        }}
+      />
+    );
+  });
+
   return (
-    <Fragment>
+    <>
       {error && <ErrorAlert error={error} />}
       <NewPostButton />
-      {renderCards()}
-    </Fragment>
+      <div className={classes.cardsContainer}>{cards}</div>;
+      {canFetchMore && (
+        <Button
+          variant="contained"
+          disabled={isFetchingMore}
+          onClick={fetchMorePosts}>
+          More posts
+        </Button>
+      )}
+    </>
   );
 };
 
