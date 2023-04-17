@@ -1,11 +1,11 @@
 import React, { useState, Fragment, useEffect, useContext } from "react";
 import { useQuery, useReactiveVar, NetworkStatus } from "@apollo/client";
 import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
-import { Button } from "@mui/material";
-import { GET_ALL_POSTS } from "../api/gqlDocuments";
-import { SortingContext } from "@context";
 import { loadingVar, sortLatestFirstVar } from "../api/cache";
+import { GET_ALL_POSTS } from "../api/gqlDocuments";
 import { GetAllPostsQuery, Post } from "@graphql";
+import { SortingContext } from "@context";
+import { Button } from "@mui/material";
 
 const queryVariables = (
   latestFirst: boolean = true,
@@ -36,9 +36,12 @@ type GetAllPostReturnType = Pick<
 
 const PostIndex = () => {
   const [sortedPosts, setSortedPosts] = useState<GetAllPostReturnType[]>([]);
+
   const sortLatest = useReactiveVar(sortLatestFirstVar);
+
   const { updateRefetchFn } = useContext(SortingContext);
-  const { loading, error, data, fetchMore, refetch, called } = useQuery(
+
+  const { loading, error, data, fetchMore, refetch, networkStatus } = useQuery(
     GET_ALL_POSTS,
     {
       variables: {
@@ -47,6 +50,13 @@ const PostIndex = () => {
       notifyOnNetworkStatusChange: true
     }
   );
+
+  // For some weired reason, Apollo prioritizes "setVariables" network status over
+  // refetch status.
+  const isRefetching = networkStatus === NetworkStatus.setVariables;
+
+  const isFetchingMore = networkStatus === NetworkStatus.fetchMore;
+  console.log(isFetchingMore);
 
   useEffect(() => {
     loadingVar(loading);
@@ -62,10 +72,13 @@ const PostIndex = () => {
   // this is because GraphQL Connections dictates that data returned via backwards pagination
   // must be the same order as data returned via forward pagination.
   useEffect(() => {
-    // Reset displayed posts when user toggles sorting switch,
-    // this prevents stale posts being sorted immediately after the swich is toggled
-    // which is very jarring. If not for this quirk, we can just sort posts in render
-    setSortedPosts([]);
+    //We want to reset sorted posts array only when refetching
+    if (isRefetching) {
+      // Reset displayed posts when user toggles sorting switch,
+      // this prevents stale posts being sorted immediately after the swich is toggled
+      // which is very jarring. If not for this quirk, we can just sort posts in render
+      setSortedPosts([]);
+    }
 
     if (!data || loading) {
       return;
@@ -81,7 +94,7 @@ const PostIndex = () => {
     setSortedPosts(
       [...posts].sort((a, b) => Date.parse(a.date) - Date.parse(b.date))
     );
-  }, [data, sortLatest, loading]);
+  }, [data, isRefetching, loading, sortLatest]);
 
   const renderCards = () => {
     if (!data?.posts || sortedPosts.length < 1) {
@@ -105,7 +118,14 @@ const PostIndex = () => {
     return (
       <>
         <Cards posts={sortedPosts} />
-        {canFetchMore && <Button onClick={fetchMorePosts}>Fetch More</Button>}
+        {canFetchMore && (
+          <Button
+            variant="contained"
+            disabled={isFetchingMore}
+            onClick={fetchMorePosts}>
+            More posts
+          </Button>
+        )}
       </>
     );
   };
