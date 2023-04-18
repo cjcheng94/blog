@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { ForwardedRef, useMemo } from "react";
 import { Tag } from "@graphql";
 import { DisplayTag, InvertedTitle } from "@components";
 import { Card, Typography, Theme } from "@mui/material";
@@ -108,13 +108,13 @@ const renderTags = (tags: Tag[]) => (
   </>
 );
 
-const ArticleCard: React.FC<Props> = props => {
+const ArticleCard = (props: Props, ref: React.Ref<HTMLDivElement>) => {
   const { title, contentText, tags, onClick, thumbnailUrl } = props;
   const classes = useStyles();
   const memoizedTags = useMemo(() => renderTags(tags), [tags]);
 
   return (
-    <Card onClick={onClick} className={classes.card}>
+    <Card onClick={onClick} className={classes.card} ref={ref}>
       <div className={classes.cardContainer}>
         {thumbnailUrl ? (
           <InvertedTitle
@@ -133,4 +133,4 @@ const ArticleCard: React.FC<Props> = props => {
   );
 };
 
-export default ArticleCard;
+export default React.forwardRef(ArticleCard);
