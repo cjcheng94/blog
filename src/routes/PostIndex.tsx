@@ -1,4 +1,10 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, {
+  useState,
+  useEffect,
+  useContext,
+  useRef,
+  useCallback
+} from "react";
 import { useQuery, useReactiveVar, NetworkStatus } from "@apollo/client";
 import {
   ErrorAlert,
@@ -12,7 +18,6 @@ import { GetAllPostsQuery, Post } from "@graphql";
 import { useHistory } from "react-router-dom";
 import { SortingContext } from "@context";
 import makeStyles from "@mui/styles/makeStyles";
-import { Button } from "@mui/material";
 
 const useStyles = makeStyles(theme => ({
   cardsContainer: {
@@ -22,6 +27,12 @@ const useStyles = makeStyles(theme => ({
     [theme.breakpoints.down("md")]: {
       gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))"
     }
+  },
+  bottomText: {
+    marginTop: 16,
+    textAlign: "center",
+    fontSize: "1.4em",
+    color: theme.palette.text.secondary
   }
 }));
 
@@ -60,6 +71,8 @@ const PostIndex = () => {
   const history = useHistory();
   const classes = useStyles();
 
+  const observer = useRef<IntersectionObserver | null>(null);
+
   const { loading, error, data, fetchMore, refetch, networkStatus } = useQuery(
     GET_ALL_POSTS,
     {
@@ -73,8 +86,54 @@ const PostIndex = () => {
   // For some weired reason, Apollo prioritizes "setVariables" network status over
   // refetch status.
   const isRefetching = networkStatus === NetworkStatus.setVariables;
-
   const isFetchingMore = networkStatus === NetworkStatus.fetchMore;
+
+  const { startCursor, endCursor, hasPreviousPage, hasNextPage } =
+    data?.posts.pageInfo || {};
+
+  const noPosts = !data?.posts || sortedPosts.length < 1;
+
+  const canFetchMore =
+    (sortLatest && hasNextPage) || (!sortLatest && hasPreviousPage);
+
+  const fetchMorePosts = useCallback(() => {
+    const cursor = sortLatest ? endCursor : startCursor;
+
+    fetchMore<GetAllPostsQuery, ReturnType<typeof queryVariables>>({
+      variables: queryVariables(sortLatest, 10, cursor)
+    });
+  }, [endCursor, fetchMore, sortLatest, startCursor]);
+
+  // A ref callback for the last card, we initiate an intersection observer here
+  // and start observing the last card and fetch more posts whenever appropriate
+  const lastPostCardRef = useCallback(
+    node => {
+      console.log(node);
+
+      // Prevents redundant api calls when we're already fetching
+      if (isFetchingMore) return;
+
+      // Stop observing the last "last card"
+      if (observer.current) {
+        observer.current.disconnect();
+      }
+
+      // We initialize an intersection observer here,
+      // fetch the next set of posts when the last card is visible in the viewport,
+      // i.e. we're at the bottom of our page.
+      observer.current = new IntersectionObserver(entries => {
+        if (entries[0].isIntersecting && canFetchMore) {
+          fetchMorePosts();
+        }
+      });
+
+      // Start observing the last card when this ref callback is passed to the last card
+      if (node) {
+        observer.current.observe(node);
+      }
+    },
+    [canFetchMore, fetchMorePosts, isFetchingMore]
+  );
 
   useEffect(() => {
     loadingVar(loading);
@@ -114,35 +173,26 @@ const PostIndex = () => {
     );
   }, [data, isRefetching, loading, sortLatest]);
 
-  if (!data?.posts) {
-    return (
-      <>
-        {error && <ErrorAlert error={error} />}
-        <NewPostButton />
-        <CardPlaceholder />
-      </>
-    );
-  }
+  const bottomText = () => {
+    if (isFetchingMore) {
+      return "Fetching more posts";
+    }
 
-  const { startCursor, endCursor, hasPreviousPage, hasNextPage } =
-    data?.posts.pageInfo;
+    if (canFetchMore) {
+      return "Scroll for more";
+    }
 
-  const canFetchMore =
-    (sortLatest && hasNextPage) || (!sortLatest && hasPreviousPage);
-
-  const fetchMorePosts = () => {
-    const cursor = sortLatest ? endCursor : startCursor;
-
-    fetchMore<GetAllPostsQuery, ReturnType<typeof queryVariables>>({
-      variables: queryVariables(sortLatest, 10, cursor)
-    });
+    return "Showing all posts";
   };
 
-  const cards = sortedPosts.map(post => {
+  const cards = sortedPosts.map((post, index) => {
     const { _id, title, contentText, tags } = post;
 
     const url = `/posts/detail/${_id}`;
+    const isLastCard = index === sortedPosts.length - 1;
 
+    // Give the ref callback to the last card on the page
+    // so we can fetch more posts whenever the user scrolls to this card
     return (
       <ArticleCard
         _id={_id}
@@ -155,6 +205,7 @@ const PostIndex = () => {
         onClick={() => {
           history.push(url);
         }}
+        ref={isLastCard ? lastPostCardRef : undefined}
       />
     );
   });
@@ -163,14 +214,13 @@ const PostIndex = () => {
     <>
       {error && <ErrorAlert error={error} />}
       <NewPostButton />
-      <div className={classes.cardsContainer}>{cards}</div>;
-      {canFetchMore && (
-        <Button
-          variant="contained"
-          disabled={isFetchingMore}
-          onClick={fetchMorePosts}>
-          More posts
-        </Button>
+      {noPosts ? (
+        <CardPlaceholder />
+      ) : (
+        <div className={classes.cardsContainer}>{cards}</div>
+      )}
+      {sortedPosts.length > 0 && (
+        <div className={classes.bottomText}>{bottomText()}</div>
       )}
     </>
   );
