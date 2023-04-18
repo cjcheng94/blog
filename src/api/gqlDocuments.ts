@@ -19,10 +19,12 @@ export const USER_SIGNUP = gql(/* GraphQL */ `
 
 // Post Documents
 export const GET_ALL_POSTS = gql(/* GraphQL */ `
-  query getAllPosts {
-    posts {
+  query getAllPosts($first: Int, $last: Int, $before: String, $after: String) {
+    posts(first: $first, last: $last, before: $before, after: $after) {
       pageInfo {
+        startCursor
         endCursor
+        hasPreviousPage
         hasNextPage
       }
       edges {

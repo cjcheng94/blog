@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Route } from "react-router-dom";
 import { useReactiveVar } from "@apollo/client";
 import { CssBaseline, useMediaQuery } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
+import { ObservableQuery } from "@apollo/client";
+
 import {
   Header,
   Main,
@@ -18,7 +20,9 @@ import {
 } from "../api/cache";
 import { checkLocalStorageAuth, handleLocalStorageAuthDeletion } from "@utils";
 import { SnackbarProvider } from "notistack";
+import { SortingContext } from "@context";
 
+type RefetchFn = ObservableQuery["refetch"];
 type ThemeType = "light" | "dark";
 
 const getDefaultTheme = (mode: ThemeType) =>
@@ -73,6 +77,7 @@ const getCustomTheme = (mode: ThemeType) => {
 };
 
 const App: React.FC = () => {
+  const [refetchFn, setRefetchFn] = useState<RefetchFn | undefined>(undefined);
   const userDarkModeSetting = useReactiveVar(darkModeVar);
   const showSearchOverlay = useReactiveVar(searchOverlayVar);
   const accountDialogType = useReactiveVar(accountDialogTypeVar);
@@ -103,12 +108,20 @@ const App: React.FC = () => {
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
       <SnackbarProvider>
-        <ServiceWorkerAlerts />
-        <InstallAlert />
-        <Route component={Header} />
-        {showSearchOverlay && <SearchOverlay />}
-        {!!accountDialogType && <AccountDialog type={accountDialogType} />}
-        <Main />
+        <SortingContext.Provider
+          value={{
+            refetchFn,
+            updateRefetchFn: fn => {
+              setRefetchFn(() => fn);
+            }
+          }}>
+          <ServiceWorkerAlerts />
+          <InstallAlert />
+          <Route component={Header} />
+          {showSearchOverlay && <SearchOverlay />}
+          {!!accountDialogType && <AccountDialog type={accountDialogType} />}
+          <Main />
+        </SortingContext.Provider>
       </SnackbarProvider>
     </ThemeProvider>
   );
