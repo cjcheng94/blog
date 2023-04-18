@@ -108,8 +108,6 @@ const PostIndex = () => {
   // and start observing the last card and fetch more posts whenever appropriate
   const lastPostCardRef = useCallback(
     node => {
-      console.log(node);
-
       // Prevents redundant api calls when we're already fetching
       if (isFetchingMore) return;
 
