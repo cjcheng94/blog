@@ -24,7 +24,7 @@ const useStyles = makeStyles<Theme, { loadedUrl: string | null; text: string }>(
   theme => ({
     title: {
       fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
-      fontWeight: 600,
+      fontWeight: 700,
       fontSize: "4em",
       color: "transparent", // used to prop up space
       wordBreak: "break-word",
