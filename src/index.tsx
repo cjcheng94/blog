@@ -22,6 +22,9 @@ import {
   imageMapVar
 } from "./api/cache";
 import { StyledEngineProvider } from "@mui/material/styles";
+import { inject } from "@vercel/analytics";
+
+inject();
 
 import "@fontsource/notable/400.css";
 
