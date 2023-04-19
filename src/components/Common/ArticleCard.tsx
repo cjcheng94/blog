@@ -26,9 +26,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   title: {
     display: "inline-block",
     wordBreak: "break-word",
-    fontWeight: 600,
+    fontWeight: 700,
     fontSize: "4em",
-    fontFamily: " Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
+    fontFamily: "Source Serif Pro, PingFang SC, Microsoft YaHei, serif",
     margin: theme.spacing(2),
     marginBottom: 0,
     [theme.breakpoints.down("md")]: {
