@@ -5,7 +5,12 @@ import React, {
   useRef,
   useCallback
 } from "react";
-import { useQuery, useReactiveVar, NetworkStatus } from "@apollo/client";
+import {
+  useQuery,
+  useReactiveVar,
+  NetworkStatus,
+  ApolloError
+} from "@apollo/client";
 import {
   ErrorAlert,
   CardPlaceholder,
@@ -65,6 +70,10 @@ type GetAllPostReturnType = Pick<
 
 const PostIndex = () => {
   const [sortedPosts, setSortedPosts] = useState<GetAllPostReturnType[]>([]);
+  const [fetchMoreError, setFetchmoreError] = useState<
+    ApolloError | undefined
+  >();
+
   const { updateRefetchFn } = useContext(SortingContext);
 
   const sortLatest = useReactiveVar(sortLatestFirstVar);
@@ -101,6 +110,8 @@ const PostIndex = () => {
 
     fetchMore<GetAllPostsQuery, ReturnType<typeof queryVariables>>({
       variables: queryVariables(sortLatest, 10, cursor)
+    }).catch(error => {
+      setFetchmoreError(error);
     });
   }, [endCursor, fetchMore, sortLatest, startCursor]);
 
@@ -108,8 +119,12 @@ const PostIndex = () => {
   // and start observing the last card and fetch more posts whenever appropriate
   const lastPostCardRef = useCallback(
     node => {
-      // Prevents redundant api calls when we're already fetching
+      // Prevents repeated api calls when we're already fetching
       if (isFetchingMore) return;
+
+      // Prevents repeated api casll when the previous fetchMore failed due to a network error,
+      // this most likely happens in offline mode
+      if (fetchMoreError) return;
 
       // Stop observing the last "last card"
       if (observer.current) {
@@ -130,7 +145,7 @@ const PostIndex = () => {
         observer.current.observe(node);
       }
     },
-    [canFetchMore, fetchMorePosts, isFetchingMore]
+    [canFetchMore, fetchMoreError, fetchMorePosts, isFetchingMore]
   );
 
   useEffect(() => {
@@ -172,10 +187,12 @@ const PostIndex = () => {
   }, [data, isRefetching, loading, sortLatest]);
 
   const bottomText = () => {
+    if (fetchMoreError) {
+      return "Something went wrong, please try again";
+    }
     if (isFetchingMore) {
       return "Fetching more posts";
     }
-
     if (canFetchMore) {
       return "Scroll for more";
     }
