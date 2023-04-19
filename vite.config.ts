@@ -68,7 +68,11 @@ export default defineConfig({
       srcDir: "src",
       filename: "service-worker.ts",
       devOptions: {
-        enabled: true
+        enabled: true,
+        type: "module"
+      },
+      injectManifest: {
+        globPatterns: ["**/*.{js,css,html,png,ico,svg,woff2}"]
       }
     }),
     splitVendorChunkPlugin(),

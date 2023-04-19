@@ -18,7 +18,6 @@ import makeStyles from "@mui/styles/makeStyles";
 import { useSnackbar } from "notistack";
 
 import {
-  DisqusComment,
   CustomDialog,
   ErrorAlert,
   NewPostButton,
@@ -230,8 +229,6 @@ const PostDetails = () => {
           handleConfirm={handleDelete}
           isDisabled={clickedConfirm}
         />
-        {/*Disqus plugin*/}
-        <DisqusComment identifier={match.params._id} title={title} />
       </div>
     </Fragment>
   );
