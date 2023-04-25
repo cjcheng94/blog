@@ -40,12 +40,13 @@ import "./prism-night-owl.css";
 import { useReactiveVar } from "@apollo/client";
 import { darkModeVar } from "../../api/cache";
 
-// Catch any errors that occur during Lexical updates and log them
-// or throw them as needed. If you don't throw them, Lexical will
-// try to recover gracefully without losing user data.
-function onError(error: any) {
-  console.error(error);
-}
+// Because Lexical catch parseEditorState errors now, see: https://github.com/facebook/lexical/pull/4109/files
+// we have to throw it so that IsLegacyDataPlugin can catch it and show an alert
+const onError = (error: Error) => {
+  if (error instanceof Error) {
+    throw error;
+  }
+};
 
 type EditorProps = {
   editable?: boolean;

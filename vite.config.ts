@@ -69,7 +69,8 @@ export default defineConfig({
       filename: "service-worker.ts",
       devOptions: {
         enabled: true,
-        type: "module"
+        type: "module",
+        navigateFallback: "index.html"
       },
       injectManifest: {
         globPatterns: ["**/*.{js,css,html,png,ico,svg,woff2}"]
