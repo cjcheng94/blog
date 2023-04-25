@@ -2,7 +2,7 @@ import React, { useEffect, Fragment } from "react";
 import { useLocation, useRouteMatch } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { Typography } from "@mui/material";
-import { ErrorAlert, Cards, NewPostButton } from "@components";
+import { ErrorAlert, Cards, NewPostButton, CardPlaceholder } from "@components";
 import { GET_USER_POSTS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { useGetUrlParams } from "@utils";
@@ -23,11 +23,7 @@ const UserProfile = () => {
     loadingVar(loading);
   }, [loading]);
 
-  if (loading || !data) {
-    return null;
-  }
-
-  const userPosts = data.getUserPosts;
+  const userPosts = data?.getUserPosts || [];
   const postCount = userPosts.length;
 
   return (
@@ -37,7 +33,7 @@ const UserProfile = () => {
         There are {postCount} post
         {postCount > 1 && "s"} by {username}
       </Typography>
-      <Cards posts={userPosts} />
+      {loading ? <CardPlaceholder /> : <Cards posts={userPosts} />}
       <NewPostButton />
     </Fragment>
   );
