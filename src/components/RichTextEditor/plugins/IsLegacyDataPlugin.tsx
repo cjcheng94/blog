@@ -33,8 +33,7 @@ const IsLegacyDataPlugin = ({
       size="small"
       aria-label="close"
       color="inherit"
-      onClick={() => closeSnackbar(snackBarId)}
-    >
+      onClick={() => closeSnackbar(snackBarId)}>
       <Close />
     </IconButton>
   );
