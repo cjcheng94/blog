@@ -19,10 +19,10 @@ import { useSnackbar } from "notistack";
 
 import {
   CustomDialog,
-  ErrorAlert,
   NewPostButton,
   DisplayTag,
-  Editor
+  Editor,
+  useErrorAlert
 } from "@components";
 import { loadingVar, isAuthedVar } from "../api/cache";
 import { MyPostFragment } from "@graphql";
@@ -76,7 +76,7 @@ const PostDetails = () => {
   const history = useHistory();
 
   const { enqueueSnackbar } = useSnackbar();
-
+  const { showErrorAlert } = useErrorAlert();
   const isOnline = useNavigatorOnline();
 
   // Get post from server
@@ -124,15 +124,17 @@ const PostDetails = () => {
     }
   }, [deletePostCalled, deletePostData, enqueueSnackbar, history]);
 
+  const error = getPostError || deletePostError;
+
+  useEffect(() => {
+    showErrorAlert(error);
+  }, [error, showErrorAlert]);
+
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
   let post: MyPostFragment | null | undefined = null;
 
   if (isOnline) {
-    // Hide network error when offline
-    if (getPostError) {
-      return <ErrorAlert error={getPostError} />;
-    }
     if (getPostLoading || !getPostData) {
       return null;
     }
@@ -173,8 +175,6 @@ const PostDetails = () => {
 
   return (
     <Fragment>
-      {getPostError && isOnline && <ErrorAlert error={getPostError} />}
-      {deletePostError && isOnline && <ErrorAlert error={deletePostError} />}
       <div className={classes.wrapper}>
         <Typography variant="h3" gutterBottom className={classes.title}>
           {title}

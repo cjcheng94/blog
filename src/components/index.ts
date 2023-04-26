@@ -7,3 +7,4 @@ export * from "./RichTextEditor";
 export * from "./Tags";
 export * from "./Account";
 export * from "./Common";
+export * from "./ErrorAlert";

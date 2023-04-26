@@ -11,7 +11,8 @@ import {
   InstallAlert,
   SearchOverlay,
   AccountDialog,
-  ServiceWorkerAlerts
+  ServiceWorkerAlerts,
+  ErrorAlertProvider
 } from "@components";
 import {
   darkModeVar,
@@ -108,20 +109,22 @@ const App: React.FC = () => {
     <ThemeProvider theme={customTheme}>
       <CssBaseline />
       <SnackbarProvider>
-        <SortingContext.Provider
-          value={{
-            refetchFn,
-            updateRefetchFn: fn => {
-              setRefetchFn(() => fn);
-            }
-          }}>
-          <ServiceWorkerAlerts />
-          <InstallAlert />
-          <Route component={Header} />
-          {showSearchOverlay && <SearchOverlay />}
-          {!!accountDialogType && <AccountDialog type={accountDialogType} />}
-          <Main />
-        </SortingContext.Provider>
+        <ErrorAlertProvider>
+          <SortingContext.Provider
+            value={{
+              refetchFn,
+              updateRefetchFn: fn => {
+                setRefetchFn(() => fn);
+              }
+            }}>
+            <ServiceWorkerAlerts />
+            <InstallAlert />
+            <Route component={Header} />
+            {showSearchOverlay && <SearchOverlay />}
+            {!!accountDialogType && <AccountDialog type={accountDialogType} />}
+            <Main />
+          </SortingContext.Provider>
+        </ErrorAlertProvider>
       </SnackbarProvider>
     </ThemeProvider>
   );

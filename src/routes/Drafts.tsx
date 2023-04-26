@@ -1,6 +1,11 @@
 import React, { Fragment, useEffect } from "react";
 import { useQuery, useReactiveVar } from "@apollo/client";
-import { ErrorAlert, Cards, CardPlaceholder, NewPostButton } from "@components";
+import {
+  useErrorAlert,
+  Cards,
+  CardPlaceholder,
+  NewPostButton
+} from "@components";
 import { GET_USER_DRAFTS } from "../api/gqlDocuments";
 import { loadingVar, accountDialogTypeVar, isAuthedVar } from "../api/cache";
 
@@ -10,6 +15,7 @@ const showAccountDialog = (type: "login" | "signup") => {
 
 const Drafts = () => {
   const isAuthenticated = useReactiveVar(isAuthedVar);
+  const { showErrorAlert } = useErrorAlert();
 
   const { loading, error, data } = useQuery(GET_USER_DRAFTS, {
     skip: !isAuthenticated
@@ -26,6 +32,10 @@ const Drafts = () => {
     loadingVar(loading);
   }, [loading]);
 
+  useEffect(() => {
+    showErrorAlert(error);
+  }, [error, showErrorAlert]);
+
   const renderCards = () => {
     if (loading || !data?.getUserDrafts) {
       return <CardPlaceholder />;
@@ -35,7 +45,6 @@ const Drafts = () => {
 
   return (
     <Fragment>
-      {error && <ErrorAlert error={error} />}
       {renderCards()}
       <NewPostButton />
     </Fragment>
