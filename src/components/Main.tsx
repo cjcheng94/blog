@@ -1,6 +1,6 @@
 import React, { Suspense } from "react";
 import { Route, Switch } from "react-router-dom";
-import makeStyles from '@mui/styles/makeStyles';
+import makeStyles from "@mui/styles/makeStyles";
 import { LoadingOverlay } from "@components";
 import { useReactiveVar } from "@apollo/client";
 import { drawerVar } from "../api/cache";
@@ -11,10 +11,10 @@ const PostDetails = React.lazy(() => import("../routes/PostDetails"));
 const PostUpdate = React.lazy(() => import("../routes/PostUpdate"));
 const DraftUpdate = React.lazy(() => import("../routes/DraftUpdate"));
 const NoMatch = React.lazy(() => import("../routes/NoMatch"));
-const UserProfile = React.lazy(() => import("../routes/UserProfile"));
 const SearchResults = React.lazy(() => import("../routes/SearchResults"));
 const PostsByTags = React.lazy(() => import("../routes/PostsByTags"));
 const Drafts = React.lazy(() => import("../routes/Drafts"));
+const About = React.lazy(() => import("../routes/About"));
 
 const drawerWidth = 240;
 const useStyles = makeStyles(theme => ({
@@ -35,7 +35,7 @@ const useStyles = makeStyles(theme => ({
       duration: theme.transitions.duration.enteringScreen
     }),
     marginLeft: drawerWidth,
-    [theme.breakpoints.down('sm')]: {
+    [theme.breakpoints.down("sm")]: {
       marginLeft: 0
     }
   }
@@ -68,16 +68,16 @@ const routes = [
     main: PostsByTags
   },
   {
-    path: "/user/profile/:userId",
-    main: UserProfile
-  },
-  {
     path: "/results",
     main: SearchResults
   },
   {
     path: "/drafts",
     main: Drafts
+  },
+  {
+    path: "/about",
+    main: About
   },
   {
     main: NoMatch
