@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import { useQuery, useReactiveVar } from "@apollo/client";
 import { useSnackbar } from "notistack";
@@ -15,7 +15,6 @@ import {
   Drawer,
   Divider,
   List,
-  ListItem,
   ListItemText,
   ListItemIcon,
   ListItemButton,
@@ -44,10 +43,10 @@ import {
 import {
   CustomDialog,
   EditTagDialog,
-  ErrorAlert,
   AutosaveSpinner,
   Logo,
-  SortLatestListItem
+  SortLatestListItem,
+  useErrorAlert
 } from "@components";
 import { removeAuth } from "@utils";
 import { GET_ALL_TAGS } from "../api/gqlDocuments";
@@ -189,6 +188,7 @@ const Header = () => {
   const isAuthenticated = useReactiveVar(isAuthedVar);
 
   const { enqueueSnackbar } = useSnackbar();
+  const { showErrorAlert } = useErrorAlert();
 
   // Get all tags to render searched tags
   const {
@@ -196,6 +196,10 @@ const Header = () => {
     error: getTagsError,
     data: getTagsData
   } = useQuery(GET_ALL_TAGS);
+
+  useEffect(() => {
+    showErrorAlert(getTagsError);
+  }, [getTagsError, showErrorAlert]);
 
   const currentUsername = localStorage.getItem("currentUsername");
   const currentUserId = localStorage.getItem("currentUserId");
@@ -309,7 +313,6 @@ const Header = () => {
 
   return (
     <Fragment>
-      {getTagsError && <ErrorAlert error={getTagsError} />}
       <AppBar position="sticky" color="inherit" className={appBarClass}>
         <Toolbar className={classes.toolBar}>
           <div className={classes.centerAligned}>

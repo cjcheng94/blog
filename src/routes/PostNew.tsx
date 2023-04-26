@@ -20,7 +20,7 @@ import { useSnackbar } from "notistack";
 
 import debounce from "lodash/debounce";
 
-import { ErrorAlert, CustomDialog, TagBar, Editor } from "@components";
+import { CustomDialog, TagBar, Editor, useErrorAlert } from "@components";
 import {
   CREATE_NEW_POST,
   GET_ALL_POSTS,
@@ -86,6 +86,7 @@ const PostNew = () => {
   const history = useHistory();
 
   const { enqueueSnackbar, closeSnackbar } = useSnackbar();
+  const { showErrorAlert } = useErrorAlert();
 
   const [
     createNewPost,
@@ -144,6 +145,10 @@ const PostNew = () => {
     debounce(updateDraftHandler, 1000 * 5),
     []
   );
+
+  useEffect(() => {
+    showErrorAlert(createNewPostError);
+  }, [createNewPostError, showErrorAlert]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -390,8 +395,6 @@ const PostNew = () => {
 
   return (
     <Fragment>
-      {createNewPostError && <ErrorAlert error={createNewPostError} />}
-
       <Typography variant="h4" gutterBottom align="center">
         Write Your Story
       </Typography>

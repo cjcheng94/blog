@@ -2,10 +2,14 @@ import React, { useEffect, Fragment } from "react";
 import { useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-
 import { useQuery } from "@apollo/client";
-
-import { ErrorAlert, Cards, NewPostButton, DisplayTag } from "@components";
+import {
+  useErrorAlert,
+  Cards,
+  NewPostButton,
+  DisplayTag,
+  CardPlaceholder
+} from "@components";
 import { SEARCH, GET_ALL_TAGS, GET_POSTS_BY_TAGS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { useGetUrlParams } from "@utils";
@@ -23,6 +27,9 @@ const useStyles = makeStyles(theme => ({
     display: "flex",
     flexWrap: "wrap",
     marginLeft: theme.spacing(1)
+  },
+  info: {
+    marginBottom: theme.spacing(2)
   }
 }));
 
@@ -31,6 +38,7 @@ const SearchResults = () => {
   const location = useLocation();
   // Get Search params from URL query
   const { searchTerm, tagIds } = useGetUrlParams(location.search);
+  const { showErrorAlert } = useErrorAlert();
 
   const hasTags = tagIds.length > 0;
   const hasSearchTerm = !!searchTerm && searchTerm.length > 0;
@@ -71,10 +79,15 @@ const SearchResults = () => {
   });
 
   const isLoading = searchLoading || getPostsByTagsLoading || getTagsLoading;
+  const error = searchError || getPostsByTagsError || getTagsError;
 
   useEffect(() => {
     loadingVar(isLoading);
   }, [isLoading]);
+
+  useEffect(() => {
+    showErrorAlert(error);
+  }, [error, showErrorAlert]);
 
   const renderTags = () => {
     if (!getTagsData?.tags) return;
@@ -101,20 +114,26 @@ const SearchResults = () => {
     return searchData?.search || [];
   };
 
-  const error = searchError || getPostsByTagsError || getTagsError;
+  const results = getResults();
 
   return (
     <Fragment>
-      {error && <ErrorAlert error={error} />}
-      <Typography variant="h5" gutterBottom align="center">
-        Search results for <strong>{searchTerm}</strong>
-      </Typography>
-      {tagIds.length > 0 && (
-        <div className={classes.tagsRow}>
-          <div className={classes.tagsContainer}>{renderTags()}</div>
-        </div>
+      <div className={classes.info}>
+        <Typography variant="h5" gutterBottom align="center">
+          Search results for <strong>{searchTerm}</strong>
+        </Typography>
+        {tagIds.length > 0 && (
+          <div className={classes.tagsRow}>
+            <div className={classes.tagsContainer}>{renderTags()}</div>
+          </div>
+        )}
+      </div>
+      {isLoading ? <CardPlaceholder /> : <Cards posts={results} />}
+      {results.length < 1 && (
+        <Typography variant="h5" align="center">
+          No results
+        </Typography>
       )}
-      <Cards posts={getResults()} />
       <NewPostButton />
     </Fragment>
   );

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
 import { TransitionProps } from "@mui/material/transitions";
 import {
@@ -10,6 +10,7 @@ import {
   Slide
 } from "@mui/material";
 import { useNavigatorOnline } from "@utils";
+import { useErrorAlert } from "@components";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<any, any> },
@@ -18,39 +19,46 @@ const Transition = React.forwardRef(function Transition(
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-type ErrorAlertProps = {
-  error: any;
-};
-
-const ErrorAlert: React.FC<ErrorAlertProps> = ({ error }) => {
-  const [isOpen, setIsOpen] = useState(true);
+const ErrorAlert = () => {
+  const { error, showErrorAlert } = useErrorAlert();
 
   const isOnline = useNavigatorOnline();
 
   const offlineMessage =
     "Oops, you're in offline mode, please try again when you have an Internet connection";
-  const errorMessage = isOnline ? error?.message : offlineMessage;
+
+  const errorMessage = () => {
+    if (typeof error === "string") {
+      return error;
+    }
+    if (!isOnline) {
+      return offlineMessage;
+    }
+    if (error instanceof Error) {
+      return error.message;
+    }
+  };
+
+  const hideAlert = () => {
+    showErrorAlert(undefined);
+  };
+
+  const message = errorMessage();
 
   return (
     <div>
       <Dialog
-        open={isOpen}
+        open={true}
         TransitionComponent={Transition}
         aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description"
-      >
+        aria-describedby="alert-dialog-slide-description">
         <DialogTitle>Oops, Something went wrong...</DialogTitle>
-        <DialogContent>{errorMessage}</DialogContent>
+        <DialogContent>{message}</DialogContent>
         <DialogActions>
-          <Button component={Link} to="/" color="secondary">
+          <Button component={Link} onClick={hideAlert} to="/" color="secondary">
             Home
           </Button>
-          <Button
-            onClick={() => {
-              setIsOpen(false);
-            }}
-            color="primary"
-          >
+          <Button onClick={hideAlert} color="primary">
             Back
           </Button>
         </DialogActions>

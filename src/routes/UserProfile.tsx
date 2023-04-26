@@ -2,7 +2,12 @@ import React, { useEffect, Fragment } from "react";
 import { useLocation, useRouteMatch } from "react-router-dom";
 import { useQuery } from "@apollo/client";
 import { Typography } from "@mui/material";
-import { ErrorAlert, Cards, NewPostButton } from "@components";
+import {
+  useErrorAlert,
+  Cards,
+  NewPostButton,
+  CardPlaceholder
+} from "@components";
 import { GET_USER_POSTS } from "../api/gqlDocuments";
 import { loadingVar } from "../api/cache";
 import { useGetUrlParams } from "@utils";
@@ -18,26 +23,26 @@ const UserProfile = () => {
   });
 
   const { username } = useGetUrlParams(location.search);
+  const { showErrorAlert } = useErrorAlert();
 
   useEffect(() => {
     loadingVar(loading);
   }, [loading]);
 
-  if (loading || !data) {
-    return null;
-  }
+  useEffect(() => {
+    showErrorAlert(error);
+  }, [error, showErrorAlert]);
 
-  const userPosts = data.getUserPosts;
+  const userPosts = data?.getUserPosts || [];
   const postCount = userPosts.length;
 
   return (
     <Fragment>
-      {error && <ErrorAlert error={error} />}
       <Typography variant="h5" gutterBottom align="center">
         There are {postCount} post
         {postCount > 1 && "s"} by {username}
       </Typography>
-      <Cards posts={userPosts} />
+      {loading ? <CardPlaceholder /> : <Cards posts={userPosts} />}
       <NewPostButton />
     </Fragment>
   );
