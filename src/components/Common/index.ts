@@ -1,7 +1,6 @@
 export { default as NewPostButton } from "./NewPostButton";
 export { default as LoadingOverlay } from "./LoadingOverlay";
 export { default as InstallAlert } from "./InstallAlert";
-export { default as ErrorAlert } from "./ErrorAlert";
 export { default as AsyncComponent } from "./AsyncComponent";
 export { default as CardPlaceholder } from "./CardPlaceholder";
 export { default as Cards } from "./Cards";

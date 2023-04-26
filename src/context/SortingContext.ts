@@ -1,4 +1,4 @@
-import { createContext, Dispatch, SetStateAction } from "react";
+import { createContext } from "react";
 import { ObservableQuery } from "@apollo/client";
 
 type RefetchFn = ObservableQuery["refetch"];
