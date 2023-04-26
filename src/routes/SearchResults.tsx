@@ -2,11 +2,9 @@ import React, { useEffect, Fragment } from "react";
 import { useLocation } from "react-router-dom";
 import { Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
-
 import { useQuery } from "@apollo/client";
-
 import {
-  ErrorAlert,
+  useErrorAlert,
   Cards,
   NewPostButton,
   DisplayTag,
@@ -40,6 +38,7 @@ const SearchResults = () => {
   const location = useLocation();
   // Get Search params from URL query
   const { searchTerm, tagIds } = useGetUrlParams(location.search);
+  const { showErrorAlert } = useErrorAlert();
 
   const hasTags = tagIds.length > 0;
   const hasSearchTerm = !!searchTerm && searchTerm.length > 0;
@@ -80,10 +79,15 @@ const SearchResults = () => {
   });
 
   const isLoading = searchLoading || getPostsByTagsLoading || getTagsLoading;
+  const error = searchError || getPostsByTagsError || getTagsError;
 
   useEffect(() => {
     loadingVar(isLoading);
   }, [isLoading]);
+
+  useEffect(() => {
+    showErrorAlert(error);
+  }, [error, showErrorAlert]);
 
   const renderTags = () => {
     if (!getTagsData?.tags) return;
@@ -111,11 +115,9 @@ const SearchResults = () => {
   };
 
   const results = getResults();
-  const error = searchError || getPostsByTagsError || getTagsError;
 
   return (
     <Fragment>
-      {error && <ErrorAlert error={error} />}
       <div className={classes.info}>
         <Typography variant="h5" gutterBottom align="center">
           Search results for <strong>{searchTerm}</strong>

@@ -12,11 +12,12 @@ import {
   ApolloError
 } from "@apollo/client";
 import {
-  ErrorAlert,
   CardPlaceholder,
   NewPostButton,
-  ArticleCard
+  ArticleCard,
+  useErrorAlert
 } from "@components";
+
 import { loadingVar, sortLatestFirstVar } from "../api/cache";
 import { GET_ALL_POSTS } from "../api/gqlDocuments";
 import { GetAllPostsQuery, Post } from "@graphql";
@@ -79,6 +80,7 @@ const PostIndex = () => {
   const sortLatest = useReactiveVar(sortLatestFirstVar);
   const history = useHistory();
   const classes = useStyles();
+  const { showErrorAlert } = useErrorAlert();
 
   const observer = useRef<IntersectionObserver | null>(null);
 
@@ -91,6 +93,10 @@ const PostIndex = () => {
       notifyOnNetworkStatusChange: true
     }
   );
+
+  useEffect(() => {
+    showErrorAlert(error);
+  }, [error, showErrorAlert]);
 
   // For some weired reason, Apollo prioritizes "setVariables" network status over
   // refetch status.
@@ -227,7 +233,7 @@ const PostIndex = () => {
 
   return (
     <>
-      {error && <ErrorAlert error={error} />}
+      {/* {error && <ErrorAlert error={error} />} */}
       <NewPostButton />
       {noPosts ? (
         <CardPlaceholder />

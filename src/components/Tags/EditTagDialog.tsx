@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Button,
   Dialog,
@@ -15,7 +15,7 @@ import { Label, Delete } from "@mui/icons-material";
 import { TransitionProps } from "@mui/material/transitions";
 import { useQuery, useMutation } from "@apollo/client";
 import { GET_ALL_TAGS, DELETE_TAG, CREATE_TAG } from "../../api/gqlDocuments";
-import { ErrorAlert, NewTagInput } from "@components";
+import { useErrorAlert, NewTagInput } from "@components";
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & { children: React.ReactElement<any, any> },
@@ -56,6 +56,7 @@ interface Props {
 const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
   const [hoveredTag, setHoveredTag] = useState<string>("");
   const classes = useStyles();
+  const { showErrorAlert } = useErrorAlert();
 
   // Get all tags
   const {
@@ -76,6 +77,12 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
       refetchQueries: [{ query: GET_ALL_TAGS }]
     });
 
+  const currentError = getAllTagsError || createTagError || deleteTagError;
+
+  useEffect(() => {
+    showErrorAlert(currentError);
+  }, [currentError, showErrorAlert]);
+
   const handleDelete = (tagId: string) => () => {
     deleteTag({
       variables: {
@@ -89,14 +96,6 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
       return;
     }
     createTag({ variables: { name: tagName } });
-  };
-
-  const renderError = () => {
-    const currentError = getAllTagsError || createTagError || deleteTagError;
-    if (!currentError) {
-      return;
-    }
-    return <ErrorAlert error={currentError} />;
   };
 
   const renderTags = () => {
@@ -137,31 +136,28 @@ const EditTagDialog: React.FC<Props> = ({ open, handleClose }) => {
   };
 
   return (
-    <div>
-      {renderError()}
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        TransitionComponent={Transition}
-        classes={{ paperScrollPaper: classes.dialog }}
-        aria-labelledby="alert-dialog-slide-title"
-        aria-describedby="alert-dialog-slide-description">
-        <DialogTitle id="alert-dialog-slide-title">Edit Tags</DialogTitle>
-        <DialogContent className={classes.content}>
-          <NewTagInput
-            placeholder="Add tag"
-            onSubmit={handleCreateTag}
-            loading={createTagLoading}
-          />
-          <div className={classes.tagsContainer}>{renderTags()}</div>
-        </DialogContent>
-        <DialogActions style={{ justifyContent: "space-evenly" }}>
-          <Button onClick={handleClose} color="primary">
-            Done
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </div>
+    <Dialog
+      open={open}
+      onClose={handleClose}
+      TransitionComponent={Transition}
+      classes={{ paperScrollPaper: classes.dialog }}
+      aria-labelledby="alert-dialog-slide-title"
+      aria-describedby="alert-dialog-slide-description">
+      <DialogTitle id="alert-dialog-slide-title">Edit Tags</DialogTitle>
+      <DialogContent className={classes.content}>
+        <NewTagInput
+          placeholder="Add tag"
+          onSubmit={handleCreateTag}
+          loading={createTagLoading}
+        />
+        <div className={classes.tagsContainer}>{renderTags()}</div>
+      </DialogContent>
+      <DialogActions style={{ justifyContent: "space-evenly" }}>
+        <Button onClick={handleClose} color="primary">
+          Done
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 };
 

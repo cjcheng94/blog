@@ -6,7 +6,7 @@ import { TextField, Button, Typography } from "@mui/material";
 import makeStyles from "@mui/styles/makeStyles";
 import { useSnackbar } from "notistack";
 
-import { CustomDialog, ErrorAlert, TagBar, Editor } from "@components";
+import { CustomDialog, useErrorAlert, TagBar, Editor } from "@components";
 import { useNavigatorOnline } from "@utils";
 import { loadingVar, draftUpdatingVar, draftErrorVar } from "../api/cache";
 import { uploadImage } from "../api/imgur";
@@ -71,6 +71,7 @@ const DraftUpdate = () => {
 
   const { _id } = match.params;
   const isOnline = useNavigatorOnline();
+  const { showErrorAlert } = useErrorAlert();
 
   const [
     createNewPost,
@@ -118,6 +119,13 @@ const DraftUpdate = () => {
   ] = useMutation(DELETE_DRAFT, {
     refetchQueries: [{ query: GET_USER_DRAFTS }]
   });
+
+  // updateDraftError is handled by AutoSaveSpinner, so we don't have to show an error alert for it
+  const error = createNewPostError || getDraftError || deleteDraftError;
+
+  useEffect(() => {
+    showErrorAlert(error);
+  }, [error, showErrorAlert]);
 
   // Get draft from cache
   const client = useApolloClient();
@@ -356,7 +364,6 @@ const DraftUpdate = () => {
 
   return (
     <Fragment>
-      {getDraftError && isOnline && <ErrorAlert error={getDraftError} />}
       <form
         id="update-form"
         className={classes.formEdit}
