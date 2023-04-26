@@ -27,8 +27,9 @@ import {
   Brightness4,
   AccountCircle,
   ChevronLeft,
-  ExitToApp,
-  LibraryBooks,
+  Login,
+  Logout,
+  Info,
   Menu as MenuIcon,
   Drafts as DraftIcon
 } from "@mui/icons-material";
@@ -202,7 +203,6 @@ const Header = () => {
   }, [getTagsError, showErrorAlert]);
 
   const currentUsername = localStorage.getItem("currentUsername");
-  const currentUserId = localStorage.getItem("currentUserId");
 
   const showMenu = (e: React.MouseEvent) => {
     setAnchorEl(e.currentTarget);
@@ -259,15 +259,6 @@ const Header = () => {
   };
 
   const isTagSelected = (tagId: string) => selectedTagIds.includes(tagId);
-
-  const getUserPath = () => {
-    if (!!currentUsername) {
-      return `/user/profile/${currentUserId}?username=${encodeURIComponent(
-        currentUsername
-      )}`;
-    }
-    return "";
-  };
 
   const TagList = () => {
     if (getTagsLoading || !getTagsData?.tags) return null;
@@ -348,33 +339,39 @@ const Header = () => {
                 <Brightness4 />
               </IconButton>
             </Tooltip>
-            <Fragment>
-              <Tooltip title="My Account">
-                <IconButton
-                  aria-haspopup="true"
-                  color="inherit"
-                  onClick={showMenu}
-                  size="large">
-                  <AccountCircle />
-                </IconButton>
-              </Tooltip>
-              <Menu
-                id="simple-menu"
-                anchorEl={anchorEl}
-                open={!!anchorEl}
-                onClose={hideMenu}>
-                {isAuthenticated ? (
+            <Tooltip title="About me">
+              <IconButton
+                aria-haspopup="true"
+                color="inherit"
+                onClick={() => {
+                  history.push("/about");
+                }}
+                size="large">
+                <Info />
+              </IconButton>
+            </Tooltip>
+
+            {isAuthenticated ? (
+              <Fragment>
+                <Tooltip title="My Account">
+                  <IconButton
+                    aria-haspopup="true"
+                    color="inherit"
+                    onClick={showMenu}
+                    size="large">
+                    <AccountCircle />
+                  </IconButton>
+                </Tooltip>
+
+                <Menu
+                  id="simple-menu"
+                  anchorEl={anchorEl}
+                  open={!!anchorEl}
+                  onClose={hideMenu}>
                   <MenuList>
                     <MenuItem>
                       <AccountCircle className={classes.menuIcon} />
                       <span>{currentUsername}</span>
-                    </MenuItem>
-                    <MenuItem
-                      component={Link}
-                      to={getUserPath()}
-                      onClick={hideMenu}>
-                      <LibraryBooks className={classes.menuIcon} />
-                      My Posts
                     </MenuItem>
                     <MenuItem component={Link} to="/drafts" onClick={hideMenu}>
                       <DraftIcon className={classes.menuIcon} />
@@ -386,22 +383,23 @@ const Header = () => {
                         hideMenu();
                       }}
                       color="inherit">
-                      <ExitToApp className={classes.menuIcon} />
+                      <Logout className={classes.menuIcon} />
                       Log Out
                     </MenuItem>
                   </MenuList>
-                ) : (
-                  <MenuList>
-                    <MenuItem onClick={openAccountDialog("login")}>
-                      Log In
-                    </MenuItem>
-                    <MenuItem onClick={openAccountDialog("signup")}>
-                      Sign Up
-                    </MenuItem>
-                  </MenuList>
-                )}
-              </Menu>
-            </Fragment>
+                </Menu>
+              </Fragment>
+            ) : (
+              <Tooltip title="Log in">
+                <IconButton
+                  aria-haspopup="true"
+                  color="inherit"
+                  onClick={openAccountDialog("login")}
+                  size="large">
+                  <Login />
+                </IconButton>
+              </Tooltip>
+            )}
           </div>
         </Toolbar>
         <div className={classes.progressContainer}>
