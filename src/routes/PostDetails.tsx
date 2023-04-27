@@ -169,10 +169,6 @@ const PostDetails = () => {
     tag => tag && <DisplayTag key={tag._id} value={tag.name} />
   );
 
-  const userPostUrl = `/user/profile/${
-    authorInfo._id
-  }?username=${encodeURIComponent(authorInfo.username)}`;
-
   return (
     <Fragment>
       <div className={classes.wrapper}>
@@ -182,7 +178,7 @@ const PostDetails = () => {
         <div className={classes.info}>
           <Typography variant="body2">
             By{" "}
-            <Link className={classes.author} to={userPostUrl}>
+            <Link className={classes.author} to="/about">
               {authorInfo.username}
             </Link>
           </Typography>
