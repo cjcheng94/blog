@@ -65,6 +65,13 @@ const useStyles = makeStyles(theme => ({
     margin: "auto",
     marginBottom: theme.spacing(1),
     maxWidth: "100%"
+  },
+  actionButtons: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(1)
   }
 }));
 
@@ -82,6 +89,7 @@ const PostNew = () => {
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentErrorMessage, setContentErrorMessage] = useState("");
   const [selectedTagIds, setSelectedTagIds] = useState<string[]>([]);
+  const [promptImport, setPromptImport] = useState(false);
 
   const history = useHistory();
 
@@ -417,31 +425,50 @@ const PostNew = () => {
           error={!!titleErrorMessage}
           fullWidth
         />
+
         <TagBar selectedTagIds={selectedTagIds} onChange={handleTagsChange} />
-        <label>
-          <Button className={classes.thumbnailButton} component="span">
-            Upload thumbnail
+
+        <div className={classes.actionButtons}>
+          <div>
+            <label>
+              <Button component="span">Upload thumbnail</Button>
+              <input
+                type="file"
+                accept="image/*"
+                className={classes.input}
+                onChange={handleImageInputChange}
+              />
+            </label>
+            <Button color="error" onClick={() => setThumbnailUrl("")}>
+              Remove Thumbnail
+            </Button>
+          </div>
+          <Button
+            onClick={() => {
+              setPromptImport(true);
+            }}>
+            Import File
           </Button>
-          <input
-            type="file"
-            accept="image/*"
-            className={classes.input}
-            onChange={handleImageInputChange}
-          />
-        </label>
-        <Button color="error" onClick={() => setThumbnailUrl("")}>
-          Remove Thumbnail
-        </Button>
+        </div>
+
         {thumbnailUrl && (
           <img src={thumbnailUrl} className={classes.thumbnail} />
         )}
+
         <Editor
           onRichTextTextChange={setRichData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
+          promptImport={promptImport}
+          importCallback={() => {
+            setPromptImport(false);
+          }}
         />
+
         <FormHelperText error>{contentErrorMessage}</FormHelperText>
+
         {renderSubmitOrLoginButton()}
+
         <Button
           className={classes.button}
           variant="contained"

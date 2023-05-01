@@ -3,7 +3,6 @@ import { useEffect } from "react";
 import { $getRoot, $isParagraphNode } from "lexical";
 
 type OnChangePluginProps = {
-  ignoreInitialChange?: boolean;
   ignoreSelectionChange?: boolean;
   setContentEmpty?: (isEmpty: boolean) => void;
   onRichTextChange?: (data: string) => void;
@@ -11,7 +10,6 @@ type OnChangePluginProps = {
 };
 
 const OnChangePlugin = ({
-  ignoreInitialChange = true,
   ignoreSelectionChange = false,
   setContentEmpty,
   onRichTextChange,
@@ -53,16 +51,12 @@ const OnChangePlugin = ({
             return;
           }
 
-          if (ignoreInitialChange && prevEditorState.isEmpty()) {
-            return;
-          }
-
           const serializedRichText = JSON.stringify(editorState);
           onRichTextChange(serializedRichText);
         }
       );
     }
-  }, [editor, ignoreInitialChange, ignoreSelectionChange, onRichTextChange]);
+  }, [editor, ignoreSelectionChange, onRichTextChange]);
 
   useEffect(() => {
     if (onTextContentChange) {

@@ -1,29 +1,40 @@
 import { useEffect } from "react";
 
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
-import { exportFile } from "@lexical/file";
+import { exportFile, importFile } from "@lexical/file";
 
 export default function FilePlugin({
   filename,
   promptDownload,
-  downloadCallback
+  promptImport,
+  downloadCallback,
+  importCallback
 }: {
-  filename: string | undefined;
-  promptDownload: boolean | undefined;
-  downloadCallback: (() => void) | undefined;
+  filename?: string;
+  promptDownload?: boolean;
+  promptImport?: boolean;
+  downloadCallback?: () => void;
+  importCallback?: () => void;
 }) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    if (promptDownload && filename && downloadCallback) {
+    if (promptDownload && filename) {
       exportFile(editor, {
         fileName: `${filename} ${new Date().toISOString()}`
       });
 
-      downloadCallback();
+      downloadCallback && downloadCallback();
     }
   }, [downloadCallback, promptDownload, editor, filename]);
 
+  useEffect(() => {
+    if (promptImport) {
+      importFile(editor);
+
+      importCallback && importCallback();
+    }
+  }, [editor, importCallback, promptImport]);
 
   return null;
 }
