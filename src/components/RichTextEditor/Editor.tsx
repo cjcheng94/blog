@@ -33,7 +33,8 @@ import {
   EditorTheme,
   CodeHighlightPlugin,
   OnChangePlugin,
-  ClickableLinkPlugin
+  ClickableLinkPlugin,
+  FilePlugin
 } from "@components";
 import "./style.css";
 import "./prism-night-owl.css";
@@ -50,8 +51,13 @@ const onError = (error: Error) => {
 
 type EditorProps = {
   editable?: boolean;
+  promptImport?: boolean;
+  promptDownload?: boolean;
+  filename?: string;
   initialContent?: string;
   initialPlainText?: string;
+  downloadCallback?: () => void;
+  importCallback?: () => void;
   setContentEmpty?: (isEmpty: boolean) => void;
   onTextContentChange?: (data: string) => void;
   onRichTextTextChange?: (data: string) => void;
@@ -60,6 +66,11 @@ type EditorProps = {
 const Editor: React.FC<EditorProps> = props => {
   const {
     editable = true,
+    filename,
+    promptImport,
+    promptDownload,
+    downloadCallback,
+    importCallback,
     initialContent,
     initialPlainText,
     setContentEmpty,
@@ -137,6 +148,13 @@ const Editor: React.FC<EditorProps> = props => {
           <IsLegacyDataPlugin initialContent={initialContent} />
           <ImagesPlugin />
           <TabIndentationPlugin />
+          <FilePlugin
+            filename={filename}
+            promptImport={promptImport}
+            promptDownload={promptDownload}
+            downloadCallback={downloadCallback}
+            importCallback={importCallback}
+          />
         </SharedHistoryContext>
       </LexicalComposer>
     </div>
