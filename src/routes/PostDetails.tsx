@@ -70,6 +70,8 @@ const useStyles = makeStyles(theme => ({
 const PostDetails = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
+  const [downloadFile, setDownloadFile] = useState(false);
+
   const classes = useStyles();
 
   const match = useRouteMatch<{ _id: string }>();
@@ -194,8 +196,13 @@ const PostDetails = () => {
           editable={false}
           initialContent={content}
           initialPlainText={contentText}
+          filename={title}
+          downloadFile={downloadFile}
+          downloadCallback={() => {
+            setDownloadFile(false);
+          }}
         />
-        {/* Conditionally render 'Edit' and 'Delete' buttons*/}
+        {/* Authorized actions*/}
         {authorInfo.username === currentUsername && isAuthenticated ? (
           <Fragment>
             <Button
@@ -212,6 +219,15 @@ const PostDetails = () => {
               variant="contained"
               color="primary">
               Edit
+            </Button>
+            <Button
+              className={classes.button}
+              onClick={() => {
+                setDownloadFile(true);
+              }}
+              variant="contained"
+              color="primary">
+              Download file
             </Button>
           </Fragment>
         ) : null}
