@@ -70,7 +70,7 @@ const useStyles = makeStyles(theme => ({
 const PostDetails = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [clickedConfirm, setClickedConfirm] = useState(false);
-  const [downloadFile, setDownloadFile] = useState(false);
+  const [promptDownload, setPromptDownload] = useState(false);
 
   const classes = useStyles();
 
@@ -197,9 +197,9 @@ const PostDetails = () => {
           initialContent={content}
           initialPlainText={contentText}
           filename={title}
-          downloadFile={downloadFile}
+          promptDownload={promptDownload}
           downloadCallback={() => {
-            setDownloadFile(false);
+            setPromptDownload(false);
           }}
         />
         {/* Authorized actions*/}
@@ -223,7 +223,7 @@ const PostDetails = () => {
             <Button
               className={classes.button}
               onClick={() => {
-                setDownloadFile(true);
+                setPromptDownload(true);
               }}
               variant="contained"
               color="primary">

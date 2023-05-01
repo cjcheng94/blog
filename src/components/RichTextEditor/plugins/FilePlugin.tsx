@@ -5,24 +5,25 @@ import { exportFile } from "@lexical/file";
 
 export default function FilePlugin({
   filename,
-  downloadFile,
+  promptDownload,
   downloadCallback
 }: {
   filename: string | undefined;
-  downloadFile: boolean | undefined;
+  promptDownload: boolean | undefined;
   downloadCallback: (() => void) | undefined;
 }) {
   const [editor] = useLexicalComposerContext();
 
   useEffect(() => {
-    if (downloadFile && filename && downloadCallback) {
+    if (promptDownload && filename && downloadCallback) {
       exportFile(editor, {
         fileName: `${filename} ${new Date().toISOString()}`
       });
 
       downloadCallback();
     }
-  }, [downloadCallback, downloadFile, editor, filename]);
+  }, [downloadCallback, promptDownload, editor, filename]);
+
 
   return null;
 }

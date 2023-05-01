@@ -51,7 +51,7 @@ const onError = (error: Error) => {
 
 type EditorProps = {
   editable?: boolean;
-  downloadFile?: boolean;
+  promptDownload?: boolean;
   filename?: string;
   initialContent?: string;
   initialPlainText?: string;
@@ -65,7 +65,7 @@ const Editor: React.FC<EditorProps> = props => {
   const {
     editable = true,
     filename,
-    downloadFile,
+    promptDownload,
     downloadCallback,
     initialContent,
     initialPlainText,
@@ -145,7 +145,7 @@ const Editor: React.FC<EditorProps> = props => {
           <ImagesPlugin />
           <TabIndentationPlugin />
           <FilePlugin
-            downloadFile={downloadFile}
+            promptDownload={promptDownload}
             filename={filename}
             downloadCallback={downloadCallback}
           />
