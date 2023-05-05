@@ -189,17 +189,15 @@ h1 {
 .editor-paragraph:last-child {
   margin-bottom: 0;
 }
+.editor-heading-h1 {
+  font-size: 1.6em;
+}
 
 .editor-heading-h2 {
-  font-size: 15px;
-  color: rgba(0, 0, 0, 0.54);
+  font-size: 1.2em;
   font-weight: 700;
   margin: 10px 0;
   padding: 0;
-  text-transform: uppercase;
-}
-.dark-mode-editor .editor-heading-h2 {
-  color: rgba(255, 255, 255, 0.7);
 }
 
 .editor-quote {
