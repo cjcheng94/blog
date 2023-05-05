@@ -54,8 +54,10 @@ const PostUpdate = () => {
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showApplyDraftDialog, setShowApplyDraftDialog] = useState(false);
   const [title, setTitle] = useState("");
-  const [content, setRichData] = useState("");
+  const [richTextData, setRichTextData] = useState("");
   const [plainText, setPlainText] = useState("");
+  const [initialRichTextData, setInitialRichTextData] = useState("");
+  const [initialPlainText, setInitialPlainText] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
@@ -152,7 +154,9 @@ const PostUpdate = () => {
       const { title, content, contentText, tagIds, thumbnailUrl } =
         getPostData.getPostById!;
       setTitle(title);
-      setRichData(content);
+      setInitialRichTextData(content);
+      setInitialPlainText(contentText);
+      setRichTextData(content);
       setPlainText(contentText);
       setSelectedTagIds(tagIds);
       setThumbnailUrl(thumbnailUrl ?? "");
@@ -226,8 +230,8 @@ const PostUpdate = () => {
         _id: draftId,
         postId,
         title,
-        content,
         thumbnailUrl,
+        content: richTextData,
         contentText: plainText,
         tagIds: selectedTagIds
       });
@@ -235,7 +239,7 @@ const PostUpdate = () => {
   }, [
     title,
     plainText,
-    content,
+    richTextData,
     selectedTagIds,
     draftId,
     debouncedUpdateDraft,
@@ -310,8 +314,8 @@ const PostUpdate = () => {
         variables: {
           _id: postId,
           title,
-          content,
           thumbnailUrl,
+          content: richTextData,
           contentText: plainText,
           tagIds: selectedTagIds
         }
@@ -321,13 +325,13 @@ const PostUpdate = () => {
 
   // Render content field
   const renderContentField = () => {
-    if (content) {
+    if (initialRichTextData) {
       return (
         <Editor
           key={editorKey}
-          initialContent={content}
-          initialPlainText={plainText}
-          onRichTextTextChange={setRichData}
+          initialContent={initialRichTextData}
+          initialPlainText={initialPlainText}
+          onRichTextTextChange={setRichTextData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
         />
@@ -380,7 +384,9 @@ const PostUpdate = () => {
     const { title, content, contentText, tagIds, thumbnailUrl } =
       getDraftByPostIdData!.getDraftByPostId;
     setTitle(title);
-    setRichData(content);
+    setInitialRichTextData(content);
+    setInitialPlainText(contentText);
+    setRichTextData(content);
     setPlainText(contentText);
     setSelectedTagIds(tagIds);
     setThumbnailUrl(thumbnailUrl ?? "");

@@ -54,8 +54,10 @@ const useStyles = makeStyles(theme => ({
 const DraftUpdate = () => {
   const [showCustomDialog, setShowCustomDialog] = useState(false);
   const [title, setTitle] = useState("");
-  const [content, setRichData] = useState("");
+  const [richTextData, setRichTextData] = useState("");
   const [plainText, setPlainText] = useState("");
+  const [initialRichTextData, setInitialRichTextData] = useState("");
+  const [initialPlainText, setInitialPlainText] = useState("");
   const [thumbnailUrl, setThumbnailUrl] = useState("");
   const [titleErrorMessage, setTitleErrorMessage] = useState("");
   const [contentEmpty, setContentEmpty] = useState(true);
@@ -177,8 +179,10 @@ const DraftUpdate = () => {
       const { title, content, contentText, tagIds, thumbnailUrl } =
         getDraftData.getDraftById;
       setTitle(title);
-      setRichData(content);
+      setRichTextData(content);
       setPlainText(contentText);
+      setInitialRichTextData(content);
+      setInitialPlainText(contentText);
       setSelectedTagIds(tagIds);
       setThumbnailUrl(thumbnailUrl ?? "");
     }
@@ -190,8 +194,10 @@ const DraftUpdate = () => {
       console.log("Loaded draft from cache");
       const { title, content, contentText, tagIds } = cachedDraftData;
       setTitle(title);
-      setRichData(content);
+      setRichTextData(content);
       setPlainText(contentText);
+      setInitialRichTextData(content);
+      setInitialPlainText(contentText);
       setSelectedTagIds(tagIds);
       setThumbnailUrl(thumbnailUrl);
     }
@@ -208,7 +214,7 @@ const DraftUpdate = () => {
           _id,
           postId,
           title,
-          content,
+          content: richTextData,
           contentText: plainText,
           tagIds: selectedTagIds,
           thumbnailUrl
@@ -219,11 +225,11 @@ const DraftUpdate = () => {
     _id,
     title,
     plainText,
-    content,
     selectedTagIds,
     getDraftData,
     debouncedUpdateDraft,
-    thumbnailUrl
+    thumbnailUrl,
+    richTextData
   ]);
 
   // Create post success
@@ -297,8 +303,8 @@ const DraftUpdate = () => {
       createNewPost({
         variables: {
           title,
-          content,
           thumbnailUrl,
+          content: richTextData,
           contentText: plainText,
           tagIds: selectedTagIds
         }
@@ -308,12 +314,12 @@ const DraftUpdate = () => {
 
   // Render content field
   const renderContentField = () => {
-    if (content) {
+    if (initialRichTextData) {
       return (
         <Editor
-          initialContent={content}
-          initialPlainText={plainText}
-          onRichTextTextChange={setRichData}
+          initialContent={initialRichTextData}
+          initialPlainText={initialPlainText}
+          onRichTextTextChange={setRichTextData}
           onTextContentChange={setPlainText}
           setContentEmpty={setContentEmpty}
         />
