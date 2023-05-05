@@ -233,7 +233,6 @@ const PostIndex = () => {
 
   return (
     <>
-      {/* {error && <ErrorAlert error={error} />} */}
       <NewPostButton />
       {noPosts ? (
         <CardPlaceholder />
