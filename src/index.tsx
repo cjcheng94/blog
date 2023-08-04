@@ -37,9 +37,7 @@ import "@fontsource/source-serif-pro/400.css";
 import "@fontsource/source-serif-pro/700.css";
 
 const httpLink = createHttpLink({
-  uri: import.meta.env.DEV
-    ? import.meta.env.VITE_BACKEND_CYCLIC_URL
-    : import.meta.env.VITE_BACKEND_RAILWAY_URL
+  uri: import.meta.env.VITE_BACKEND_CYCLIC_URL
 });
 
 const authLink = setContext((_, { headers }) => {
