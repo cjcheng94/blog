@@ -66,13 +66,7 @@ registerRoute(
 
 // Workbox with custom handler to use IndexedDB for cache.
 registerRoute(
-  ({ url }) => {
-    const backendUrl = import.meta.env.DEV
-      ? import.meta.env.VITE_BACKEND_CYCLIC_URL
-      : import.meta.env.VITE_BACKEND_RAILWAY_URL;
-
-    return url.origin === backendUrl;
-  },
+  ({ url }) => url.origin === import.meta.env.VITE_BACKEND_RAILWAY_URL,
   async ({ request }) => networkFirst(request),
   "POST"
 );
