@@ -18,7 +18,8 @@ import {
   ListItemText,
   ListItemIcon,
   ListItemButton,
-  useScrollTrigger
+  useScrollTrigger,
+  useMediaQuery
 } from "@mui/material";
 import {
   Edit,
@@ -312,21 +313,19 @@ const Header = () => {
               aria-label="open drawer"
               onClick={setShowDrawer(true)}
               edge="start"
-              className={menuButtonClass}
-              size="large">
+              className={menuButtonClass}>
               <MenuIcon />
             </IconButton>
             <Logo />
           </div>
           {/* Show different sets of buttons based on whether user is signed in or not*/}
-          <div id="conditional-buttons">
+          <div>
             {showAutoSaveSpinner && <AutosaveSpinner />}
             <Tooltip title="Search">
               <IconButton
                 aria-haspopup="true"
                 color="inherit"
-                onClick={toggleSearchOverlay}
-                size="large">
+                onClick={toggleSearchOverlay}>
                 <Search />
               </IconButton>
             </Tooltip>
@@ -334,8 +333,7 @@ const Header = () => {
               <IconButton
                 aria-haspopup="true"
                 color="inherit"
-                onClick={toggleDarkMode}
-                size="large">
+                onClick={toggleDarkMode}>
                 <Brightness4 />
               </IconButton>
             </Tooltip>
@@ -345,8 +343,7 @@ const Header = () => {
                 color="inherit"
                 onClick={() => {
                   history.push("/about");
-                }}
-                size="large">
+                }}>
                 <Info />
               </IconButton>
             </Tooltip>
@@ -357,8 +354,7 @@ const Header = () => {
                   <IconButton
                     aria-haspopup="true"
                     color="inherit"
-                    onClick={showMenu}
-                    size="large">
+                    onClick={showMenu}>
                     <AccountCircle />
                   </IconButton>
                 </Tooltip>
@@ -394,8 +390,7 @@ const Header = () => {
                 <IconButton
                   aria-haspopup="true"
                   color="inherit"
-                  onClick={openAccountDialog("login")}
-                  size="large">
+                  onClick={openAccountDialog("login")}>
                   <Login />
                 </IconButton>
               </Tooltip>
@@ -415,7 +410,7 @@ const Header = () => {
           paper: classes.drawerPaper
         }}>
         <div className={classes.drawerHeader}>
-          <IconButton onClick={setShowDrawer(false)} size="large">
+          <IconButton onClick={setShowDrawer(false)}>
             <ChevronLeft />
           </IconButton>
         </div>
