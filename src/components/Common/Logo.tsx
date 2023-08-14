@@ -1,8 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import makeStyles from "@mui/styles/makeStyles";
-import { Theme } from "@mui/material/styles";
-import { Typography } from "@mui/material";
+import { useTheme, Theme } from "@mui/material/styles";
+import { Typography, useMediaQuery } from "@mui/material";
 
 import noiseSvgUrl from "/assets/noise.svg";
 
@@ -24,7 +24,7 @@ const useStyles = makeStyles<Theme, { logoText: string }>(theme => ({
     marginTop: "-11px",
 
     "&::before": {
-      content: ({ logoText }) => `"${logoText}"`,
+      content: ({ logoText }: { logoText: string }) => `"${logoText}"`,
       position: "absolute",
       inset: 0,
 
@@ -40,7 +40,8 @@ const useStyles = makeStyles<Theme, { logoText: string }>(theme => ({
 }));
 
 export const Logo = () => {
-  const logoText = window.innerWidth < 400 ? "B!" : "BLOG!";
+  const theme = useTheme();
+  const logoText = useMediaQuery(theme.breakpoints.down("sm")) ? "B!" : "BLOG!";
 
   const classes = useStyles({ logoText });
   return (
